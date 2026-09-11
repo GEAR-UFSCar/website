@@ -18,9 +18,9 @@ const spaceMono = Space_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "AI-Native Product Builder | Portfolio",
-  description: "System Architect & Interface Designer crafting intelligent digital experiences",
-    generator: 'v0.app'
+  title: "GEAR | UFSCar Sorocaba",
+  description:
+    "Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Construímos robôs — competição, pesquisa e projetos aplicados —, e registramos as decisões técnicas por trás deles.",
 }
 
 export const viewport: Viewport = {
