@@ -1,0 +1,5 @@
+Fotos do Portas Abertas 2026, lidas por components/portas-abertas.tsx.
+Nomeie sequencialmente: foto-01.jpg ... foto-08.jpg
+Para mudar a quantidade, edite o array FOTOS no componente — cada item tem
+arquivo, proporção (aspect ratio do mosaico) e legenda.
+Slots sem arquivo aparecem como marcador com o nome do arquivo; nada quebra.

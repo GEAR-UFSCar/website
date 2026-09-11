@@ -1,0 +1,7 @@
+Fotos do Diário de Bordo. Nomes esperados por components/works.tsx:
+  ai-rover-01.jpg          — "Três cérebros, uma missão"
+  mecanum-sensores.jpg     — "Cinco sensores, uma média ponderada"
+  mecanum-pid.jpg          — "Por que trocamos regras binárias por PID"
+  mecanum-teste.jpg        — "Machine Learning ficou de fora — de propósito"
+  ai-rover-limitacao.jpg   — "A limitação que não escondemos"
+Se um arquivo faltar, o painel cai no modo texto automaticamente.

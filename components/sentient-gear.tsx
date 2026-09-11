@@ -1,118 +1,14 @@
 "use client"
 
 import { useRef, useMemo, useEffect, useState } from "react"
-import type { RefObject, PointerEvent as ReactPointerEvent } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { Color, ExtrudeGeometry, MathUtils, Shape } from "three"
-import { TessellateModifier } from "three/addons/modifiers/TessellateModifier.js"
-import type { BufferGeometry, Group, Mesh, ShaderMaterial } from "three"
+import { MathUtils, Shape, Path, ExtrudeGeometry } from "three"
+import type { Mesh, ShaderMaterial, Group } from "three"
 
-/*
- * Perfil medido em public/gear-icon-g.svg (raios 92 / 76 / 42, passo de 45°):
- * 8 dentes, e dentro de cada passo — 22,5° de raiz, 5,625° de flanco,
- * 11,25° de topo, 5,625° de flanco. Normalizado com o topo em 1.0.
- */
-const TEETH = 8
-const R_ROOT = 76 / 92
-const MAIN_RADIUS = 1.5
-const GEAR_AMBER = "#FF7A2F"
-
-/** Dentro de um passo: o vale fica centrado em 0,25 e o topo do dente em 0,75. */
-const VALLEY_CENTER = 0.25
-const TIP_CENTER = 0.75
-
-/** Rotação automática de base, em rad/s. */
-const BASE_SPEED = 0.22
-/** Quanto um pixel de arraste horizontal vira rotação. */
-const RAD_PER_PX = 0.006
-/** Teto da velocidade de arremesso, em rad/s. */
-const MAX_FLICK = 9
-/** Constante de desaceleração após soltar (maior = para mais rápido). */
-const FLICK_DECAY = 2.2
-
-type DragState = {
-  active: boolean
-  lastX: number
-  lastTime: number
-  /** Rotação acumulada pelo ponteiro e ainda não consumida por um frame. */
-  pending: number
-  /** Velocidade de arremesso em rad/s, decai até zero após soltar. */
-  velocity: number
-}
-
-function createGearShape(teeth: number, rTip: number, rRoot: number, steps = 5) {
-  const shape = new Shape()
-  const pitch = (Math.PI * 2) / teeth
-  // frações do passo, na ordem raiz → sobe → topo → desce
-  const segments: Array<[number, number, number, number]> = [
-    [0, 0.5, rRoot, rRoot],
-    [0.5, 0.625, rRoot, rTip],
-    [0.625, 0.875, rTip, rTip],
-    [0.875, 1, rTip, rRoot],
-  ]
-
-  let started = false
-  for (let i = 0; i < teeth; i++) {
-    const base = i * pitch
-    for (const [from, to, rFrom, rTo] of segments) {
-      for (let s = 0; s <= steps; s++) {
-        const t = s / steps
-        const angle = base + pitch * (from + (to - from) * t)
-        const radius = rFrom + (rTo - rFrom) * t
-        const x = Math.cos(angle) * radius
-        const y = Math.sin(angle) * radius
-        if (started) {
-          shape.lineTo(x, y)
-        } else {
-          shape.moveTo(x, y)
-          started = true
-        }
-      }
-    }
-  }
-  shape.closePath()
-
-  return shape
-}
-
-function useGearGeometry(radius: number, teeth: number) {
-  return useMemo<BufferGeometry>(() => {
-    const shape = createGearShape(teeth, radius, radius * R_ROOT)
-    const geometry = new ExtrudeGeometry(shape, { depth: radius * 0.22, bevelEnabled: false })
-    geometry.center()
-    // O extrude sai com triângulos grandes demais para o wireframe respirar;
-    // subdividir dá densidade para o ruído do vertex shader aparecer.
-    const tessellated = new TessellateModifier(radius * 0.22, 4).modify(geometry)
-    tessellated.computeVertexNormals()
-    return tessellated
-  }, [radius, teeth])
-}
-
-/*
- * Encaixe de um satélite na principal: ele é posto num ângulo onde a principal
- * tem vale, à distância em que o topo de um entra no vão do outro, e defasado
- * para que um dente seu aponte de volta ao centro. Como a razão de giro é
- * −N_principal / N_satélite, esse encaixe se mantém enquanto giram.
- */
-function meshWithMain(valleyIndex: number, teeth: number, radius: number) {
-  const pitchMain = (Math.PI * 2) / TEETH
-  const pitch = (Math.PI * 2) / teeth
-  const angle = (valleyIndex + VALLEY_CENTER) * pitchMain
-  const distance = (MAIN_RADIUS * R_ROOT + radius + (MAIN_RADIUS + radius * R_ROOT)) / 2
-
-  return {
-    position: [Math.cos(angle) * distance, Math.sin(angle) * distance, 0] as [number, number, number],
-    // o dente que olha para o centro da principal
-    phase: angle + Math.PI - TIP_CENTER * pitch,
-    ratio: -TEETH / teeth,
-  }
-}
-
+// ---------- shared noise shader (same technique as the original sphere) ----------
 const vertexShader = `
   uniform float uTime;
-  uniform vec2 uMouse;
   uniform float uNoiseScale;
-  uniform float uAmplitude;
   varying vec2 vUv;
   varying float vDisplacement;
 
@@ -169,75 +65,119 @@ const vertexShader = `
 
   void main() {
     vUv = uv;
-
-    float noise = snoise(position * uNoiseScale + vec3(uMouse * 0.5, 0.0) + uTime * 0.15);
-    float displacement = noise * uAmplitude;
+    float noise = snoise(position * uNoiseScale + uTime * 0.15);
+    float displacement = noise * 0.12;
     vDisplacement = displacement;
-
     vec3 newPosition = position + normal * displacement;
     gl_Position = projectionMatrix * modelViewMatrix * vec4(newPosition, 1.0);
   }
 `
 
 const fragmentShader = `
-  uniform vec3 uColor;
   uniform float uOpacity;
   varying vec2 vUv;
   varying float vDisplacement;
 
   void main() {
-    float intensity = 0.45 + vDisplacement * 3.0;
-    vec3 color = uColor * intensity;
+    float intensity = 0.35 + vDisplacement * 2.0;
+    vec3 amber = vec3(1.0, 0.478, 0.184);
+    vec3 color = intensity * amber;
 
-    float line = smoothstep(0.0, 0.02, abs(fract(vUv.x * 20.0) - 0.5));
-    line *= smoothstep(0.0, 0.02, abs(fract(vUv.y * 20.0) - 0.5));
+    float line = smoothstep(0.0, 0.02, abs(fract(vUv.x * 14.0) - 0.5));
+    line *= smoothstep(0.0, 0.02, abs(fract(vUv.y * 14.0) - 0.5));
 
-    gl_FragColor = vec4(color * (1.0 - line * 0.5), uOpacity);
+    gl_FragColor = vec4(color * (1.0 - line * 0.5), 0.6 * uOpacity);
   }
 `
 
-type GearProps = {
-  radius: number
-  teeth: number
-  position: [number, number, number]
-  /** Multiplicador de giro; negativo engrena contra a engrenagem vizinha. */
-  ratio: number
-  /** Defasagem que põe um dente apontando para o centro da principal. */
-  phase: number
-  opacity: number
-  amplitude: number
-  spin: RefObject<number>
+// ---------- gear silhouette with flat-topped teeth (trapezoidal), no bevel, WITH center hole ----------
+function buildGearShape(teeth: number, innerRadius: number, outerRadius: number, holeRadius: number) {
+  const shape = new Shape()
+  const anglePerTooth = (Math.PI * 2) / teeth
+  const tipHalfWidth = anglePerTooth * 0.28
+  const rootHalfWidth = anglePerTooth * 0.5
+
+  for (let i = 0; i < teeth; i++) {
+    const center = i * anglePerTooth
+    const a0 = center - rootHalfWidth
+    const a1 = center - tipHalfWidth
+    const a2 = center + tipHalfWidth
+    const a3 = center + rootHalfWidth
+
+    const p0 = [Math.cos(a0) * innerRadius, Math.sin(a0) * innerRadius]
+    const p1 = [Math.cos(a1) * outerRadius, Math.sin(a1) * outerRadius]
+    const p2 = [Math.cos(a2) * outerRadius, Math.sin(a2) * outerRadius]
+    const p3 = [Math.cos(a3) * innerRadius, Math.sin(a3) * innerRadius]
+
+    if (i === 0) shape.moveTo(p0[0], p0[1])
+    else shape.lineTo(p0[0], p0[1])
+    shape.lineTo(p1[0], p1[1])
+    shape.lineTo(p2[0], p2[1])
+    shape.lineTo(p3[0], p3[1])
+  }
+  shape.closePath()
+
+  // hole must wind OPPOSITE to the outer contour (clockwise=true) or the
+  // triangulation breaks and produces the huge malformed mesh
+  const hole = new Path()
+  hole.absarc(0, 0, holeRadius, 0, Math.PI * 2, true)
+  shape.holes.push(hole)
+
+  return shape
 }
 
-function Gear({ radius, teeth, position, ratio, phase, opacity, amplitude, spin }: GearProps) {
+function GearMesh({
+  teeth,
+  innerRadius,
+  outerRadius,
+  depth,
+  opacity,
+  spinSpeed,
+  noiseScale,
+}: {
+  teeth: number
+  innerRadius: number
+  outerRadius: number
+  depth: number
+  opacity: number
+  spinSpeed: number
+  noiseScale: number
+}) {
   const meshRef = useRef<Mesh>(null)
   const materialRef = useRef<ShaderMaterial>(null)
-  const geometry = useGearGeometry(radius, teeth)
+
+  const geometry = useMemo(() => {
+    const holeRadius = innerRadius * 0.42
+    const shape = buildGearShape(teeth, innerRadius, outerRadius, holeRadius)
+    const geo = new ExtrudeGeometry(shape, {
+      depth,
+      bevelEnabled: false,
+      curveSegments: 8,
+    })
+    geo.center()
+    return geo
+  }, [teeth, innerRadius, outerRadius, depth])
 
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uMouse: { value: [0, 0] },
-      uColor: { value: new Color(GEAR_AMBER) },
       uOpacity: { value: opacity },
-      uNoiseScale: { value: 1.5 / radius },
-      uAmplitude: { value: amplitude },
+      uNoiseScale: { value: noiseScale },
     }),
-    [opacity, radius, amplitude],
+    [opacity, noiseScale],
   )
 
   useFrame((state, delta) => {
     if (materialRef.current) {
       materialRef.current.uniforms.uTime.value += delta
-      materialRef.current.uniforms.uMouse.value = [state.pointer.x, state.pointer.y]
     }
-    if (meshRef.current) {
-      meshRef.current.rotation.z = phase + spin.current * ratio
+    if (meshRef.current && spinSpeed !== 0) {
+      meshRef.current.rotation.z += delta * spinSpeed
     }
   })
 
   return (
-    <mesh ref={meshRef} position={position} geometry={geometry}>
+    <mesh ref={meshRef} geometry={geometry}>
       <shaderMaterial
         ref={materialRef}
         vertexShader={vertexShader}
@@ -250,131 +190,131 @@ function Gear({ radius, teeth, position, ratio, phase, opacity, amplitude, spin 
   )
 }
 
-/* Satélites: menores, mais rápidas na razão dos dentes, e encaixadas na principal. */
-const SATELITE_A = { radius: 0.9, teeth: 5, opacity: 0.32, amplitude: 0.1, ...meshWithMain(3, 5, 0.9) }
-const SATELITE_B = { radius: 0.7, teeth: 4, opacity: 0.24, amplitude: 0.08, ...meshWithMain(-1, 4, 0.7) }
+function GearSystem() {
+  const mainGroupRef = useRef<Group>(null)
+  const { pointer } = useThree()
 
-function GearSystem({ drag }: { drag: RefObject<DragState> }) {
-  const groupRef = useRef<Group>(null)
-  const { pointer, viewport } = useThree()
-  const spin = useRef(0)
+  const dragVelocity = useRef(0)
+  const isDragging = useRef(false)
+  const lastX = useRef(0)
+  const baseSpeed = 0.16
+  const baseTiltX = -0.45 // fixed tilt so the extrusion depth reads immediately
 
-  // O conjunto ocupa ~5,1 unidades de largura; em viewport estreita as
-  // satélites sairiam de quadro, então encolhe para caber.
-  const scale = Math.min(1, Math.max(0.4, viewport.width / 7))
+  useEffect(() => {
+    // attached to window (not the canvas element) so the drag still works
+    // even though the hero's text/button overlay sits on top of the canvas
+    // in the DOM stacking order and would otherwise swallow the event
+    const onPointerDown = (e: PointerEvent) => {
+      isDragging.current = true
+      lastX.current = e.clientX
+    }
+    const onPointerMove = (e: PointerEvent) => {
+      if (!isDragging.current) return
+      const dx = e.clientX - lastX.current
+      dragVelocity.current = dx * 0.006
+      lastX.current = e.clientX
+    }
+    const onPointerUp = () => {
+      isDragging.current = false
+    }
+
+    window.addEventListener("pointerdown", onPointerDown)
+    window.addEventListener("pointermove", onPointerMove)
+    window.addEventListener("pointerup", onPointerUp)
+    return () => {
+      window.removeEventListener("pointerdown", onPointerDown)
+      window.removeEventListener("pointermove", onPointerMove)
+      window.removeEventListener("pointerup", onPointerUp)
+    }
+  }, [])
 
   useFrame((state, delta) => {
-    const d = drag.current
-
-    // Enquanto arrasta, o ponteiro manda direto; ao soltar, o arremesso
-    // decai exponencialmente até sobrar só a rotação de base.
-    if (d.active) {
-      spin.current += d.pending
-      d.pending = 0
-    } else if (d.velocity !== 0) {
-      spin.current += d.velocity * delta
-      d.velocity *= Math.exp(-FLICK_DECAY * delta)
-      if (Math.abs(d.velocity) < 0.001) d.velocity = 0
+    if (!isDragging.current) {
+      dragVelocity.current = MathUtils.lerp(dragVelocity.current, 0, 0.05)
     }
-    spin.current += BASE_SPEED * delta
+    const speed = baseSpeed + dragVelocity.current * 12
 
-    if (groupRef.current) {
-      groupRef.current.rotation.x = MathUtils.lerp(groupRef.current.rotation.x, pointer.y * 0.25, 0.05)
-      groupRef.current.rotation.y = MathUtils.lerp(groupRef.current.rotation.y, pointer.x * 0.25, 0.05)
+    if (mainGroupRef.current) {
+      // turntable rotation on Y — this is what reveals the 3D depth of the
+      // extrusion; rotating on Z instead (as before) just spins it in-plane
+      // like a flat clock hand and looks 2D
+      mainGroupRef.current.rotation.y += speed * delta
+      mainGroupRef.current.rotation.x = MathUtils.lerp(
+        mainGroupRef.current.rotation.x,
+        baseTiltX + pointer.y * 0.12,
+        0.05,
+      )
     }
   })
 
   return (
-    <group ref={groupRef} scale={scale}>
-      <Gear
-        radius={MAIN_RADIUS}
-        teeth={TEETH}
-        position={[0, 0, 0]}
-        ratio={1}
-        phase={0}
-        opacity={0.62}
-        amplitude={0.16}
-        spin={spin}
-      />
-      <Gear {...SATELITE_A} spin={spin} />
-      <Gear {...SATELITE_B} spin={spin} />
+    <group>
+      <group ref={mainGroupRef}>
+        <GearMesh
+          teeth={12}
+          innerRadius={1.3}
+          outerRadius={1.8}
+          depth={0.4}
+          opacity={0.7}
+          spinSpeed={0}
+          noiseScale={1.5}
+        />
+      </group>
+
+      {/* engrenagens auxiliares — giram mais rápido quanto menores, como engrenagens reais */}
+      <group position={[2.5, 1.3, -0.6]} rotation={[baseTiltX, 0, 0]}>
+        <GearMesh
+          teeth={8}
+          innerRadius={0.5}
+          outerRadius={0.75}
+          depth={0.3}
+          opacity={0.32}
+          spinSpeed={0.34}
+          noiseScale={2.2}
+        />
+      </group>
+      <group position={[-2.3, -1.1, -0.9]} rotation={[baseTiltX, 0, 0]}>
+        <GearMesh
+          teeth={10}
+          innerRadius={0.62}
+          outerRadius={0.92}
+          depth={0.3}
+          opacity={0.26}
+          spinSpeed={-0.24}
+          noiseScale={2.2}
+        />
+      </group>
     </group>
   )
 }
 
 export function SentientGear() {
   const [mounted, setMounted] = useState(false)
-  const [grabbing, setGrabbing] = useState(false)
-  const drag = useRef<DragState>({ active: false, lastX: 0, lastTime: 0, pending: 0, velocity: 0 })
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // O toque fica reservado para a rolagem da página; arrasto só com mouse/caneta.
-  const isDraggable = (event: ReactPointerEvent<HTMLDivElement>) => event.pointerType !== "touch"
-
-  const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    if (!isDraggable(event)) return
-    const d = drag.current
-    d.active = true
-    d.lastX = event.clientX
-    d.lastTime = event.timeStamp
-    d.pending = 0
-    d.velocity = 0
-    setGrabbing(true)
-    event.currentTarget.setPointerCapture?.(event.pointerId)
-  }
-
-  const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const d = drag.current
-    if (!d.active) return
-    const dx = event.clientX - d.lastX
-    const dt = Math.max(event.timeStamp - d.lastTime, 1) / 1000
-    d.lastX = event.clientX
-    d.lastTime = event.timeStamp
-    d.pending += dx * RAD_PER_PX
-    d.velocity = MathUtils.clamp((dx * RAD_PER_PX) / dt, -MAX_FLICK, MAX_FLICK)
-  }
-
-  const handlePointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
-    const d = drag.current
-    if (!d.active) return
-    d.active = false
-    setGrabbing(false)
-    event.currentTarget.releasePointerCapture?.(event.pointerId)
-    // Parado no momento de soltar não deve arremessar.
-    if (event.timeStamp - d.lastTime > 120) d.velocity = 0
-  }
-
   if (!mounted) {
     return (
       <div className="w-full h-full flex items-center justify-center">
-        <div className="w-64 h-64 rounded-full border border-accent/20 animate-pulse" />
+        <div className="w-64 h-64 rounded-full border border-white/10 animate-pulse" />
       </div>
     )
   }
 
   return (
-    <div
-      className={`w-full h-full ${grabbing ? "cursor-grabbing" : "cursor-grab"}`}
-      onPointerDown={handlePointerDown}
-      onPointerMove={handlePointerMove}
-      onPointerUp={handlePointerUp}
-      onPointerCancel={handlePointerUp}
+    <Canvas
+      camera={{ position: [0, 0, 5], fov: 45 }}
+      className="w-full my-0 h-full py-0"
+      dpr={[1, 2]}
+      gl={{
+        antialias: true,
+        alpha: true,
+      }}
     >
-      <Canvas
-        camera={{ position: [0, 0, 5], fov: 45 }}
-        className="w-full my-0 h-full py-0"
-        dpr={[1, 2]}
-        gl={{
-          antialias: true,
-          alpha: true,
-        }}
-      >
-        <ambientLight intensity={0.5} />
-        <GearSystem drag={drag} />
-      </Canvas>
-    </div>
+      <ambientLight intensity={0.5} />
+      <GearSystem />
+    </Canvas>
   )
 }
