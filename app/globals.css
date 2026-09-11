@@ -204,3 +204,25 @@
 .animate-marquee-right {
   animation: marquee-right 50s linear infinite;
 }
+
+/* Respeita quem pediu menos movimento no sistema.
+   Cobre o que é CSS: o marquee infinito, o pulse, o ping e todas as
+   transições. As animações em JS (springs do framer-motion e o loop da
+   engrenagem em WebGL) não são alcançadas por CSS — ver nota no README. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* o marquee roda para sempre; aqui ele simplesmente para */
+  .animate-marquee-left,
+  .animate-marquee-right {
+    animation: none !important;
+    transform: none !important;
+  }
+}

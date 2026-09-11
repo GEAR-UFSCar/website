@@ -2,7 +2,7 @@ import { Navbar } from "@/components/navbar"
 import { Hero } from "@/components/hero"
 import { About } from "@/components/about"
 import { Works } from "@/components/works"
-import { PortasAbertas } from "@/components/portas-abertas"
+import { UniversidadeAberta } from "@/components/universidade-aberta"
 import { TechMarquee } from "@/components/tech-marquee"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
@@ -19,7 +19,7 @@ export default function Home() {
         <SectionBlend />
         <About />
         <Works />
-        <PortasAbertas />
+        <UniversidadeAberta />
         <TechMarquee />
         <Footer />
       </main>

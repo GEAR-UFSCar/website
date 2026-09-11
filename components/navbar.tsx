@@ -5,6 +5,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
 
+import { AuthLink } from "@/components/auth-link"
+
 const navLinks = [
   { label: "Sobre", href: "/sobre" },
   { label: "Trilhas", href: "/trilhas" },
@@ -58,14 +60,8 @@ export function Navbar() {
             ))}
           </ul>
 
-          {/* Status Indicator */}
-          <div className="hidden xl:flex items-center gap-3">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-            </span>
-            <span className="font-mono text-xs tracking-wider text-muted-foreground">INSCRIÇÕES ABERTAS</span>
-          </div>
+          {/* Entrar / Membros, conforme a sessão */}
+          <AuthLink className="hidden lg:inline-block font-mono text-xs tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-300" />
 
           {/* Mobile Menu Button */}
           <button
@@ -123,13 +119,12 @@ export function Navbar() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
-                className="flex items-center gap-3 mt-8"
+                className="mt-8"
               >
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-accent" />
-                </span>
-                <span className="font-mono text-xs tracking-wider text-muted-foreground">INSCRIÇÕES ABERTAS</span>
+                <AuthLink
+                  onNavigate={() => setIsMenuOpen(false)}
+                  className="font-mono text-xs tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-300"
+                />
               </motion.div>
             </nav>
           </motion.div>

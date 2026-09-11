@@ -21,12 +21,11 @@ export function Footer() {
       const horas = agora.getHours().toString().padStart(2, "0")
       const minutos = agora.getMinutes().toString().padStart(2, "0")
       const segundos = agora.getSeconds().toString().padStart(2, "0")
-      const milissegundos = agora.getMilliseconds().toString().padStart(3, "0")
-      setHora(`${horas}:${minutos}:${segundos}.${milissegundos}`)
+      setHora(`${horas}:${minutos}:${segundos}`)
     }
 
     atualizarHora()
-    const intervalo = setInterval(atualizarHora, 10)
+    const intervalo = setInterval(atualizarHora, 1000)
     return () => clearInterval(intervalo)
   }, [])
 

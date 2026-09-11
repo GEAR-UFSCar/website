@@ -3,33 +3,25 @@
 import { motion } from "framer-motion"
 
 const techItems = [
-  "NEXT.JS",
-  "REACT",
-  "TYPESCRIPT",
+  "ROS 2",
   "PYTHON",
   "PYTORCH",
-  "LATENCY",
-  "INTUITION",
-  "OPENAI",
-  "EMPATHY",
-  "WEBGL",
-  "NODE.JS",
-  "PRECISION",
+  "YOLO",
+  "ARDUINO",
+  "WEBOTS",
+  "SLAM",
+  "C++",
 ]
 
 const concepts = [
-  "ARCHITECTURE",
-  "SYSTEMS",
-  "INTERFACES",
-  "ALGORITHMS",
-  "EMERGENCE",
-  "COGNITION",
-  "SYNTHESIS",
-  "VELOCITY",
-  "ENTROPY",
-  "FLUX",
-  "AXIOM",
-  "TENSOR",
+  "AUTONOMIA",
+  "PRECISÃO",
+  "ENGENHARIA",
+  "ITERAÇÃO",
+  "ROBUSTEZ",
+  "DISCIPLINA",
+  "CURIOSIDADE",
+  "ORIGEM",
 ]
 
 function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?: "left" | "right" }) {
@@ -79,7 +71,7 @@ export function TechMarquee() {
         transition={{ duration: 0.8 }}
         className="px-8 md:px-12 mb-16"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">06 — TECHNICAL ARSENAL</p>
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">06 — ARSENAL TÉCNICO</p>
       </motion.div>
 
       {/* Marquee Rows */}
