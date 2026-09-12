@@ -12,6 +12,7 @@ import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { dataLonga } from "@/lib/datas"
 import { STATUS_SPRINT, eDiretoria, temCargo, type TrilhaNome } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 type Sprint = {
   id: string
@@ -66,6 +67,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
       <Navbar />
       <main>
         <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Trilha
@@ -84,6 +86,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
             {sprints.length} SPRINT(S)
             {eMinhaTrilha ? " · SUA TRILHA" : ""}
           </p>
+          </Surge>
 
           {error && (
             <Aviso titulo="SPRINTS INDISPONÍVEIS" className="mt-10 max-w-2xl">
@@ -109,8 +112,8 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
                 </div>
 
                 <div className="mt-8">
-                  {doStatus.map((sprint) => (
-                    <article key={sprint.id} className="border-t border-white/10 py-6">
+                  {doStatus.map((sprint, i) => (
+                    <Surge as="article" index={i} key={sprint.id} className="border-t border-white/10 py-6">
                       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                         <div className="flex-1">
                           <h3 className="font-sans text-lg md:text-xl font-light leading-snug">
@@ -135,7 +138,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
                           </div>
                         )}
                       </div>
-                    </article>
+                    </Surge>
                   ))}
                 </div>
               </section>

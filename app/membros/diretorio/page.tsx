@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Diretório | GEAR",
@@ -69,6 +70,7 @@ export default async function DiretorioPage() {
       <Navbar />
       <main>
         <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Diretório
@@ -84,6 +86,7 @@ export default async function DiretorioPage() {
           <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
             {membros.length} MEMBRO(S)
           </p>
+          </Surge>
 
           {error && (
             <Aviso titulo="DIRETÓRIO INDISPONÍVEL" className="mt-10 max-w-2xl">
@@ -117,8 +120,10 @@ export default async function DiretorioPage() {
                 </div>
 
                 <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
-                  {doGrupo.map((membro) => (
-                    <li
+                  {doGrupo.map((membro, i) => (
+                    <Surge
+                      as="li"
+                      index={i}
                       key={membro.id}
                       className="border border-white/10 p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]"
                     >
@@ -150,7 +155,7 @@ export default async function DiretorioPage() {
                           {membro.cargo}
                         </p>
                       )}
-                    </li>
+                    </Surge>
                   ))}
                 </ul>
               </section>

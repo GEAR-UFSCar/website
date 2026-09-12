@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Administração | GEAR",
@@ -17,20 +18,22 @@ const SECOES = [
 export default function AdministracaoPage() {
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <Surge>
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
         Painel da
         <br />
         <span className="italic">entidade</span>
       </h1>
+      </Surge>
 
       <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-        {SECOES.map((secao) => (
+        {SECOES.map((secao, i) => (
+          <Surge key={secao.href} index={i} className="h-full">
           <Link
-            key={secao.href}
             href={secao.href}
             data-cursor-hover
-            className="group border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
+            className="group block h-full border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
           >
             <h2 className="font-sans text-2xl md:text-3xl font-light tracking-tight">{secao.nome}</h2>
             <p className="mt-3 font-sans text-sm font-light leading-relaxed text-muted-foreground">
@@ -40,6 +43,7 @@ export default function AdministracaoPage() {
               ABRIR →
             </span>
           </Link>
+          </Surge>
         ))}
       </div>
 

@@ -6,6 +6,7 @@ import { PatrimonioStatus } from "@/components/patrimonio-status"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Patrimônio | GEAR",
@@ -36,6 +37,7 @@ export default async function PatrimonioPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <Surge>
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">
         Patrimônio
@@ -43,6 +45,7 @@ export default async function PatrimonioPage() {
       <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
         {itens.length} REGISTRO(S) · {unidades} UNIDADE(S)
       </p>
+      </Surge>
 
       {error && (
         <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
@@ -70,8 +73,8 @@ export default async function PatrimonioPage() {
                 </td>
               </tr>
             )}
-            {itens.map((i) => (
-              <tr key={i.id} className="border-b border-white/10 align-top">
+            {itens.map((i, indice) => (
+              <Surge as="tr" index={indice} key={i.id} className="border-b border-white/10 align-top">
                 <td className="py-4 pr-4">
                   <p className="font-sans text-base font-light">{i.item}</p>
                   {i.observacoes && (
@@ -86,7 +89,7 @@ export default async function PatrimonioPage() {
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.responsavel_atual ?? "—"}</td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.trilha_vinculada ?? "—"}</td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.localizacao ?? "—"}</td>
-              </tr>
+              </Surge>
             ))}
           </tbody>
         </table>

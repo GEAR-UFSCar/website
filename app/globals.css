@@ -8,6 +8,10 @@
   --gear-navy: #0B2138;
   --gear-amber: #FF7A2F;
   --gear-ink: #081726;
+  /* slate NÃO SERVE PARA TEXTO: 3.29:1 sobre ink e 2.95:1 sobre navy, abaixo
+     dos 4.5:1 que a WCAG AA exige para corpo. É o único token da paleta que
+     reprova. Use-o só em borda, divisor e decoração — para texto secundário
+     o token é mist (9.15:1 sobre ink). */
   --gear-slate: #5A6B7A;
   --gear-mist: #AEBAC4;
   --gear-fog: #EDF1F4;
@@ -95,6 +99,25 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /*
+   * Foco visível em tudo que recebe Tab. A regra `*` acima só definia a COR
+   * do contorno, sem style nem width — o desenho ficava por conta do padrão
+   * de cada navegador, e os botões do site (que só tinham :hover) não davam
+   * sinal nenhum de foco por teclado.
+   *
+   * Vive em @layer base de propósito: utilitários do Tailwind vencem esta
+   * regra, então os campos de formulário — que usam outline-none e repõem o
+   * foco com ring — continuam mandando na própria aparência.
+   *
+   * :focus-visible, e não :focus, para o contorno não aparecer em clique de
+   * mouse: só em teclado e quando o navegador julgar que ajuda.
+   */
+  *:focus-visible {
+    outline: 2px solid var(--gear-amber);
+    outline-offset: 2px;
+    border-radius: 1px;
   }
 }
 

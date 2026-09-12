@@ -19,6 +19,16 @@ export function Hero() {
 
   return (
     <section ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#050505]">
+      {/*
+       * O h1 da home. As duas frases grandes abaixo são h2 de propósito — são
+       * chamadas visuais, não o título do site — e mudá-las para h1 poria
+       * "ROBÓTICA autônoma" como cabeçalho principal. sr-only mantém o layout
+       * assimétrico intacto e dá ao leitor de tela o nome real da entidade.
+       */}
+      <h1 className="sr-only">
+        GEAR — Grupo de Extensão em Automação e Robótica, UFSCar Sorocaba
+      </h1>
+
       {/* 3D Sphere Background */}
       <div className="absolute inset-0">
         <SentientGear />

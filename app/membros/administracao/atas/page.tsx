@@ -6,6 +6,7 @@ import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Atas | GEAR",
@@ -42,11 +43,13 @@ export default async function AtasPage() {
 
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <Surge>
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Atas</h1>
       <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
         {atas.length} ATA(S) REGISTRADA(S)
       </p>
+      </Surge>
 
       {error && (
         <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
@@ -59,8 +62,8 @@ export default async function AtasPage() {
           <p className="font-sans text-sm font-light text-muted-foreground">Nenhuma ata registrada ainda.</p>
         )}
 
-        {atas.map((ata) => (
-          <article key={ata.id} className="border-t border-white/10 py-8">
+        {atas.map((ata, i) => (
+          <Surge as="article" index={i} key={ata.id} className="border-t border-white/10 py-8">
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
               <h2 className="font-sans text-xl md:text-2xl font-light tracking-tight">
                 <span className="font-mono text-[10px] tracking-[0.25em] text-[var(--gear-amber)] mr-3">
@@ -87,7 +90,7 @@ export default async function AtasPage() {
                 </div>
               ))}
             </dl>
-          </article>
+          </Surge>
         ))}
       </div>
 

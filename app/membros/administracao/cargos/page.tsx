@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { eDiretoria } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Cargos | GEAR",
@@ -56,11 +57,13 @@ export default async function CargosPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <Surge>
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Cargos</h1>
       <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
         {perfis.length} PERFIL(S) · {comCargo} COM CARGO
       </p>
+      </Surge>
 
       <Aviso titulo="ATENÇÃO" tom="neutro" className="mt-8 max-w-3xl">
         Qualquer cargo preenchido dá acesso ao painel de Patrimônio e Atas. Só Presidente e
@@ -91,8 +94,8 @@ export default async function CargosPage() {
                 Nenhum perfil cadastrado.
               </td></tr>
             )}
-            {perfis.map((p) => (
-              <tr key={p.id} className="border-b border-white/10 align-top">
+            {perfis.map((p, indice) => (
+              <Surge as="tr" index={indice} key={p.id} className="border-b border-white/10 align-top">
                 <td className="py-4 pr-4">
                   <p className="font-sans text-base font-light">{p.nome_completo ?? "sem nome"}</p>
                   {p.id === user.id && (
@@ -109,7 +112,7 @@ export default async function CargosPage() {
                       })
                     : "—"}
                 </td>
-              </tr>
+              </Surge>
             ))}
           </tbody>
         </table>

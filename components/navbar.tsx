@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
 
 import { AuthLink } from "@/components/auth-link"
@@ -16,6 +17,7 @@ const navLinks = [
 ]
 
 export function Navbar() {
+  const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
@@ -48,18 +50,32 @@ export function Navbar() {
 
           {/* Desktop Navigation */}
           <ul className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {navLinks.map((link, index) => (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className="group relative font-mono text-xs tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-300"
-                >
-                  <span className="text-accent mr-1">0{index + 1}</span>
-                  {link.label.toUpperCase()}
-                  <span className="absolute -bottom-1 left-0 w-0 h-px bg-foreground group-hover:w-full transition-all duration-300" />
-                </Link>
-              </li>
-            ))}
+            {navLinks.map((link, index) => {
+              const ativo = pathname === link.href
+
+              return (
+                <li key={link.href}>
+                  <Link
+                    href={link.href}
+                    aria-current={ativo ? "page" : undefined}
+                    className={`group relative font-mono text-xs tracking-wider transition-colors duration-300 ${
+                      ativo ? "text-[var(--gear-amber)]" : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    <span className="text-accent mr-1">0{index + 1}</span>
+                    {link.label.toUpperCase()}
+                    {/* na rota ativa o sublinhado já nasce inteiro, em âmbar */}
+                    <span
+                      className={`absolute -bottom-1 left-0 h-px transition-all duration-300 ${
+                        ativo
+                          ? "w-full bg-[var(--gear-amber)]"
+                          : "w-0 bg-foreground group-hover:w-full"
+                      }`}
+                    />
+                  </Link>
+                </li>
+              )
+            })}
           </ul>
 
           {/* Entrar / Membros, conforme a sessão */}
@@ -110,7 +126,10 @@ export function Navbar() {
                   <Link
                     href={link.href}
                     onClick={() => setIsMenuOpen(false)}
-                    className="group text-3xl sm:text-4xl font-sans tracking-tight text-foreground"
+                    aria-current={pathname === link.href ? "page" : undefined}
+                    className={`group text-3xl sm:text-4xl font-sans tracking-tight ${
+                      pathname === link.href ? "text-[var(--gear-amber)]" : "text-foreground"
+                    }`}
                   >
                     <span className="text-accent font-mono text-sm mr-2">0{index + 1}</span>
                     {link.label}

@@ -10,6 +10,7 @@ import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Aprendizagem | GEAR",
@@ -59,6 +60,7 @@ export default async function AprendizagemPage() {
       <Navbar />
       <main>
         <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ACADEMIA GEAR</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Sua
@@ -88,6 +90,7 @@ export default async function AprendizagemPage() {
               />
             </div>
           </div>
+          </Surge>
 
           {erroModulos && (
             <Aviso titulo="MÓDULOS INDISPONÍVEIS" className="mt-10 max-w-2xl">
@@ -120,7 +123,9 @@ export default async function AprendizagemPage() {
                     const liberado = doNivel.slice(0, indice).every((m) => concluidos.has(m.id))
 
                     return (
-                      <li
+                      <Surge
+                        as="li"
+                        index={indice}
                         key={modulo.id}
                         className={`flex gap-5 border-t border-white/10 py-6 ${
                           concluido || liberado ? "" : "opacity-45"
@@ -171,7 +176,7 @@ export default async function AprendizagemPage() {
                             </a>
                           )}
                         </div>
-                      </li>
+                      </Surge>
                     )
                   })}
                 </ul>

@@ -12,6 +12,7 @@ import { dataHora, inicioDeHoje } from "@/lib/datas"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Calendário | GEAR",
@@ -54,8 +55,8 @@ export default async function CalendarioPage() {
   const agenda = (proximos ?? []) as Evento[]
   const historico = (passados ?? []) as Evento[]
 
-  const linha = (evento: Evento) => (
-    <article key={evento.id} className="border-t border-white/10 py-6">
+  const linha = (evento: Evento, indice: number) => (
+    <Surge as="article" index={indice} key={evento.id} className="border-t border-white/10 py-6">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
         <div className="flex-1">
           <h3 className="font-sans text-lg md:text-xl font-light leading-snug">{evento.titulo}</h3>
@@ -80,7 +81,7 @@ export default async function CalendarioPage() {
           </span>
         </div>
       </div>
-    </article>
+    </Surge>
   )
 
   return (
@@ -89,6 +90,7 @@ export default async function CalendarioPage() {
       <Navbar />
       <main>
         <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Calendário
@@ -103,6 +105,7 @@ export default async function CalendarioPage() {
           <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
             {agenda.length} EVENTO(S) À FRENTE
           </p>
+          </Surge>
 
           {error && (
             <Aviso titulo="CALENDÁRIO INDISPONÍVEL" className="mt-10 max-w-2xl">

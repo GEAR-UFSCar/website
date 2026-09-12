@@ -13,6 +13,7 @@ import { dataHora } from "@/lib/datas"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Mural | GEAR",
@@ -68,6 +69,7 @@ export default async function MuralPage() {
       <Navbar />
       <main>
         <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Mural
@@ -82,6 +84,7 @@ export default async function MuralPage() {
           <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
             {avisos.length} AVISO(S) · {fixados} FIXADO(S)
           </p>
+          </Surge>
 
           {error && (
             <Aviso titulo="MURAL INDISPONÍVEL" className="mt-10 max-w-2xl">
@@ -98,11 +101,13 @@ export default async function MuralPage() {
 
           {/* Fixados primeiro, depois os mais recentes — a ordem vem do banco. */}
           <div className="mt-12 max-w-4xl">
-            {avisos.map((aviso) => {
+            {avisos.map((aviso, indice) => {
               const autor = aviso.autor_id ? nomes.get(aviso.autor_id) : null
 
               return (
-                <article
+                <Surge
+                  as="article"
+                  index={indice}
                   key={aviso.id}
                   className={`border-t border-white/10 py-8 ${
                     aviso.fixado ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8" : ""
@@ -131,7 +136,7 @@ export default async function MuralPage() {
                   <p className="mt-5 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground whitespace-pre-line">
                     {aviso.conteudo}
                   </p>
-                </article>
+                </Surge>
               )
             })}
           </div>

@@ -12,6 +12,7 @@ import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { dataHora, inicioDeHoje } from "@/lib/datas"
 import { rotaDaTrilha, temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Membros | GEAR",
@@ -152,6 +153,7 @@ export default async function MembrosPage() {
       <main>
         <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
           {/* Topo: saudação */}
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Bem-vindo(a),
@@ -169,6 +171,7 @@ export default async function MembrosPage() {
               </span>
             )}
           </div>
+          </Surge>
 
           {/* A tabela pode não existir ainda, ou o trigger não ter rodado. */}
           {(erro || !perfil) && (
@@ -182,7 +185,7 @@ export default async function MembrosPage() {
           {/* Dois blocos de prévia, lado a lado no desktop */}
           <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Avisos recentes */}
-            <section className="border-t border-white/10 pt-8">
+            <Surge as="section" className="border-t border-white/10 pt-8">
               <div className="flex items-baseline justify-between gap-4">
                 <h2 className="font-sans text-2xl md:text-3xl font-light italic">Avisos recentes</h2>
                 <Link
@@ -227,10 +230,10 @@ export default async function MembrosPage() {
                   </ul>
                 )}
               </div>
-            </section>
+            </Surge>
 
             {/* Próximos eventos */}
-            <section className="border-t border-white/10 pt-8">
+            <Surge as="section" delay={0.1} className="border-t border-white/10 pt-8">
               <div className="flex items-baseline justify-between gap-4">
                 <h2 className="font-sans text-2xl md:text-3xl font-light italic">Próximos eventos</h2>
                 <Link
@@ -273,7 +276,7 @@ export default async function MembrosPage() {
                   </ul>
                 )}
               </div>
-            </section>
+            </Surge>
           </div>
 
           {/* Grid de atalhos */}
@@ -283,12 +286,12 @@ export default async function MembrosPage() {
             </div>
 
             <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {atalhos.map((atalho) => (
+              {atalhos.map((atalho, i) => (
+                <Surge key={atalho.href} index={i} className="h-full">
                 <Link
-                  key={atalho.href}
                   href={atalho.href}
                   data-cursor-hover
-                  className="border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
+                  className="block h-full border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
                 >
                   <h3 className="font-sans text-xl md:text-2xl font-light tracking-tight">
                     {atalho.nome}
@@ -300,12 +303,13 @@ export default async function MembrosPage() {
                     ABRIR →
                   </span>
                 </Link>
+                </Surge>
               ))}
             </div>
           </section>
 
           {/* Ficha do perfil e sessão */}
-          <section className="mt-20">
+          <Surge as="section" className="mt-20">
             <div className="border-t border-white/10 pt-8">
               <h2 className="font-sans text-2xl md:text-3xl font-light italic">Seu perfil</h2>
             </div>
@@ -342,7 +346,7 @@ export default async function MembrosPage() {
                 </form>
               </div>
             </div>
-          </section>
+          </Surge>
         </section>
         <Footer />
       </main>

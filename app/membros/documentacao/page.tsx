@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
   title: "Documentação | GEAR",
@@ -93,6 +94,7 @@ export default async function DocumentacaoPage() {
       <Navbar />
       <main>
         <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
             Documentação
@@ -108,6 +110,7 @@ export default async function DocumentacaoPage() {
           <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
             {documentos.length} DOCUMENTO(S) · {anexados} COM ARQUIVO
           </p>
+          </Surge>
 
           {error && (
             <Aviso titulo="DOCUMENTOS INDISPONÍVEIS" className="mt-10 max-w-2xl">
@@ -138,8 +141,10 @@ export default async function DocumentacaoPage() {
                 </div>
 
                 <ul className="mt-8 space-y-px">
-                  {daCategoria.map((documento) => (
-                    <li
+                  {daCategoria.map((documento, i) => (
+                    <Surge
+                      as="li"
+                      index={i}
                       key={documento.id}
                       className="flex flex-col gap-3 border-t border-white/10 py-6 sm:flex-row sm:items-baseline sm:justify-between"
                     >
@@ -169,7 +174,7 @@ export default async function DocumentacaoPage() {
                           ARQUIVO AINDA NÃO ANEXADO
                         </span>
                       )}
-                    </li>
+                    </Surge>
                   ))}
                 </ul>
               </section>

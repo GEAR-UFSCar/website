@@ -8,6 +8,7 @@ import { SmoothScroll } from "@/components/smooth-scroll"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { Surge } from "@/components/surge"
 
 export default async function AdministracaoLayout({ children }: { children: ReactNode }) {
   // Sem sessão vai para o login antes de qualquer coisa.
@@ -26,6 +27,7 @@ export default async function AdministracaoLayout({ children }: { children: Reac
         <Navbar />
         <main>
           <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+            <Surge>
             <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)] mb-4">
               ACESSO RESTRITO
             </p>
@@ -45,6 +47,7 @@ export default async function AdministracaoLayout({ children }: { children: Reac
             >
               Voltar para membros
             </Link>
+            </Surge>
           </section>
           <Footer />
         </main>
