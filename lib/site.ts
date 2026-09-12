@@ -19,3 +19,11 @@ export const OG_IMAGE = {
   height: 900, // dimensões medidas no arquivo
   alt: "Equipe da GEAR reunida durante a Universidade Aberta UFSCar 2026",
 }
+
+/**
+ * Versão do Regimento Interno (com o Código de Conduta) aceita no cadastro.
+ * Gravada em termos_aceitos.versao_documento — ver supabase/012_termos_aceitos.sql.
+ * Subir este número faz o próximo cadastro registrar um aceite novo; quem já
+ * aceitou a versão anterior continua com o registro dela, não com esta.
+ */
+export const VERSAO_TERMOS = "1.0"

@@ -7,6 +7,7 @@ import { motion } from "framer-motion"
 
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/client"
+import { VERSAO_TERMOS } from "@/lib/site"
 import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
 
 type Modo = "entrar" | "criar"
@@ -30,6 +31,7 @@ export function Entrar() {
   const [senha, setSenha] = useState("")
   const [nome, setNome] = useState("")
   const [curso, setCurso] = useState("")
+  const [aceitouTermos, setAceitouTermos] = useState(false)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -38,6 +40,7 @@ export function Entrar() {
     setModo(novo)
     setErro(null)
     setAviso(null)
+    setAceitouTermos(false)
   }
 
   const aoEnviar = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -68,11 +71,39 @@ export function Entrar() {
       return
     }
 
+    /*
+     * Esta é a única barreira, de propósito. `required` no checkbox dispararia
+     * o balão nativo do navegador e abortaria o submit antes do onSubmit, e um
+     * botão desabilitado bloquearia sem dizer por quê — nos dois casos a
+     * mensagem abaixo nunca apareceria. O checkbox leva aria-required para a
+     * semântica de leitor de tela sem a validação nativa junto.
+     */
+    if (!aceitouTermos) {
+      setErro(
+        "É preciso ler e aceitar o Regimento Interno, incluindo o Código de Conduta, para criar sua conta.",
+      )
+      setCarregando(false)
+      return
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password: senha,
-      // lido pelo trigger handle_new_user() para preencher public.perfis
-      options: { data: { nome_completo: nome.trim(), curso: curso.trim() } },
+      /*
+       * Lido por dois triggers em auth.users: handle_new_user() (001) preenche
+       * public.perfis, registrar_termos_aceitos() (012) grava o aceite.
+       *
+       * O aceite vai por aqui, e não por um insert do cliente, porque com
+       * confirmação de e-mail ligada signUp() não devolve sessão — sem
+       * auth.uid(), a RLS recusaria o insert e o aceite se perderia.
+       */
+      options: {
+        data: {
+          nome_completo: nome.trim(),
+          curso: curso.trim(),
+          termos_versao: VERSAO_TERMOS,
+        },
+      },
     })
     if (error) {
       setErro(error.message)
@@ -87,6 +118,7 @@ export function Entrar() {
       return
     }
 
+    setAceitouTermos(false)
     setAviso(`Conta criada. Confirme o e-mail enviado para ${email} antes de entrar.`)
     setCarregando(false)
   }
@@ -223,6 +255,31 @@ export function Entrar() {
               className={campoGrande}
             />
           </div>
+
+          {modo === "criar" && (
+            <div>
+              <label htmlFor="termos" className="flex items-start gap-3 cursor-pointer" data-cursor-hover>
+                <input
+                  id="termos"
+                  name="termos"
+                  type="checkbox"
+                  aria-required="true"
+                  checked={aceitouTermos}
+                  onChange={(e) => setAceitouTermos(e.target.checked)}
+                  disabled={carregando}
+                  aria-describedby="termos-versao"
+                  className="mt-1 h-4 w-4 shrink-0 accent-[var(--gear-amber)]"
+                />
+                <span className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                  Li e aceito o Regimento Interno da GEAR, incluindo o Código de Conduta.
+                </span>
+              </label>
+              {/* o que fica gravado em termos_aceitos.versao_documento */}
+              <p id="termos-versao" className="mt-2 pl-7 font-mono text-[10px] tracking-wider text-muted-foreground">
+                VERSÃO {VERSAO_TERMOS} · REGISTRADA NO SEU CADASTRO
+              </p>
+            </div>
+          )}
 
           {/* Mensagem da própria API do Supabase, sem reescrever */}
           {erro && <Aviso titulo="ERRO" role="alert">{erro}</Aviso>}
