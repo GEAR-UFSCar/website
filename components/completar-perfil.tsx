@@ -5,13 +5,11 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 
+import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/client"
+import { TRILHAS } from "@/lib/administracao"
+import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
 
-/** Os três valores aceitos pelo CHECK da coluna `trilha`; vazio vira null. */
-const TRILHAS = ["Competição", "Pesquisa", "Projetos"] as const
-
-const campoBase =
-  "w-full bg-[var(--gear-ink)] border border-white/15 px-4 py-3 font-sans text-base font-light text-foreground outline-none transition-colors duration-300 focus:border-[var(--gear-amber)] disabled:opacity-50"
 
 type Props = {
   userId: string
@@ -102,7 +100,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               disabled={carregando}
-              className={campoBase}
+              className={campoGrande}
             />
           </div>
 
@@ -121,7 +119,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
               value={curso}
               onChange={(e) => setCurso(e.target.value)}
               disabled={carregando}
-              className={campoBase}
+              className={campoGrande}
             />
           </div>
 
@@ -138,7 +136,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
               value={trilha}
               onChange={(e) => setTrilha(e.target.value)}
               disabled={carregando}
-              className={campoBase}
+              className={campoGrande}
             >
               <option value="">Ainda não decidido</option>
               {TRILHAS.map((opcao) => (
@@ -149,18 +147,13 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
             </select>
           </div>
 
-          {erro && (
-            <div role="alert" className="border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-4">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">ERRO</p>
-              <p className="font-sans text-sm font-light leading-relaxed text-foreground">{erro}</p>
-            </div>
-          )}
+          {erro && <Aviso titulo="ERRO" role="alert">{erro}</Aviso>}
 
           <button
             type="submit"
             disabled={carregando}
             data-cursor-hover
-            className="w-full border border-[var(--gear-amber)] bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--gear-amber)]"
+            className={`w-full ${botaoPrimario} ${botaoDesabilitavel}`}
           >
             {carregando ? "Salvando…" : "Salvar e continuar"}
           </button>

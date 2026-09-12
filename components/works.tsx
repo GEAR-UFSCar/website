@@ -3,92 +3,73 @@
 import type React from "react"
 
 import { useState, useRef } from "react"
-import Image from "next/image"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 
 type Entrada = {
-  data: string
-  projeto: string
+  /** Tag temática da decisão, mostrada à esquerda em caixa alta. */
+  tema: string
   titulo: string
   texto: string
-  /** Momentos de honestidade técnica — ganham borda âmbar e o selo TRANSPARÊNCIA. */
+  /** Momentos de honestidade pública — ganham borda âmbar e o selo TRANSPARÊNCIA. */
   destaque?: boolean
-  /** Specs mostradas na ficha flutuante; só valores que a própria narrativa sustenta. */
-  ficha?: { label: string; valor: string }[]
-  /** Foto em public/fotos/. Se o arquivo não existir, o painel cai no modo texto. */
-  foto?: string
+  /** Pares mostrados no painel flutuante; só o que a própria narrativa sustenta. */
+  resumo?: { label: string; valor: string }[]
 }
 
 const entradas: Entrada[] = [
   {
-    data: "2026",
-    projeto: "AI Rover",
-    titulo: "Três cérebros, uma missão",
+    tema: "Estrutura",
+    titulo: "Por que três trilhas, e não uma entidade genérica de robótica",
     texto:
-      "Dividimos o rover em três partes: o ESP32-S3-CAM cuida dos olhos e do rádio, o Arduino UNO dos reflexos, o notebook do raciocínio via YOLO. Se o notebook trava, o Arduino para sozinho — nenhuma parte depende cegamente da outra.",
-    foto: "/fotos/ai-rover.jpg",
-    ficha: [
-      { label: "Olhos e rádio", valor: "ESP32-S3-CAM" },
-      { label: "Reflexos", valor: "ARDUINO UNO" },
-      { label: "Raciocínio", valor: "NOTEBOOK · YOLO" },
+      "Competição, Pesquisa e Projetos têm ritmos completamente diferentes — uma corre contra prazo de campeonato, outra não tem prazo externo nenhum, a terceira vive em sprints internos. Juntar tudo numa coisa só faria uma dessas partes sufocar as outras.",
+    resumo: [
+      { label: "Competição", valor: "PRAZO EXTERNO FIXO" },
+      { label: "Pesquisa", valor: "SEM PRAZO EXTERNO" },
+      { label: "Projetos", valor: "SPRINTS INTERNOS" },
     ],
   },
   {
-    data: "2026",
-    projeto: "Navegador Mecanum",
-    titulo: "Cinco sensores, uma média ponderada",
+    tema: "Formação",
+    titulo: "Por que ninguém escolhe a trilha no primeiro dia",
     texto:
-      "No lugar de tratar cada sensor de linha isoladamente, demos um peso pra cada posição. O resultado é uma estimativa numérica da posição da linha, não só 'tem linha / não tem linha' — e isso mudou tudo na suavidade do movimento.",
-    foto: "/fotos/mecanum.jpg",
-    ficha: [
-      { label: "Mapa de pesos", valor: "-200 -100 0 +100 +200" },
-      { label: "Leitura", valor: "MÉDIA PONDERADA" },
+      "Todo mundo passa pela Academia GEAR antes — Bootcamp, formação técnica, Projeto de Validação. A escolha da trilha vem depois de aprender, não de uma decisão às cegas na hora da inscrição.",
+    resumo: [{ label: "Jornada", valor: "BOOTCAMP → ACADEMIA → VALIDAÇÃO → TRILHA" }],
+  },
+  {
+    tema: "Governança",
+    titulo: "Por que cargo não é hierarquia aqui",
+    texto:
+      "Cargos existem pra organizar responsabilidade e garantir continuidade entre gestões — não pra criar distância. Qualquer membro pode falar direto com a Presidência, independente de cargo ou tempo de casa.",
+    resumo: [
+      { label: "Mandato", valor: "1 ANO" },
+      { label: "Acesso à Presidência", valor: "QUALQUER MEMBRO" },
     ],
   },
   {
-    data: "2026",
-    projeto: "Navegador Mecanum",
-    titulo: "Por que trocamos regras binárias por PID",
+    tema: "Processo Seletivo",
+    titulo: "Por que não exigimos experiência prévia",
     texto:
-      "'Vira esquerda, vira direita' gerava oscilação constante. Trocamos por um controlador PID: erro pequeno vira correção pequena, erro grande vira correção maior. O robô parou de 'brigar' com a própria trajetória.",
-    foto: "/fotos/mecanum.jpg",
-    ficha: [
-      { label: "Kp", valor: "0,30" },
-      { label: "Kd", valor: "0,075" },
+      "A Academia GEAR nivela todo mundo. Se exigíssemos conhecimento prévio, estaríamos filtrando por quem já teve acesso antes, não por quem tem potencial agora.",
+    resumo: [
+      { label: "Pré-requisito técnico", valor: "NENHUM" },
+      { label: "Vagas por ciclo", valor: "ATÉ 20" },
     ],
   },
   {
-    data: "2026",
-    projeto: "Navegador Mecanum",
-    titulo: "Machine Learning ficou de fora — de propósito",
+    tema: "Transparência",
+    titulo: "Por que a gente fala sobre o que não sabe",
     texto:
-      "Dava pra usar ML no controle de linha. Não usamos porque o problema já tinha solução determinística boa. Complexidade sem necessidade real não é sofisticação, é desperdício.",
-    foto: "/fotos/mecanum.jpg",
-    ficha: [
-      { label: "Abordagem", valor: "DETERMINÍSTICA" },
-      { label: "ML", valor: "NÃO APLICADO" },
-    ],
-  },
-  {
-    data: "2026",
-    projeto: "AI Rover",
-    titulo: "A limitação que não escondemos",
-    texto:
-      "O AI Rover não tem encoders nas rodas. Sabemos a força que mandamos pro motor, não quanto ele andou de fato — e isso significa que mapa e rota ainda não são confiáveis. Preferimos falar isso agora do que descobrir sozinho depois.",
+      "Preferimos admitir uma limitação em público do que deixar alguém descobrir sozinho depois. Isso vale pra um robô, pra um cronograma, ou pra qualquer parte da entidade.",
     destaque: true,
-    foto: "/fotos/ai-rover.jpg",
-    ficha: [
-      { label: "Encoders", valor: "AUSENTES" },
-      { label: "Odometria", valor: "MALHA ABERTA" },
-      { label: "Mapa e rota", valor: "NÃO CONFIÁVEIS" },
+    resumo: [
+      { label: "Princípio", valor: "HONESTIDADE PÚBLICA" },
+      { label: "Se aplica a", valor: "ROBÔS, PRAZOS, A ENTIDADE" },
     ],
   },
 ]
 
 export function Works() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
-  /** Fotos que deram 404 — a entrada volta para o painel de texto. */
-  const [fotosQuebradas, setFotosQuebradas] = useState<Record<string, boolean>>({})
   const containerRef = useRef<HTMLDivElement>(null)
 
   const mouseX = useMotionValue(0)
@@ -106,7 +87,6 @@ export function Works() {
   }
 
   const emFoco = hoveredIndex !== null ? entradas[hoveredIndex] : null
-  const comFoto = Boolean(emFoco?.foto && !fotosQuebradas[emFoco.foto])
 
   return (
     <section className="relative py-32 px-8 md:px-12 md:py-24">
@@ -118,11 +98,11 @@ export function Works() {
         transition={{ duration: 0.8 }}
         className="mb-24"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — DECISÕES DE ENGENHARIA</p>
-        <h2 className="font-sans text-3xl md:text-5xl font-light italic">Diário de Bordo</h2>
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — DECISÕES QUE NOS DEFINEM</p>
+        <h2 className="font-sans text-3xl md:text-5xl font-light italic">Como Construímos a GEAR</h2>
       </motion.div>
 
-      {/* Entradas do diário */}
+      {/* Entradas */}
       <div ref={containerRef} onMouseMove={handleMouseMove} className="relative">
         {entradas.map((entrada, index) => (
           <motion.div
@@ -143,9 +123,9 @@ export function Works() {
             )}
 
             <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-3 md:gap-10">
-              {/* Data e projeto */}
+              {/* Tema */}
               <span className="font-mono text-xs text-muted-foreground tracking-widest order-1 md:order-none shrink-0">
-                {entrada.data} · {entrada.projeto}
+                {entrada.tema.toUpperCase()}
               </span>
 
               <div className="flex-1 order-2 md:order-none">
@@ -169,7 +149,7 @@ export function Works() {
           </motion.div>
         ))}
 
-        {/* Ficha técnica flutuante */}
+        {/* Resumo flutuante */}
         <motion.div
           className="absolute pointer-events-none z-50 hidden md:block w-80 overflow-hidden border border-[var(--gear-amber)] bg-[var(--gear-navy)]"
           style={{
@@ -185,44 +165,21 @@ export function Works() {
           transition={{ duration: 0.2 }}
         >
           {emFoco && (
-            <div className={comFoto ? "relative aspect-square" : "relative"}>
-              {/* camada de fundo: a foto real */}
-              {comFoto && emFoco.foto && (
-                <Image
-                  src={emFoco.foto}
-                  alt={emFoco.titulo}
-                  fill
-                  sizes="320px"
-                  className="object-cover"
-                  onError={() =>
-                    setFotosQuebradas((anterior) => ({ ...anterior, [emFoco.foto as string]: true }))
-                  }
-                />
-              )}
-
-              {/* conteúdo técnico: faixa inferior sobre a foto, ou painel inteiro sem ela */}
-              <div
-                className={
-                  comFoto
-                    ? "absolute inset-x-0 bottom-0 bg-[var(--gear-navy)]/85 backdrop-blur-sm p-4"
-                    : "p-4"
-                }
-              >
-                <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">FICHA TÉCNICA</p>
-                <p className="font-mono text-[11px] tracking-wider text-foreground mt-2 pb-2 border-b border-white/10">
-                  {emFoco.projeto}
-                </p>
-                <dl className="mt-2 space-y-1.5">
-                  {emFoco.ficha?.map((linha) => (
-                    <div key={linha.label}>
-                      <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                        {linha.label}
-                      </dt>
-                      <dd className="font-mono text-[11px] text-foreground mt-0.5">{linha.valor}</dd>
-                    </div>
-                  ))}
-                </dl>
-              </div>
+            <div className="p-4">
+              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">EM RESUMO</p>
+              <p className="font-mono text-[11px] tracking-wider text-foreground mt-2 pb-2 border-b border-white/10">
+                {emFoco.tema}
+              </p>
+              <dl className="mt-2 space-y-1.5">
+                {emFoco.resumo?.map((linha) => (
+                  <div key={linha.label}>
+                    <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                      {linha.label}
+                    </dt>
+                    <dd className="font-mono text-[11px] text-foreground mt-0.5">{linha.valor}</dd>
+                  </div>
+                ))}
+              </dl>
             </div>
           )}
         </motion.div>

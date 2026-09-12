@@ -19,18 +19,37 @@ export const STATUS = [
 
 export const TIPOS_ATA = ["Geral", "Trilha", "Diretoria"] as const
 
+/** Valores espelhados dos CHECKs em supabase/008_eventos_avisos_sprints.sql. */
+export const TIPOS_EVENTO = ["Reunião", "Sprint", "Prazo", "Outro"] as const
+
+export const STATUS_SPRINT = ["Planejado", "Em andamento", "Concluído"] as const
+
+/** Valores aceitos pelo CHECK da coluna `trilha` em 001_perfis.sql; vazio vira null. */
 export const TRILHAS = ["Competição", "Pesquisa", "Projetos"] as const
+
+/**
+ * Trilhas e suas rotas. O slug é o da URL (sem acento nem cedilha); o nome é
+ * o valor gravado no banco. As duas formas não podem divergir, então moram
+ * juntas — quem precisa de uma quase sempre precisa da outra.
+ */
+export const TRILHAS_ROTAS = [
+  { slug: "competicao", nome: "Competição" },
+  { slug: "pesquisa", nome: "Pesquisa" },
+  { slug: "projetos", nome: "Projetos" },
+] as const
+
+export type TrilhaNome = (typeof TRILHAS_ROTAS)[number]["nome"]
+
+/** Rota da trilha, ou a primeira aba quando a pessoa ainda não escolheu. */
+export function rotaDaTrilha(nome: string | null | undefined) {
+  const achada = TRILHAS_ROTAS.find((t) => t.nome === nome?.trim())
+  return `/membros/trilhas/${(achada ?? TRILHAS_ROTAS[0]).slug}`
+}
 
 /** Um cargo em branco conta como "sem cargo". */
 export function temCargo(cargo: string | null | undefined) {
   return Boolean(cargo?.trim())
 }
-
-export const campoBase =
-  "w-full bg-[var(--gear-ink)] border border-white/15 px-3 py-2.5 font-sans text-sm font-light text-foreground outline-none transition-colors duration-300 focus:border-[var(--gear-amber)] disabled:opacity-50"
-
-export const rotuloBase =
-  "block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-2"
 
 /** Cargos atribuíveis pela diretoria. Vazio = sem cargo (perde o acesso admin). */
 export const CARGOS = [

@@ -1,10 +1,12 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 
 import { CargoSelect } from "@/components/cargo-select"
+import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
+import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { eDiretoria } from "@/lib/administracao"
+import { botaoSecundario } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Cargos | GEAR",
@@ -21,18 +23,9 @@ type Perfil = {
 }
 
 export default async function CargosPage() {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect("/entrar")
-
-  const { data: meu } = await supabase
-    .from("perfis")
-    .select("cargo")
-    .eq("id", user.id)
-    .maybeSingle<{ cargo: string | null }>()
+  // sessão e perfil vêm do cache do layout — sem nova consulta
+  const user = await exigirUsuario()
+  const { perfil: meu } = await getPerfil()
 
   // O layout já barra quem não tem cargo; aqui a régua é mais alta.
   if (!eDiretoria(meu?.cargo)) {
@@ -45,13 +38,14 @@ export default async function CargosPage() {
           <span className="text-foreground">{meu?.cargo ?? "nenhum"}</span>.
         </p>
         <Link href="/membros/administracao" data-cursor-hover
-          className="mt-12 inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground">
+          className={`mt-12 inline-block ${botaoSecundario}`}>
           Voltar ao painel
         </Link>
       </section>
     )
   }
 
+  const supabase = await createClient()
   const { data, error } = await supabase
     .from("perfis")
     .select("id, nome_completo, curso, trilha, cargo, cargo_atualizado_em")
@@ -68,22 +62,16 @@ export default async function CargosPage() {
         {perfis.length} PERFIL(S) · {comCargo} COM CARGO
       </p>
 
-      <div className="mt-8 max-w-3xl border border-white/20 bg-[var(--gear-navy)] p-5">
-        <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">ATENÇÃO</p>
-        <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-          Qualquer cargo preenchido dá acesso ao painel de Patrimônio e Atas. Só Presidente e
-          Vice-Presidente conseguem alterar cargos. Remover o próprio cargo tira o seu acesso.
-        </p>
-      </div>
+      <Aviso titulo="ATENÇÃO" tom="neutro" className="mt-8 max-w-3xl">
+        Qualquer cargo preenchido dá acesso ao painel de Patrimônio e Atas. Só Presidente e
+        Vice-Presidente conseguem alterar cargos. Remover o próprio cargo tira o seu acesso.
+      </Aviso>
 
       {error && (
-        <div className="mt-10 max-w-2xl border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-          <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">ERRO</p>
-          <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-            {error.message}. Se as colunas de auditoria não existem, rode{" "}
-            <code>supabase/004_cargos.sql</code>.
-          </p>
-        </div>
+        <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
+          {error.message}. Se as colunas de auditoria não existem, rode{" "}
+          <code>supabase/004_cargos.sql</code>.
+        </Aviso>
       )}
 
       <div className="mt-12 overflow-x-auto">
@@ -128,7 +116,7 @@ export default async function CargosPage() {
       </div>
 
       <Link href="/membros/administracao" data-cursor-hover
-        className="mt-14 inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground">
+        className={`mt-14 inline-block ${botaoSecundario}`}>
         Voltar ao painel
       </Link>
     </section>

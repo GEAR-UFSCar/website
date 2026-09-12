@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
+import { botaoSecundario } from "@/lib/ui"
+
 export const metadata: Metadata = {
   title: "Administração | GEAR",
   robots: { index: false, follow: false },
@@ -44,7 +46,7 @@ export default function AdministracaoPage() {
       <Link
         href="/membros"
         data-cursor-hover
-        className="mt-16 inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+        className={`mt-16 inline-block ${botaoSecundario}`}
       >
         Voltar para membros
       </Link>

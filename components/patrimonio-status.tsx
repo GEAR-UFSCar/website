@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { STATUS } from "@/lib/administracao"
+import { selectInline } from "@/lib/ui"
 
 /** Select inline que grava assim que o valor muda. */
 export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
@@ -30,7 +31,7 @@ export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
         disabled={salvando}
         onChange={(e) => mudar(e.target.value)}
         aria-label="Status do item"
-        className="w-full bg-transparent border border-white/15 px-2 py-1.5 font-mono text-[11px] text-foreground outline-none transition-colors duration-300 focus:border-[var(--gear-amber)] disabled:opacity-50"
+        className={selectInline}
       >
         {STATUS.map((s) => (
           <option key={s} value={s} className="bg-[var(--gear-ink)]">

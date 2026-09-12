@@ -1,12 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { Aviso } from "@/components/aviso"
+import { botaoPrimario } from "@/lib/ui"
 
-/*
- * PREENCHER ANTES DE PUBLICAR: endereço real do grupo. Enquanto estiver vazio,
- * a página mostra o aviso de canal indisponível em vez de um e-mail falso.
- */
-const EMAIL_CONTATO = ""
+/* Canal de contato do grupo. Vazio faz a página exibir o aviso de indisponível. */
+const EMAIL_CONTATO = "gearufscar@gmail.com"
 
 const valor = [
   {
@@ -216,21 +215,16 @@ export function Parceiros() {
             <a
               href={`mailto:${EMAIL_CONTATO}?subject=Parceria%20GEAR`}
               data-cursor-hover
-              className="mt-10 inline-block border border-[var(--gear-amber)] bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)]"
+              className={`mt-10 inline-block ${botaoPrimario}`}
             >
               {EMAIL_CONTATO}
             </a>
           ) : (
-            <div className="mt-10 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">
-                CANAL AINDA NÃO PUBLICADO
-              </p>
-              <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-                O endereço de contato do grupo ainda não foi definido nesta página. Preencher a constante{" "}
-                <span className="font-mono text-foreground">EMAIL_CONTATO</span> publica o botão de
-                e-mail automaticamente no lugar deste aviso.
-              </p>
-            </div>
+            <Aviso titulo="CANAL AINDA NÃO PUBLICADO" className="mt-10">
+              O endereço de contato do grupo ainda não foi definido nesta página. Preencher a constante{" "}
+              <span className="font-mono text-foreground">EMAIL_CONTATO</span> publica o botão de
+              e-mail automaticamente no lugar deste aviso.
+            </Aviso>
           )}
         </motion.div>
       </section>

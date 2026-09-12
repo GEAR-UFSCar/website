@@ -5,7 +5,8 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { CATEGORIAS, STATUS, TRILHAS, campoBase, rotuloBase } from "@/lib/administracao"
+import { CATEGORIAS, STATUS, TRILHAS } from "@/lib/administracao"
+import { campoBase, rotuloBase } from "@/lib/ui"
 
 const VAZIO = {
   item: "",

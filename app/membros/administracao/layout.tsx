@@ -1,27 +1,21 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { createClient } from "@/lib/supabase/server"
+import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
+import { botaoSecundario } from "@/lib/ui"
 
 export default async function AdministracaoLayout({ children }: { children: ReactNode }) {
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Sem sessão vai para o login antes de qualquer coisa.
+  await exigirUsuario()
 
-  if (!user) redirect("/entrar")
-
-  const { data: perfil } = await supabase
-    .from("perfis")
-    .select("cargo")
-    .eq("id", user.id)
-    .maybeSingle<{ cargo: string | null }>()
+  // getPerfil() é memoizado por request: as páginas filhas releem daqui, sem
+  // nova ida ao banco.
+  const { perfil } = await getPerfil()
 
   // Sem cargo: mostra o aviso no lugar do conteúdo, sem deslogar nem
   // redirecionar. A RLS no banco é a barreira de verdade; isto é a da tela.
@@ -47,7 +41,7 @@ export default async function AdministracaoLayout({ children }: { children: Reac
             <Link
               href="/membros"
               data-cursor-hover
-              className="mt-12 inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+              className={`mt-12 inline-block ${botaoSecundario}`}
             >
               Voltar para membros
             </Link>

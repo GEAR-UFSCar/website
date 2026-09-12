@@ -3,6 +3,8 @@
 import { useState } from "react"
 import type React from "react"
 import { motion } from "framer-motion"
+import { Aviso } from "@/components/aviso"
+import { botaoPrimario } from "@/lib/ui"
 
 const condicoes = [
   { label: "Vagas", valor: "ATÉ 20" },
@@ -11,39 +13,36 @@ const condicoes = [
   { label: "Campus", valor: "UFSCar Sorocaba" },
 ]
 
-/*
- * As fases são as do edital. As datas ainda não foram definidas — preencher
- * `quando` com a data real antes de publicar, ou a etapa segue como "a definir".
- */
+/* Fases e datas do edital. `quando` vazio faz a etapa exibir "DATA A DEFINIR". */
 const cronograma = [
   {
     fase: "Inscrições",
-    quando: "",
+    quando: "02/03/2027 a 16/03/2027",
     detalhe: "Formulário aberto a qualquer estudante de graduação do campus.",
   },
   {
     fase: "Carta de interesse",
-    quando: "",
+    quando: "Junto da inscrição, até 16/03/2027",
     detalhe: "Enviada junto da inscrição. É o que lemos primeiro.",
   },
   {
     fase: "Entrevista",
-    quando: "",
+    quando: "17/03/2027 a 21/03/2027",
     detalhe: "Conversa sobre a carta e sobre como você aborda um problema que não conhece.",
   },
   {
     fase: "Resultado",
-    quando: "",
+    quando: "Até 26/03/2027",
     detalhe: "Divulgado para todos os inscritos, aprovados ou não.",
   },
   {
     fase: "Bootcamp de Integração",
-    quando: "",
+    quando: "29/03/2027 a 04/04/2027",
     detalhe: "Primeiro contato com as ferramentas, o repositório e o jeito como o grupo trabalha.",
   },
   {
     fase: "Início da Academia GEAR",
-    quando: "",
+    quando: "05/04/2027",
     detalhe: "Fundamentos de eletrônica, programação e controle. A formação começa de fato aqui.",
   },
 ]
@@ -217,16 +216,11 @@ export function ProcessoSeletivo() {
           className="max-w-3xl"
         >
           {/* Estado real do formulário — sem backend, nada sai daqui. */}
-          <div className="border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5 mb-10">
-            <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">
-              ENVIO NÃO CONECTADO
-            </p>
-            <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-              Este formulário ainda não está ligado a um banco de dados. Nada que for preenchido aqui é
-              gravado ou enviado — sua inscrição <span className="text-foreground">não será registrada</span>.
-              Os campos estão prontos para receber a integração.
-            </p>
-          </div>
+          <Aviso titulo="ENVIO NÃO CONECTADO" className="mb-10">
+            Este formulário ainda não está ligado a um banco de dados. Nada que for preenchido aqui é
+            gravado ou enviado — sua inscrição <span className="text-foreground">não será registrada</span>.
+            Os campos estão prontos para receber a integração.
+          </Aviso>
 
           <form onSubmit={aoEnviar} noValidate className="space-y-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -316,7 +310,7 @@ export function ProcessoSeletivo() {
               <button
                 type="submit"
                 data-cursor-hover
-                className="border border-[var(--gear-amber)] bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)]"
+                className={botaoPrimario}
               >
                 Enviar inscrição
               </button>

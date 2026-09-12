@@ -8,7 +8,8 @@ export const supabaseConfigurado = Boolean(
 
 /**
  * Renova a sessão do usuário a cada request e repassa os cookies atualizados
- * para o browser. Padrão oficial do @supabase/ssr para o App Router.
+ * para o browser. Padrão oficial do @supabase/ssr para o App Router, chamado
+ * do `proxy.ts` na raiz (o antigo `middleware.ts`).
  */
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })

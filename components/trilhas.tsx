@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { motion } from "framer-motion"
+import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 const trilhas = [
   {
@@ -118,14 +119,14 @@ export function Trilhas() {
           <Link
             href="/processo-seletivo"
             data-cursor-hover
-            className="border border-[var(--gear-amber)] bg-transparent px-8 py-4 text-center font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)]"
+            className={`text-center ${botaoPrimario}`}
           >
             Processo Seletivo
           </Link>
           <Link
             href="/time"
             data-cursor-hover
-            className="border border-white/20 bg-transparent px-8 py-4 text-center font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+            className={`text-center ${botaoSecundario}`}
           >
             Quem assina cada trilha
           </Link>

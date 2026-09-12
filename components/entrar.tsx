@@ -5,7 +5,9 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 import { motion } from "framer-motion"
 
+import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/client"
+import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
 
 type Modo = "entrar" | "criar"
 
@@ -20,8 +22,6 @@ function eInstitucional(email: string) {
   return Boolean(dominio) && DOMINIOS_PERMITIDOS.includes(dominio)
 }
 
-const campoBase =
-  "w-full bg-[var(--gear-ink)] border border-white/15 px-4 py-3 font-sans text-base font-light text-foreground placeholder:text-muted-foreground/50 outline-none transition-colors duration-300 focus:border-[var(--gear-amber)] disabled:opacity-50"
 
 export function Entrar() {
   const router = useRouter()
@@ -154,7 +154,7 @@ export function Entrar() {
                   value={nome}
                   onChange={(e) => setNome(e.target.value)}
                   disabled={carregando}
-                  className={campoBase}
+                  className={campoGrande}
                 />
               </div>
 
@@ -173,7 +173,7 @@ export function Entrar() {
                   value={curso}
                   onChange={(e) => setCurso(e.target.value)}
                   disabled={carregando}
-                  className={campoBase}
+                  className={campoGrande}
                 />
               </div>
             </>
@@ -195,7 +195,7 @@ export function Entrar() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={carregando}
-              className={campoBase}
+              className={campoGrande}
             />
             {modo === "criar" && (
               <p className="mt-2 font-mono text-[10px] tracking-wider text-muted-foreground">
@@ -220,32 +220,24 @@ export function Entrar() {
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               disabled={carregando}
-              className={campoBase}
+              className={campoGrande}
             />
           </div>
 
           {/* Mensagem da própria API do Supabase, sem reescrever */}
-          {erro && (
-            <div role="alert" className="border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-4">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">ERRO</p>
-              <p className="font-sans text-sm font-light leading-relaxed text-foreground">{erro}</p>
-            </div>
-          )}
+          {erro && <Aviso titulo="ERRO" role="alert">{erro}</Aviso>}
 
           {aviso && (
-            <div role="status" className="border border-white/20 bg-[var(--gear-navy)] p-4">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-muted-foreground mb-2">
-                CONFIRME SEU E-MAIL
-              </p>
-              <p className="font-sans text-sm font-light leading-relaxed text-foreground">{aviso}</p>
-            </div>
+            <Aviso titulo="CONFIRME SEU E-MAIL" tom="neutro" role="status">
+              {aviso}
+            </Aviso>
           )}
 
           <button
             type="submit"
             disabled={carregando}
             data-cursor-hover
-            className="w-full border border-[var(--gear-amber)] bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--gear-amber)]"
+            className={`w-full ${botaoPrimario} ${botaoDesabilitavel}`}
           >
             {carregando ? "Enviando…" : modo === "entrar" ? "Entrar" : "Criar conta"}
           </button>

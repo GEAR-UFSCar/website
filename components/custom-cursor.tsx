@@ -31,7 +31,7 @@ export function CustomCursor() {
       }
     }
 
-    window.addEventListener("mousemove", handleMouseMove)
+    window.addEventListener("mousemove", handleMouseMove, { passive: true })
     document.addEventListener("mouseenter", handleMouseEnter)
     document.addEventListener("mouseleave", handleMouseLeave)
     document.addEventListener("mouseover", handleHoverStart)

@@ -4,6 +4,7 @@ import Link from "next/link"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Rota não encontrada | GEAR",
@@ -32,14 +33,14 @@ export default function NotFound() {
             <Link
               href="/"
               data-cursor-hover
-              className="border border-[var(--gear-amber)] bg-transparent px-8 py-4 text-center font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)]"
+              className={`text-center ${botaoPrimario}`}
             >
               Voltar ao início
             </Link>
             <Link
               href="/trilhas"
               data-cursor-hover
-              className="border border-white/20 bg-transparent px-8 py-4 text-center font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+              className={`text-center ${botaoSecundario}`}
             >
               Ver as trilhas
             </Link>

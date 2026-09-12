@@ -4,10 +4,11 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { CARGOS } from "@/lib/administracao"
+import { STATUS_SPRINT } from "@/lib/administracao"
 import { selectInline } from "@/lib/ui"
 
-export function CargoSelect({ perfilId, valor }: { perfilId: string; valor: string | null }) {
+/** Select inline que grava assim que o valor muda. Só para quem tem cargo. */
+export function SprintStatus({ id, valor, usuarioId }: { id: string; valor: string; usuarioId: string }) {
   const router = useRouter()
   const [salvando, iniciar] = useTransition()
   const [erro, setErro] = useState<string | null>(null)
@@ -17,15 +18,17 @@ export function CargoSelect({ perfilId, valor }: { perfilId: string; valor: stri
     const supabase = createClient()
 
     const { data, error } = await supabase
-      .from("perfis")
-      .update({ cargo: novo === "" ? null : novo })
-      .eq("id", perfilId)
+      .from("sprints")
+      // updated_at é do trigger; a autoria tem de vir daqui
+      .update({ status: novo, atualizado_por: usuarioId })
+      .eq("id", id)
       .select("id")
 
     if (error) {
       setErro(error.message)
       return
     }
+    // update sem erro e sem linha afetada = a política de acesso recusou
     if (!data || data.length === 0) {
       setErro("Nenhuma linha alterada — a política de acesso recusou a mudança.")
       return
@@ -37,18 +40,23 @@ export function CargoSelect({ perfilId, valor }: { perfilId: string; valor: stri
   return (
     <div>
       <select
-        value={valor ?? ""}
+        value={valor}
         disabled={salvando}
         onChange={(e) => mudar(e.target.value)}
-        aria-label="Cargo do membro"
+        aria-label="Status do sprint"
         className={selectInline}
       >
-        <option value="" className="bg-[var(--gear-ink)]">— sem cargo —</option>
-        {CARGOS.map((c) => (
-          <option key={c} value={c} className="bg-[var(--gear-ink)]">{c}</option>
+        {STATUS_SPRINT.map((s) => (
+          <option key={s} value={s} className="bg-[var(--gear-ink)]">
+            {s}
+          </option>
         ))}
       </select>
-      {erro && <p role="alert" className="mt-1 font-mono text-[9px] leading-snug text-[var(--gear-amber)]">{erro}</p>}
+      {erro && (
+        <p role="alert" className="mt-1 font-mono text-[9px] leading-snug text-[var(--gear-amber)]">
+          {erro}
+        </p>
+      )}
     </div>
   )
 }

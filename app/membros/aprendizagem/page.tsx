@@ -1,13 +1,15 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { ModuloCheckbox } from "@/components/modulo-checkbox"
+import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
+import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { botaoSecundario } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Aprendizagem | GEAR",
@@ -32,24 +34,11 @@ type Progresso = {
 }
 
 export default async function AprendizagemPage() {
+  // mesmo portão de /membros: sem sessão vai ao login, perfil incompleto ao
+  // formulário de primeiro acesso.
+  const { user } = await exigirPerfilCompleto()
+
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect("/entrar")
-
-  // mesmo portão de /membros: perfil incompleto não entra na área
-  const { data: perfil, error: erroPerfil } = await supabase
-    .from("perfis")
-    .select("nome_completo")
-    .eq("id", user.id)
-    .maybeSingle<{ nome_completo: string | null }>()
-
-  if (!erroPerfil && !perfil?.nome_completo?.trim()) {
-    redirect("/membros/completar-perfil")
-  }
-
   const [{ data: modulos, error: erroModulos }, { data: progresso }] = await Promise.all([
     supabase.from("modulos").select("id, nivel, ordem, titulo, descricao, conteudo_url").order("ordem"),
     supabase.from("progresso").select("modulo_id, concluido_em").eq("usuario_id", user.id),
@@ -101,15 +90,10 @@ export default async function AprendizagemPage() {
           </div>
 
           {erroModulos && (
-            <div className="mt-10 max-w-2xl border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">
-                MÓDULOS INDISPONÍVEIS
-              </p>
-              <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-                {erroModulos.message}. Rode <code>supabase/002_academia.sql</code> no SQL Editor do
-                painel — ele cria as tabelas e cadastra os 9 módulos.
-              </p>
-            </div>
+            <Aviso titulo="MÓDULOS INDISPONÍVEIS" className="mt-10 max-w-2xl">
+              {erroModulos.message}. Rode <code>supabase/002_academia.sql</code> no SQL Editor do
+              painel — ele cria as tabelas e cadastra os 9 módulos.
+            </Aviso>
           )}
 
           {/* Uma seção por nível */}
@@ -199,7 +183,7 @@ export default async function AprendizagemPage() {
             <Link
               href="/membros"
               data-cursor-hover
-              className="inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+              className={`inline-block ${botaoSecundario}`}
             >
               Voltar para membros
             </Link>

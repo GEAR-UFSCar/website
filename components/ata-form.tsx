@@ -5,7 +5,8 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { TIPOS_ATA, campoBase, rotuloBase } from "@/lib/administracao"
+import { TIPOS_ATA } from "@/lib/administracao"
+import { campoBase, rotuloBase } from "@/lib/ui"
 
 const hoje = () => new Date().toISOString().slice(0, 10)
 

@@ -1,9 +1,11 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { redirect } from "next/navigation"
 
 import { AtaForm } from "@/components/ata-form"
+import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
+import { exigirUsuario } from "@/lib/supabase/sessao"
+import { botaoSecundario } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Atas | GEAR",
@@ -21,13 +23,10 @@ type Ata = {
 }
 
 export default async function AtasPage() {
+  // o layout já garantiu sessão e cargo; aqui só reaproveitamos o usuário
+  const user = await exigirUsuario()
+
   const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) redirect("/entrar")
-
   const { data, error } = await supabase
     .from("atas")
     .select("id, tipo, data_reuniao, presentes, pauta, decisoes, pendencias")
@@ -50,12 +49,9 @@ export default async function AtasPage() {
       </p>
 
       {error && (
-        <div className="mt-10 max-w-2xl border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-          <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">ERRO</p>
-          <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-            {error.message}. Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
-          </p>
-        </div>
+        <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
+          {error.message}. Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
+        </Aviso>
       )}
 
       <div className="mt-12 max-w-4xl">
@@ -100,7 +96,7 @@ export default async function AtasPage() {
       </div>
 
       <Link href="/membros/administracao" data-cursor-hover
-        className="mt-14 inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground">
+        className={`mt-14 inline-block ${botaoSecundario}`}>
         Voltar ao painel
       </Link>
     </section>

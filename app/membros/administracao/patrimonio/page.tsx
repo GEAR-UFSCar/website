@@ -3,7 +3,9 @@ import Link from "next/link"
 
 import { PatrimonioForm } from "@/components/patrimonio-form"
 import { PatrimonioStatus } from "@/components/patrimonio-status"
+import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
+import { botaoSecundario } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Patrimônio | GEAR",
@@ -43,12 +45,9 @@ export default async function PatrimonioPage() {
       </p>
 
       {error && (
-        <div className="mt-10 max-w-2xl border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-          <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)] mb-2">ERRO</p>
-          <p className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-            {error.message}. Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
-          </p>
-        </div>
+        <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
+          {error.message}. Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
+        </Aviso>
       )}
 
       {/* Lista */}
@@ -98,7 +97,7 @@ export default async function PatrimonioPage() {
       </div>
 
       <Link href="/membros/administracao" data-cursor-hover
-        className="mt-14 inline-block border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground">
+        className={`mt-14 inline-block ${botaoSecundario}`}>
         Voltar ao painel
       </Link>
     </section>
