@@ -16,7 +16,7 @@ export default function NotFound() {
     <SmoothScroll>
       <Navbar />
       <main>
-        <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+        <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
           <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)] mb-4">ERRO 404</p>
           <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
             ROTA

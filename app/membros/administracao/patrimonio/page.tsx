@@ -35,7 +35,7 @@ export default async function PatrimonioPage() {
   const unidades = itens.reduce((soma, i) => soma + i.quantidade, 0)
 
   return (
-    <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">
         Patrimônio

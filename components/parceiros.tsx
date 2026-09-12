@@ -102,7 +102,7 @@ export function Parceiros() {
   return (
     <>
       {/* Cabeçalho */}
-      <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -120,7 +120,7 @@ export function Parceiros() {
       </section>
 
       {/* 01 — Proposta de valor */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -155,7 +155,7 @@ export function Parceiros() {
       </section>
 
       {/* 02 — Necessidades */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -217,7 +217,7 @@ export function Parceiros() {
       </section>
 
       {/* 03 — Níveis de patrocínio */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -283,7 +283,7 @@ export function Parceiros() {
       </section>
 
       {/* 04 — Contato */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

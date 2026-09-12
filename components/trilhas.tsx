@@ -44,7 +44,7 @@ export function Trilhas() {
   return (
     <>
       {/* Cabeçalho */}
-      <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -64,7 +64,7 @@ export function Trilhas() {
       </section>
 
       {/* As três trilhas */}
-      <section className="relative px-8 md:px-12 pb-24 md:pb-32">
+      <section className="relative mx-auto max-w-4xl px-8 md:px-12 pb-24 md:pb-32">
         <div className="relative">
           {trilhas.map((trilha, index) => (
             <motion.div

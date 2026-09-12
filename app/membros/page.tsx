@@ -150,7 +150,7 @@ export default async function MembrosPage() {
       <CustomCursor />
       <Navbar />
       <main>
-        <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+        <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
           {/* Topo: saudação */}
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">

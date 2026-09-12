@@ -69,7 +69,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="max-w-md"
+        className="mx-auto max-w-md"
       >
         <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">PRIMEIRO ACESSO</p>
         <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">

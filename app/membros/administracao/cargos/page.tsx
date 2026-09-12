@@ -30,7 +30,7 @@ export default async function CargosPage() {
   // O layout já barra quem não tem cargo; aqui a régua é mais alta.
   if (!eDiretoria(meu?.cargo)) {
     return (
-      <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)] mb-4">ACESSO RESTRITO</p>
         <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight">Cargos</h1>
         <p className="mt-8 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
@@ -55,7 +55,7 @@ export default async function CargosPage() {
   const comCargo = perfis.filter((p) => p.cargo?.trim()).length
 
   return (
-    <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Cargos</h1>
       <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">

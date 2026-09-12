@@ -25,7 +25,7 @@ export default async function AdministracaoLayout({ children }: { children: Reac
         <CustomCursor />
         <Navbar />
         <main>
-          <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+          <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
             <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)] mb-4">
               ACESSO RESTRITO
             </p>

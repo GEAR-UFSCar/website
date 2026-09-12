@@ -93,7 +93,7 @@ export function Time() {
   return (
     <>
       {/* Cabeçalho */}
-      <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -112,7 +112,7 @@ export function Time() {
 
       {/* Grupos por trilha */}
       {grupos.map((grupo, grupoIndex) => (
-        <section key={grupo.trilha} className="relative px-8 md:px-12 py-16 md:py-20">
+        <section key={grupo.trilha} className="relative mx-auto max-w-6xl px-8 md:px-12 py-16 md:py-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -135,7 +135,7 @@ export function Time() {
       ))}
 
       {/* Orientação institucional */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}

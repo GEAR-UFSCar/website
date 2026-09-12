@@ -47,7 +47,7 @@ export function Sobre() {
   return (
     <>
       {/* Cabeçalho */}
-      <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
@@ -65,7 +65,7 @@ export function Sobre() {
       </section>
 
       {/* 01 — Missão */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -102,7 +102,7 @@ export function Sobre() {
       </section>
 
       {/* 02 — Formação */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -146,7 +146,7 @@ export function Sobre() {
       </section>
 
       {/* 03 — Vínculo institucional */}
-      <section className="relative px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
