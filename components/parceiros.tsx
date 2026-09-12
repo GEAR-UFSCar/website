@@ -67,6 +67,37 @@ const necessidades = [
   },
 ]
 
+/*
+ * Níveis de patrocínio. Sem valor em R$ de propósito: a contrapartida é
+ * fechada caso a caso, e publicar uma tabela de preço engessaria a conversa.
+ * `herda` sai como linha própria em vez de virar mais um item da lista —
+ * é referência a outro nível, não um benefício em si.
+ */
+const niveis = [
+  {
+    nome: "Bronze",
+    herda: null,
+    beneficios: [
+      "Logo da empresa na página de Parceiros do site",
+      "Menção em posts de redes sociais sobre resultados da equipe",
+    ],
+  },
+  {
+    nome: "Prata",
+    herda: "Tudo do nível Bronze",
+    beneficios: ["Nome/logo na camiseta da equipe de Competição"],
+  },
+  {
+    nome: "Ouro",
+    herda: "Tudo do nível Prata",
+    beneficios: [
+      "Logo em posição de destaque no robô de competição",
+      "Agradecimento especial em apresentações públicas da GEAR (como a Universidade Aberta UFSCar)",
+    ],
+    destaque: true,
+  },
+]
+
 export function Parceiros() {
   return (
     <>
@@ -185,7 +216,7 @@ export function Parceiros() {
         </div>
       </section>
 
-      {/* 03 — Contato */}
+      {/* 03 — Níveis de patrocínio */}
       <section className="relative px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -194,7 +225,73 @@ export function Parceiros() {
           transition={{ duration: 0.8 }}
           className="mb-16"
         >
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — CONTATO</p>
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — CONTRAPARTIDAS</p>
+          <h2 className="font-sans text-3xl md:text-5xl font-light italic">Níveis de patrocínio</h2>
+        </motion.div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {niveis.map((nivel, index) => (
+            <motion.div
+              key={nivel.nome}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.7, delay: index * 0.1 }}
+              className={`flex flex-col border p-7 transition-colors duration-300 ${
+                nivel.destaque
+                  ? "border-[var(--gear-amber)] bg-[var(--gear-navy)]"
+                  : "border-white/10 hover:border-[var(--gear-amber)]"
+              }`}
+            >
+              <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
+                Nível 0{index + 1}
+              </p>
+              <h3 className="mt-4 font-sans text-2xl md:text-3xl font-light tracking-tight uppercase">
+                {nivel.nome}
+              </h3>
+
+              {nivel.herda && (
+                <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+                  {nivel.herda}
+                </p>
+              )}
+
+              <ul className={`space-y-3 ${nivel.herda ? "mt-4" : "mt-6 border-t border-white/10 pt-6"}`}>
+                {nivel.beneficios.map((beneficio) => (
+                  <li key={beneficio} className="flex gap-3">
+                    <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-[var(--gear-amber)]" />
+                    <span className="font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
+                      {beneficio}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ))}
+        </div>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-10 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground"
+        >
+          Valores e contrapartidas adicionais são definidos em conversa direta — entre em contato pelo
+          e-mail abaixo.
+        </motion.p>
+      </section>
+
+      {/* 04 — Contato */}
+      <section className="relative px-8 md:px-12 py-24 md:py-32">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-16"
+        >
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — CONTATO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Falar com a gente</h2>
         </motion.div>
 
