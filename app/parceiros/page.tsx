@@ -1,5 +1,7 @@
 import type { Metadata } from "next"
 
+import { OG_IMAGE } from "@/lib/site"
+
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
@@ -10,6 +12,15 @@ export const metadata: Metadata = {
   title: "Parceiros | GEAR",
   description:
     "Apoie o GEAR — visibilidade técnica, acesso a talento da UFSCar Sorocaba e as necessidades abertas da trilha de Competição.",
+  // openGraph de page substitui o do layout inteiro (não mescla), então
+  // title/description ficam por página e a imagem é repetida de propósito
+  openGraph: {
+    title: "Parceiros | GEAR",
+    description:
+      "Apoie o GEAR — visibilidade técnica, acesso a talento da UFSCar Sorocaba e as necessidades abertas da trilha de Competição.",
+    url: "/parceiros",
+    images: [OG_IMAGE],
+  },
 }
 
 export default function ParceirosPage() {
