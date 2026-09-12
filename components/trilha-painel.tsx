@@ -10,7 +10,7 @@ import { SprintStatus } from "@/components/sprint-status"
 import { createClient } from "@/lib/supabase/server"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { dataLonga } from "@/lib/datas"
-import { STATUS_SPRINT, temCargo, type TrilhaNome } from "@/lib/administracao"
+import { STATUS_SPRINT, eDiretoria, temCargo, type TrilhaNome } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 
 type Sprint = {
@@ -42,11 +42,13 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
   const { user, perfil } = await exigirPerfilCompleto()
 
   /*
-   * Portão só da tela, e agora com duas condições: cargo E trilha igual à
-   * da página. Espelha a policy de 010 — sem isso, o select apareceria para
-   * um líder de outra trilha e toda mudança seria recusada pelo banco.
+   * Portão só da tela, espelhando a policy de 011: diretoria escreve em
+   * qualquer trilha; qualquer outro cargo, só na própria. Sem espelhar, o
+   * select ou apareceria para quem o banco vai recusar, ou sumiria para a
+   * diretoria, que é justamente quem a 011 veio destravar.
    */
-  const podeEscrever = temCargo(perfil?.cargo) && perfil?.trilha?.trim() === trilha
+  const podeEscrever =
+    eDiretoria(perfil?.cargo) || (temCargo(perfil?.cargo) && perfil?.trilha?.trim() === trilha)
 
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -75,7 +77,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
 
           <p className="mt-10 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
             Os sprints da trilha {trilha}. Qualquer membro acompanha as três; mudar status é de quem
-            tem cargo nesta trilha.
+            tem cargo nesta trilha — ou da diretoria, em qualquer uma.
           </p>
 
           <p className="mt-8 font-mono text-xs tracking-[0.2em] text-muted-foreground">
@@ -87,7 +89,8 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
             <Aviso titulo="SPRINTS INDISPONÍVEIS" className="mt-10 max-w-2xl">
               {error.message}. Se a tabela não existe, rode{" "}
               <code>supabase/008_eventos_avisos_sprints.sql</code> e depois{" "}
-              <code>supabase/010_sprints_por_trilha.sql</code> no SQL Editor do painel.
+              <code>supabase/010_sprints_por_trilha.sql</code> e{" "}
+              <code>supabase/011_sprints_diretoria.sql</code> no SQL Editor do painel.
             </Aviso>
           )}
 
