@@ -56,8 +56,11 @@ const nextConfig = {
    */
   async redirects() {
     return [
-      { source: "/trilhas", destination: "/frentes", permanent: true },
-      { source: "/membros/trilhas/:caminho*", destination: "/membros/frentes/:caminho*", permanent: true },
+      // /trilhas -> /frentes foi a renomeação; /frentes virou seção de /sobre
+      { source: "/trilhas", destination: "/sobre#frentes", permanent: true },
+      { source: "/frentes", destination: "/sobre#frentes", permanent: true },
+      { source: "/membros/trilhas/:caminho*", destination: "/membros/sprints/:caminho*", permanent: true },
+      { source: "/membros/frentes/:caminho*", destination: "/membros/sprints/:caminho*", permanent: true },
     ]
   },
 }

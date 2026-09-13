@@ -1,12 +1,18 @@
 "use client"
 
+import Link from "next/link"
 import { motion } from "framer-motion"
+
+import { Frentes } from "@/components/frentes"
+
+import { CONTATO_INGRESSO } from "@/lib/site"
+import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 const etapas = [
   {
     nome: "Processo Seletivo",
     descricao:
-      "Não é prova de conhecimento acumulado. Interessa como a pessoa pensa quando ainda não sabe a resposta.",
+      "Não é prova de conhecimento acumulado. Interessa como a pessoa pensa quando ainda não sabe a resposta. O próximo ciclo ainda não tem data — quem quiser ser avisado pode escrever para a gente.",
   },
   {
     nome: "Bootcamp de Integração",
@@ -145,7 +151,10 @@ export function Sobre() {
         </div>
       </section>
 
-      {/* 03 — Vínculo institucional */}
+      {/* 03/04 — As frentes e as áreas de apoio, absorvidas de /frentes */}
+      <Frentes />
+
+      {/* 05 — Vínculo institucional */}
       <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -155,7 +164,7 @@ export function Sobre() {
           className="mb-16"
         >
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            03 — VÍNCULO INSTITUCIONAL
+            05 — VÍNCULO INSTITUCIONAL
           </p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde isso está registrado</h2>
         </motion.div>
@@ -173,7 +182,7 @@ export function Sobre() {
             coletivo informal: existe processo, orientação docente e prestação de contas à universidade.
           </motion.p>
 
-          {/* Ficha do registro — mesma linguagem da ficha técnica do Diário de Bordo */}
+          {/* Ficha do registro — mesma linguagem das fichas técnicas de /projetos */}
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -194,6 +203,26 @@ export function Sobre() {
             </dl>
           </motion.div>
         </div>
+
+        {/*
+         * Saída da página. Antes /sobre terminava na ficha de registro, sem
+         * nenhum destino — a auditoria classificou como beco sem saída: quem
+         * leu a página inteira e se interessou não tinha o que fazer.
+         */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mt-16 flex flex-col sm:flex-row gap-5"
+        >
+          <Link href="/projetos" data-cursor-hover className={`text-center ${botaoPrimario}`}>
+            Ver o que construímos
+          </Link>
+          <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoSecundario}`}>
+            Falar com a gente
+          </a>
+        </motion.div>
       </section>
     </>
   )

@@ -16,7 +16,7 @@ export function FrenteAbas({ atual }: { atual: FrenteNome }) {
         return (
           <Link
             key={frente.slug}
-            href={`/membros/frentes/${frente.slug}`}
+            href={`/membros/sprints/${frente.slug}`}
             aria-current={ativa ? "page" : undefined}
             data-cursor-hover
             className={`flex-1 px-4 py-3 text-center font-mono text-[11px] tracking-[0.2em] uppercase transition-colors duration-300 ${

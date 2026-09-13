@@ -43,7 +43,7 @@ export type FrenteNome = (typeof FRENTES_ROTAS)[number]["nome"]
 /** Rota da frente, ou a primeira aba quando a pessoa ainda não escolheu. */
 export function rotaDaFrente(nome: string | null | undefined) {
   const achada = FRENTES_ROTAS.find((t) => t.nome === nome?.trim())
-  return `/membros/frentes/${(achada ?? FRENTES_ROTAS[0]).slug}`
+  return `/membros/sprints/${(achada ?? FRENTES_ROTAS[0]).slug}`
 }
 
 /**

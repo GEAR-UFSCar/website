@@ -1,8 +1,31 @@
 "use client"
 
-import Link from "next/link"
 import { motion } from "framer-motion"
-import { botaoPrimario, botaoSecundario } from "@/lib/ui"
+
+/*
+ * Áreas de apoio. Os cargos Tesouraria e Comunicação existem em
+ * lib/administracao.ts e aparecem no seletor de cargos, mas o site público
+ * nunca os mencionava: quem faz captação, finanças ou comunicação não tinha
+ * lugar nenhum, e o recrutamento ficava restrito a quem programa.
+ *
+ * Cornell Cup e ThundeRatz tratam essas áreas como pares das técnicas —
+ * "Business" e "Design & Marketing" ficam ao lado de Mecânica e Software.
+ *
+ * A descrição é curta de propósito: descreve a função pelo que o cargo já faz
+ * na estrutura, sem inventar atribuição que a diretoria não definiu.
+ */
+const apoio = [
+  {
+    nome: "Comunicação",
+    texto:
+      "Divulgação do que o grupo produz: redes, material de apresentação e a relação com a universidade. É quem faz o trabalho técnico chegar a quem não está na sala.",
+  },
+  {
+    nome: "Tesouraria",
+    texto:
+      "Captação e prestação de contas. Acompanha o patrimônio da entidade, organiza as necessidades por prioridade e conduz a conversa com patrocinadores.",
+  },
+]
 
 const frentes = [
   {
@@ -11,9 +34,9 @@ const frentes = [
     detalhe:
       "A liga é de simulação: o cenário de desastre, os sensores e o robô vivem no Webots, e a lógica roda em ROS 2. O problema central é navegar e mapear um ambiente desconhecido e degradado — daí o SLAM. Prazo de competição é externo e não negocia: o que não estiver pronto na data não compete.",
     ficha: [
-      { label: "Frente", valor: "RoboCup Rescue Simulation" },
+      { label: "Liga", valor: "RoboCup Rescue Simulation" },
       { label: "Stack", valor: "Webots · ROS 2 · SLAM" },
-      { label: "Squad", valor: "João (diretor) · Nasser · Guilherme" },
+      { label: "Squad", valor: "João (direção) · Nasser · Guilherme" },
     ],
   },
   {
@@ -22,20 +45,20 @@ const frentes = [
     detalhe:
       "RL resolve controle aprendendo por tentativa; Safe RL acrescenta a pergunta que importa em robótica: como garantir que a política aprendida não viole restrições durante o próprio aprendizado. O trabalho é conduzido com método — hipótese, experimento, dado e escrita — sob orientação docente, com publicação como meta declarada.",
     ficha: [
-      { label: "Frente", valor: "RL · Safe RL" },
+      { label: "Linha", valor: "RL · Safe RL" },
       { label: "Orientação", valor: "Prof. Iago Pacheco Gomes" },
-      { label: "Meta", valor: "SBC · CBA" },
-      { label: "Squad", valor: "Mateus (diretor) · Pedro · Thomaz" },
+      { label: "Meta", valor: "Publicar na SBC e no CBA" },
+      { label: "Squad", valor: "Mateus (direção) · Pedro · Thomaz" },
     ],
   },
   {
     nome: "Projetos",
     resumo: "Automação aplicada, com o AI Rover como projeto piloto.",
     detalhe:
-      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente — e as decisões dele, incluindo o que ainda não funciona, estão registradas no Diário de Bordo. Diferente da competição, aqui o sistema não pode só funcionar uma vez.",
+      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente — um rover autônomo dividido em três unidades que falham de forma independente: o ESP32-S3-CAM cuida da percepção e do rádio, o Arduino UNO dos reflexos, e o raciocínio roda via YOLO. Se uma parte cai, as outras não vão junto. Diferente da competição, aqui o sistema não pode só funcionar uma vez — e as decisões, incluindo a odometria em malha aberta que ainda não é confiável, ficam registradas na ficha do projeto.",
     ficha: [
       { label: "Piloto", valor: "AI Rover" },
-      { label: "Squad", valor: "Luiza (diretor) · Julio · Elis" },
+      { label: "Squad", valor: "Luiza (direção) · Julio · Elis" },
     ],
   },
 ]
@@ -43,28 +66,22 @@ const frentes = [
 export function Frentes() {
   return (
     <>
-      {/* Cabeçalho */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      {/* As três frentes */}
+      <section id="frentes" className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32 scroll-mt-24">
         <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mb-12"
         >
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">TRÊS CAMINHOS · UM GRUPO</p>
-          <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-            ONDE
-            <br />
-            <span className="italic">você entra</span>
-          </h1>
-          <p className="mt-8 max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            Toda pessoa que entra no GEAR passa pela mesma formação e só então escolhe uma frente. Não é
-            especialização precoce: é escolha feita com repertório, depois de já ter construído algo.
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — AS TRÊS FRENTES</p>
+          <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde você entra</h2>
+          <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
+            Toda pessoa passa pela mesma formação e só então escolhe uma frente. Não é especialização
+            precoce: é escolha feita com repertório.
           </p>
         </motion.div>
-      </section>
-
-      {/* As três frentes */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 pb-24 md:pb-32">
         <div className="relative">
           {frentes.map((frente, index) => (
             <motion.div
@@ -73,7 +90,7 @@ export function Frentes() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="border-t border-white/10 py-12 md:py-16"
+              className="border-t border-white/10 py-12 md:py-16 transition-colors duration-300 hover:border-t-[var(--gear-amber)]"
             >
               <div className="flex flex-col md:flex-row gap-6 md:gap-12">
                 <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)] shrink-0 md:w-16 md:pt-3">
@@ -108,28 +125,36 @@ export function Frentes() {
           <div className="border-t border-white/10" />
         </div>
 
-        {/* Saídas para as páginas relacionadas */}
+        {/* Áreas de apoio — pares das frentes técnicas, não subordinadas */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
-          className="mt-16 flex flex-col sm:flex-row gap-5"
+          className="mt-20 border-t border-white/10 pt-10"
         >
-          <Link
-            href="/projetos"
-            data-cursor-hover
-            className={`text-center ${botaoPrimario}`}
-          >
-            Ver os projetos
-          </Link>
-          <Link
-            href="/time"
-            data-cursor-hover
-            className={`text-center ${botaoSecundario}`}
-          >
-            Quem assina cada frente
-          </Link>
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
+            04 — ÁREAS DE APOIO
+          </p>
+          <h2 className="font-sans text-3xl md:text-5xl font-light italic">Não é só código</h2>
+          <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
+            Robô em pista depende de verba aprovada, peça comprada e resultado divulgado. Quem faz
+            essa parte entra pela mesma formação e escolhe aqui, não numa fila separada.
+          </p>
+
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+            {apoio.map((area) => (
+              <div
+                key={area.nome}
+                className="border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
+              >
+                <h3 className="font-sans text-2xl font-light tracking-tight">{area.nome}</h3>
+                <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                  {area.texto}
+                </p>
+              </div>
+            ))}
+          </div>
         </motion.div>
       </section>
     </>
