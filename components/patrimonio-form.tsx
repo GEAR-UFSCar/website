@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { CATEGORIAS, STATUS, FRENTES } from "@/lib/administracao"
 import { campoBase, rotuloBase } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 const VAZIO = {
   item: "",
@@ -47,7 +48,7 @@ export function PatrimonioForm() {
     })
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       setSalvando(false)
       return
     }

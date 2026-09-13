@@ -12,6 +12,8 @@ import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { dataHora, inicioDeHoje } from "@/lib/datas"
 import { rotaDaFrente, temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
+import { ErroDados } from "@/components/erro-dados"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -183,12 +185,18 @@ export default async function MembrosPage() {
           </Surge>
 
           {/* A tabela pode não existir ainda, ou o trigger não ter rodado. */}
-          {(erro || !perfil) && (
-            <Aviso titulo="PERFIL NÃO ENCONTRADO" tom="neutro" className="mt-10 max-w-2xl">
-              Sua conta existe, mas não há linha correspondente em <code>perfis</code>
-              {erro ? ` (${erro})` : ""}. Rode <code>supabase/001_perfis.sql</code> no SQL Editor do
-              painel — ele cria a tabela, as políticas e preenche quem já se cadastrou.
-            </Aviso>
+          {erro ? (
+            <ErroDados titulo="PERFIL NÃO ENCONTRADO" erro={erro} className="mt-10 max-w-2xl">
+              Rode <code>supabase/001_perfis.sql</code> no SQL Editor do painel — ele cria a tabela,
+              as políticas e preenche quem já se cadastrou.
+            </ErroDados>
+          ) : (
+            !perfil && (
+              <Aviso titulo="PERFIL NÃO ENCONTRADO" tom="neutro" className="mt-10 max-w-2xl">
+                Sua conta existe, mas não há linha correspondente em <code>perfis</code>. Avise a
+                diretoria: o cadastro precisa ser refeito no painel.
+              </Aviso>
+            )
           )}
 
           {/* Dois blocos de prévia, lado a lado no desktop */}
@@ -209,7 +217,7 @@ export default async function MembrosPage() {
               <div className="mt-6">
                 {erroAvisos ? (
                   <p className="font-sans text-sm font-light text-muted-foreground">
-                    Mural indisponível: {erroAvisos.message}
+                    Mural indisponível: {mensagemSegura(erroAvisos)}
                   </p>
                 ) : avisos.length === 0 ? (
                   <p className="font-sans text-sm font-light text-muted-foreground">
@@ -257,7 +265,7 @@ export default async function MembrosPage() {
               <div className="mt-6">
                 {erroEventos ? (
                   <p className="font-sans text-sm font-light text-muted-foreground">
-                    Calendário indisponível: {erroEventos.message}
+                    Calendário indisponível: {mensagemSegura(erroEventos)}
                   </p>
                 ) : eventos.length === 0 ? (
                   <p className="font-sans text-sm font-light text-muted-foreground">

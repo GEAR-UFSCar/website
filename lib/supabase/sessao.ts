@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import type { User } from "@supabase/supabase-js"
 
 import { createClient } from "@/lib/supabase/server"
+import type { ErroDeDados } from "@/lib/erros"
 
 export type Perfil = {
   id: string
@@ -40,8 +41,12 @@ export const exigirUsuario = cache(async (): Promise<User> => {
 /**
  * Perfil de quem está logado. Devolve `erro` em vez de lançar porque as
  * telas distinguem "tabela ainda não criada" de "perfil não preenchido".
+ *
+ * `erro` carrega o objeto inteiro, não só `message`: quem renderiza precisa do
+ * `code` para escolher a frase segura em lib/erros.ts. Devolver a string crua
+ * era o que fazia o dashboard imprimir o texto do Postgres na tela.
  */
-export const getPerfil = cache(async (): Promise<{ perfil: Perfil | null; erro: string | null }> => {
+export const getPerfil = cache(async (): Promise<{ perfil: Perfil | null; erro: ErroDeDados | null }> => {
   const user = await getUsuario()
   if (!user) return { perfil: null, erro: null }
 
@@ -53,7 +58,7 @@ export const getPerfil = cache(async (): Promise<{ perfil: Perfil | null; erro: 
     .eq("id", user.id)
     .maybeSingle<Perfil>()
 
-  return { perfil: data ?? null, erro: error?.message ?? null }
+  return { perfil: data ?? null, erro: error ?? null }
 })
 
 /**

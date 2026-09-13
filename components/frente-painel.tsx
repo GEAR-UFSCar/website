@@ -4,7 +4,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { FrenteAbas } from "@/components/frente-abas"
 import { SprintStatus } from "@/components/sprint-status"
 import { createClient } from "@/lib/supabase/server"
@@ -89,12 +89,11 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
           </Surge>
 
           {error && (
-            <Aviso titulo="SPRINTS INDISPONÍVEIS" className="mt-10 max-w-2xl">
-              {error.message}. Se a tabela não existe, rode{" "}
-              <code>supabase/008_eventos_avisos_sprints.sql</code> e depois{" "}
-              <code>supabase/010_sprints_por_frente.sql</code> e{" "}
+            <ErroDados titulo="SPRINTS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
+              Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code> e
+              depois <code>supabase/010_sprints_por_frente.sql</code> e{" "}
               <code>supabase/011_sprints_diretoria.sql</code> no SQL Editor do painel.
-            </Aviso>
+            </ErroDados>
           )}
 
           {/* Uma seção por status, na ordem do andamento */}

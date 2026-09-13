@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { CARGOS } from "@/lib/administracao"
 import { selectInline } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 export function CargoSelect({ perfilId, valor }: { perfilId: string; valor: string | null }) {
   const router = useRouter()
@@ -23,7 +24,7 @@ export function CargoSelect({ perfilId, valor }: { perfilId: string; valor: stri
       .select("id")
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       return
     }
     if (!data || data.length === 0) {

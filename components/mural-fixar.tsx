@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
+import { mensagemSegura } from "@/lib/erros"
 
 /** Alterna o destaque de um aviso. Só renderizado para quem tem cargo. */
 export function MuralFixar({ id, fixado }: { id: string; fixado: boolean }) {
@@ -22,7 +23,7 @@ export function MuralFixar({ id, fixado }: { id: string; fixado: boolean }) {
       .select("id")
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       return
     }
     // update sem erro e sem linha afetada = a política de acesso recusou

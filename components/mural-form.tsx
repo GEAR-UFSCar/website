@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { campoBase, rotuloBase } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 export function MuralForm({ usuarioId }: { usuarioId: string }) {
   const router = useRouter()
@@ -26,11 +27,17 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
       conteudo: conteudo.trim(),
       fixado,
       // preenchido aqui, não digitado: é sempre quem está logado
+      /*
+       * Mandado por compatibilidade com bancos em que a 016 ainda não rodou.
+       * Depois dela o valor é irrelevante: o trigger de autoria sobrescreve
+       * esta coluna com auth.uid() antes de gravar. Não confie neste campo
+       * como prova de autoria — a prova está no banco.
+       */
       autor_id: usuarioId,
     })
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       setSalvando(false)
       return
     }

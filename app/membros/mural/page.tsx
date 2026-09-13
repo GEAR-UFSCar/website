@@ -5,7 +5,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { MuralForm } from "@/components/mural-form"
 import { MuralFixar } from "@/components/mural-fixar"
 import { createClient } from "@/lib/supabase/server"
@@ -87,10 +87,10 @@ export default async function MuralPage() {
           </Surge>
 
           {error && (
-            <Aviso titulo="MURAL INDISPONÍVEL" className="mt-10 max-w-2xl">
-              {error.message}. Se a tabela não existe, rode{" "}
-              <code>supabase/008_eventos_avisos_sprints.sql</code> no SQL Editor do painel.
-            </Aviso>
+            <ErroDados titulo="MURAL INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
+              Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code> no
+              SQL Editor do painel.
+            </ErroDados>
           )}
 
           {!error && avisos.length === 0 && (

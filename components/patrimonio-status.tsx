@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { STATUS } from "@/lib/administracao"
 import { selectInline } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 /** Select inline que grava assim que o valor muda. */
 export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
@@ -18,7 +19,7 @@ export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
     const supabase = createClient()
     const { error } = await supabase.from("patrimonio").update({ status: novo }).eq("id", id)
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       return
     }
     iniciar(() => router.refresh())

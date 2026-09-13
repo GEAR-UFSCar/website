@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { AtaForm } from "@/components/ata-form"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
@@ -52,9 +52,9 @@ export default async function AtasPage() {
       </Surge>
 
       {error && (
-        <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
-          {error.message}. Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
-        </Aviso>
+        <ErroDados titulo="ATAS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
+          Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
+        </ErroDados>
       )}
 
       <div className="mt-12 max-w-4xl">

@@ -5,7 +5,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
@@ -113,11 +113,11 @@ export default async function DocumentacaoPage() {
           </Surge>
 
           {error && (
-            <Aviso titulo="DOCUMENTOS INDISPONÍVEIS" className="mt-10 max-w-2xl">
-              {error.message}. Se a tabela não existe, rode <code>supabase/006_documentos.sql</code>{" "}
-              no SQL Editor do painel — ele cria a tabela, as políticas, o bucket e cadastra os
-              documentos já conhecidos.
-            </Aviso>
+            <ErroDados titulo="DOCUMENTOS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
+              Se a tabela não existe, rode <code>supabase/006_documentos.sql</code> no SQL Editor do
+              painel — ele cria a tabela, as políticas, o bucket e cadastra os documentos já
+              conhecidos.
+            </ErroDados>
           )}
 
           {!error && documentos.length === 0 && (

@@ -6,7 +6,7 @@ import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { ModuloCheckbox } from "@/components/modulo-checkbox"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
@@ -93,10 +93,10 @@ export default async function AprendizagemPage() {
           </Surge>
 
           {erroModulos && (
-            <Aviso titulo="MÓDULOS INDISPONÍVEIS" className="mt-10 max-w-2xl">
-              {erroModulos.message}. Rode <code>supabase/002_academia.sql</code> no SQL Editor do
-              painel — ele cria as tabelas e cadastra os 9 módulos.
-            </Aviso>
+            <ErroDados titulo="MÓDULOS INDISPONÍVEIS" erro={erroModulos} className="mt-10 max-w-2xl">
+              Rode <code>supabase/002_academia.sql</code> no SQL Editor do painel — ele cria as
+              tabelas e cadastra os 9 módulos.
+            </ErroDados>
           )}
 
           {/* Uma seção por nível */}

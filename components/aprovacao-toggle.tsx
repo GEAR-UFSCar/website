@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
+import { mensagemSegura } from "@/lib/erros"
 
 /**
  * Aprova ou revoga um membro. Só renderizado para a diretoria — e o trigger
@@ -43,7 +44,7 @@ export function AprovacaoToggle({
       .select("id")
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       return
     }
     // update sem erro e sem linha afetada = a política de acesso recusou

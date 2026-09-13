@@ -6,6 +6,7 @@ import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
@@ -89,12 +90,11 @@ export default async function DiretorioPage() {
           </Surge>
 
           {error && (
-            <Aviso titulo="DIRETÓRIO INDISPONÍVEL" className="mt-10 max-w-2xl">
-              {error.message}. Se a tabela não existe, rode <code>supabase/001_perfis.sql</code>. Se
-              ela existe mas só a sua linha aparece, falta rodar{" "}
-              <code>supabase/009_diretorio.sql</code> — é ele que libera a leitura dos perfis para
-              todos os membros.
-            </Aviso>
+            <ErroDados titulo="DIRETÓRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
+              Se a tabela não existe, rode <code>supabase/001_perfis.sql</code>. Se ela existe mas só
+              a sua linha aparece, falta rodar <code>supabase/009_diretorio.sql</code> — é ele que
+              libera a leitura dos perfis para todos os membros.
+            </ErroDados>
           )}
 
           {!error && membros.length <= 1 && (

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { STATUS_SPRINT } from "@/lib/administracao"
 import { selectInline } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 /** Select inline que grava assim que o valor muda. Só para quem tem cargo. */
 export function SprintStatus({ id, valor, usuarioId }: { id: string; valor: string; usuarioId: string }) {
@@ -20,12 +21,14 @@ export function SprintStatus({ id, valor, usuarioId }: { id: string; valor: stri
     const { data, error } = await supabase
       .from("sprints")
       // updated_at é do trigger; a autoria tem de vir daqui
+      // atualizado_por é reescrito pelo trigger da 016 com auth.uid();
+      // continua aqui para o caso de a migração ainda não ter sido aplicada.
       .update({ status: novo, atualizado_por: usuarioId })
       .eq("id", id)
       .select("id")
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       return
     }
     // update sem erro e sem linha afetada = a política de acesso recusou

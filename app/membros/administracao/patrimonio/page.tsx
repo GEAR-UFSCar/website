@@ -3,7 +3,7 @@ import Link from "next/link"
 
 import { PatrimonioForm } from "@/components/patrimonio-form"
 import { PatrimonioStatus } from "@/components/patrimonio-status"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
@@ -48,9 +48,9 @@ export default async function PatrimonioPage() {
       </Surge>
 
       {error && (
-        <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
-          {error.message}. Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
-        </Aviso>
+        <ErroDados titulo="INVENTÁRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
+          Se a tabela não existe, rode <code>supabase/003_administracao.sql</code>.
+        </ErroDados>
       )}
 
       {/* Lista */}

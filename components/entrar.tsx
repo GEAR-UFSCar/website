@@ -8,6 +8,7 @@ import { motion } from "framer-motion"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/client"
 import { VERSAO_TERMOS } from "@/lib/site"
+import { mensagemSegura } from "@/lib/erros"
 import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
 
 type Modo = "entrar" | "criar"
@@ -54,7 +55,7 @@ export function Entrar() {
     if (modo === "entrar") {
       const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
       if (error) {
-        setErro(error.message)
+        setErro(mensagemSegura(error))
         setCarregando(false)
         return
       }
@@ -106,7 +107,7 @@ export function Entrar() {
       },
     })
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       setCarregando(false)
       return
     }

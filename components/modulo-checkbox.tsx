@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
+import { mensagemSegura } from "@/lib/erros"
 
 type Props = {
   usuarioId: string
@@ -37,7 +38,7 @@ export function ModuloCheckbox({ usuarioId, moduloId, concluido, liberado }: Pro
     )
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       return
     }
 

@@ -9,6 +9,7 @@ import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/client"
 import { FRENTES } from "@/lib/administracao"
 import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 
 type Props = {
@@ -45,7 +46,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
       .select("id")
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       setCarregando(false)
       return
     }

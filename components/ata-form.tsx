@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { TIPOS_ATA } from "@/lib/administracao"
 import { campoBase, rotuloBase } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 const hoje = () => new Date().toISOString().slice(0, 10)
 
@@ -40,11 +41,17 @@ export function AtaForm({ usuarioId }: { usuarioId: string }) {
       decisoes: campos.decisoes.trim(),
       pendencias: campos.pendencias.trim() || null,
       // preenchido aqui, não digitado: é sempre quem está logado
+      /*
+       * Mandado por compatibilidade com bancos em que a 016 ainda não rodou.
+       * Depois dela o valor é irrelevante: o trigger de autoria sobrescreve
+       * esta coluna com auth.uid() antes de gravar. Não confie neste campo
+       * como prova de autoria — a prova está no banco.
+       */
       registrado_por: usuarioId,
     })
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       setSalvando(false)
       return
     }

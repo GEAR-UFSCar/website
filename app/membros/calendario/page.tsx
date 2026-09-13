@@ -5,7 +5,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { EventoForm } from "@/components/evento-form"
 import { createClient } from "@/lib/supabase/server"
 import { dataHora, inicioDeHoje } from "@/lib/datas"
@@ -108,10 +108,10 @@ export default async function CalendarioPage() {
           </Surge>
 
           {error && (
-            <Aviso titulo="CALENDÁRIO INDISPONÍVEL" className="mt-10 max-w-2xl">
-              {error.message}. Se a tabela não existe, rode{" "}
-              <code>supabase/008_eventos_avisos_sprints.sql</code> no SQL Editor do painel.
-            </Aviso>
+            <ErroDados titulo="CALENDÁRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
+              Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code> no
+              SQL Editor do painel.
+            </ErroDados>
           )}
 
           <section className="mt-16 max-w-4xl">

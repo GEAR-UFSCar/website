@@ -4,6 +4,7 @@ import Link from "next/link"
 import { CargoSelect } from "@/components/cargo-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { Aviso } from "@/components/aviso"
+import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { eDiretoria } from "@/lib/administracao"
@@ -78,10 +79,9 @@ export default async function CargosPage() {
       </Aviso>
 
       {error && (
-        <Aviso titulo="ERRO" className="mt-10 max-w-2xl">
-          {error.message}. Se as colunas de auditoria não existem, rode{" "}
-          <code>supabase/004_cargos.sql</code>.
-        </Aviso>
+        <ErroDados titulo="LISTA INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
+          Se as colunas de auditoria não existem, rode <code>supabase/004_cargos.sql</code>.
+        </ErroDados>
       )}
 
       <div className="mt-12 overflow-x-auto">

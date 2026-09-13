@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { TIPOS_EVENTO, FRENTES } from "@/lib/administracao"
 import { campoBase, rotuloBase } from "@/lib/ui"
+import { mensagemSegura } from "@/lib/erros"
 
 /** Agora arredondado para o minuto, no formato que datetime-local aceita. */
 const agora = () => {
@@ -55,11 +56,17 @@ export function EventoForm({ usuarioId }: { usuarioId: string }) {
       data_fim: campos.data_fim ? new Date(campos.data_fim).toISOString() : null,
       // vazio = evento geral da entidade, não de uma frente
       frente_vinculada: campos.frente_vinculada || null,
+      /*
+       * Mandado por compatibilidade com bancos em que a 016 ainda não rodou.
+       * Depois dela o valor é irrelevante: o trigger de autoria sobrescreve
+       * esta coluna com auth.uid() antes de gravar. Não confie neste campo
+       * como prova de autoria — a prova está no banco.
+       */
       criado_por: usuarioId,
     })
 
     if (error) {
-      setErro(error.message)
+      setErro(mensagemSegura(error))
       setSalvando(false)
       return
     }
