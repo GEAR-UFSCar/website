@@ -10,6 +10,7 @@ import { AuthLink } from "@/components/auth-link"
 
 const navLinks = [
   { label: "Sobre", href: "/sobre" },
+  { label: "Projetos", href: "/projetos" },
   { label: "Frentes", href: "/frentes" },
   { label: "Processo Seletivo", href: "/processo-seletivo" },
   { label: "Time", href: "/time" },

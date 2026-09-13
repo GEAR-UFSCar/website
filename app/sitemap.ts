@@ -5,6 +5,7 @@ import { SITE_URL } from "@/lib/site"
 const ROTAS = [
   "/",
   "/sobre",
+  "/projetos",
   "/frentes",
   "/processo-seletivo",
   "/time",
