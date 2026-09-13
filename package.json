@@ -6,7 +6,8 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "test:rls": "node scripts/testar-rls.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.4.0",
