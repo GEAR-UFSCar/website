@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
 const EMAIL = "gearufscar@gmail.com"
@@ -106,10 +107,20 @@ export function Footer() {
             ))}
           </div>
 
-          {/* Assinatura */}
-          <p className="font-mono text-xs tracking-widest text-muted-foreground">
-            GEAR · UFSCAR SOROCABA · {new Date().getFullYear()}
-          </p>
+          {/* Assinatura + privacidade (exigência de LGPD: aviso acessível de
+              qualquer página) */}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link
+              href="/privacidade"
+              data-cursor-hover
+              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+            >
+              PRIVACIDADE
+            </Link>
+            <p className="font-mono text-xs tracking-widest text-muted-foreground">
+              GEAR · UFSCAR SOROCABA · {new Date().getFullYear()}
+            </p>
+          </div>
         </div>
       </div>
     </footer>
