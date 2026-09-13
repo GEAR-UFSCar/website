@@ -48,7 +48,7 @@ export function CargoSelect({ perfilId, valor }: { perfilId: string; valor: stri
           <option key={c} value={c} className="bg-[var(--gear-ink)]">{c}</option>
         ))}
       </select>
-      {erro && <p role="alert" className="mt-1 font-mono text-[9px] leading-snug text-[var(--gear-amber)]">{erro}</p>}
+      {erro && <p role="alert" className="mt-1 font-mono text-[10px] md:text-[9px] leading-snug text-[var(--gear-amber)]">{erro}</p>}
     </div>
   )
 }

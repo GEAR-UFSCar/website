@@ -5,7 +5,7 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { CATEGORIAS, STATUS, TRILHAS } from "@/lib/administracao"
+import { CATEGORIAS, STATUS, FRENTES } from "@/lib/administracao"
 import { campoBase, rotuloBase } from "@/lib/ui"
 
 const VAZIO = {
@@ -14,7 +14,7 @@ const VAZIO = {
   quantidade: "1",
   status: STATUS[0] as string,
   responsavel_atual: "",
-  trilha_vinculada: "",
+  frente_vinculada: "",
   localizacao: "",
   observacoes: "",
 }
@@ -41,7 +41,7 @@ export function PatrimonioForm() {
       status: campos.status,
       // strings vazias viram null, para o banco não guardar "" como valor
       responsavel_atual: campos.responsavel_atual.trim() || null,
-      trilha_vinculada: campos.trilha_vinculada || null,
+      frente_vinculada: campos.frente_vinculada || null,
       localizacao: campos.localizacao.trim() || null,
       observacoes: campos.observacoes.trim() || null,
     })
@@ -59,7 +59,7 @@ export function PatrimonioForm() {
 
   return (
     <form onSubmit={enviar} className="border border-white/10 p-6 space-y-5">
-      <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVO ITEM</p>
+      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVO ITEM</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="md:col-span-2">
@@ -87,10 +87,10 @@ export function PatrimonioForm() {
         </div>
 
         <div>
-          <label htmlFor="trilha_vinculada" className={rotuloBase}>Trilha vinculada</label>
-          <select id="trilha_vinculada" value={campos.trilha_vinculada} onChange={set("trilha_vinculada")} disabled={salvando} className={campoBase}>
+          <label htmlFor="frente_vinculada" className={rotuloBase}>Frente vinculada</label>
+          <select id="frente_vinculada" value={campos.frente_vinculada} onChange={set("frente_vinculada")} disabled={salvando} className={campoBase}>
             <option value="" className="bg-[var(--gear-ink)]">Nenhuma</option>
-            {TRILHAS.map((t) => <option key={t} value={t} className="bg-[var(--gear-ink)]">{t}</option>)}
+            {FRENTES.map((t) => <option key={t} value={t} className="bg-[var(--gear-ink)]">{t}</option>)}
           </select>
         </div>
 

@@ -7,7 +7,7 @@ import { motion } from "framer-motion"
 
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/client"
-import { TRILHAS } from "@/lib/administracao"
+import { FRENTES } from "@/lib/administracao"
 import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
 
 
@@ -15,14 +15,14 @@ type Props = {
   userId: string
   nomeInicial: string
   cursoInicial: string
-  trilhaInicial: string
+  frenteInicial: string
 }
 
-export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInicial }: Props) {
+export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInicial }: Props) {
   const router = useRouter()
   const [nome, setNome] = useState(nomeInicial)
   const [curso, setCurso] = useState(cursoInicial)
-  const [trilha, setTrilha] = useState(trilhaInicial)
+  const [frente, setFrente] = useState(frenteInicial)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -39,7 +39,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
         nome_completo: nome.trim(),
         curso: curso.trim(),
         // "Ainda não decidido" grava null: é o que o CHECK da coluna aceita
-        trilha: trilha === "" ? null : trilha,
+        frente: frente === "" ? null : frente,
       })
       .eq("id", userId)
       .select("id")
@@ -79,7 +79,7 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
         </h1>
 
         <p className="mt-6 font-sans text-base font-light leading-relaxed text-muted-foreground">
-          Faltam alguns dados antes de você entrar na área de membros. A trilha pode ficar em aberto —
+          Faltam alguns dados antes de você entrar na área de membros. A frente pode ficar em aberto —
           ela é escolhida ao fim da formação.
         </p>
 
@@ -125,21 +125,21 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, trilhaInici
 
           <div>
             <label
-              htmlFor="trilha"
+              htmlFor="frente"
               className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3"
             >
-              Trilha
+              Frente
             </label>
             <select
-              id="trilha"
-              name="trilha"
-              value={trilha}
-              onChange={(e) => setTrilha(e.target.value)}
+              id="frente"
+              name="frente"
+              value={frente}
+              onChange={(e) => setFrente(e.target.value)}
               disabled={carregando}
               className={campoGrande}
             >
               <option value="">Ainda não decidido</option>
-              {TRILHAS.map((opcao) => (
+              {FRENTES.map((opcao) => (
                 <option key={opcao} value={opcao}>
                   {opcao}
                 </option>

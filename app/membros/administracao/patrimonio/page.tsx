@@ -20,7 +20,7 @@ type Item = {
   quantidade: number
   status: string
   responsavel_atual: string | null
-  trilha_vinculada: string | null
+  frente_vinculada: string | null
   localizacao: string | null
   observacoes: string | null
 }
@@ -29,7 +29,7 @@ export default async function PatrimonioPage() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("patrimonio")
-    .select("id, item, categoria, quantidade, status, responsavel_atual, trilha_vinculada, localizacao, observacoes")
+    .select("id, item, categoria, quantidade, status, responsavel_atual, frente_vinculada, localizacao, observacoes")
     .order("created_at", { ascending: false })
 
   const itens = (data ?? []) as Item[]
@@ -58,8 +58,8 @@ export default async function PatrimonioPage() {
         <table className="w-full min-w-[52rem] border-collapse">
           <thead>
             <tr className="border-b border-white/15 text-left">
-              {["Item", "Categoria", "Qtd", "Status", "Responsável", "Trilha", "Local"].map((h) => (
-                <th key={h} className="py-3 pr-4 font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
+              {["Item", "Categoria", "Qtd", "Status", "Responsável", "Frente", "Local"].map((h) => (
+                <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
                 </th>
               ))}
@@ -87,7 +87,7 @@ export default async function PatrimonioPage() {
                 <td className="py-4 pr-4 font-mono text-[11px] tabular-nums">{i.quantidade}</td>
                 <td className="py-4 pr-4 w-40"><PatrimonioStatus id={i.id} valor={i.status} /></td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.responsavel_atual ?? "—"}</td>
-                <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.trilha_vinculada ?? "—"}</td>
+                <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.frente_vinculada ?? "—"}</td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{i.localizacao ?? "—"}</td>
               </Surge>
             ))}

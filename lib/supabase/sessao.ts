@@ -8,7 +8,7 @@ export type Perfil = {
   id: string
   nome_completo: string | null
   curso: string | null
-  trilha: string | null
+  frente: string | null
   cargo: string | null
   created_at: string
 }
@@ -48,7 +48,7 @@ export const getPerfil = cache(async (): Promise<{ perfil: Perfil | null; erro: 
   // A RLS já limita ao próprio usuário; o eq() deixa a intenção explícita.
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, trilha, cargo, created_at")
+    .select("id, nome_completo, curso, frente, cargo, created_at")
     .eq("id", user.id)
     .maybeSingle<Perfil>()
 

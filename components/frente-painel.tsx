@@ -5,18 +5,18 @@ import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Aviso } from "@/components/aviso"
-import { TrilhaAbas } from "@/components/trilha-abas"
+import { FrenteAbas } from "@/components/frente-abas"
 import { SprintStatus } from "@/components/sprint-status"
 import { createClient } from "@/lib/supabase/server"
 import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
 import { dataLonga } from "@/lib/datas"
-import { STATUS_SPRINT, eDiretoria, temCargo, type TrilhaNome } from "@/lib/administracao"
+import { STATUS_SPRINT, eDiretoria, temCargo, type FrenteNome } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
 type Sprint = {
   id: string
-  trilha: string
+  frente: string
   titulo: string
   descricao: string
   status: string
@@ -36,30 +36,30 @@ const dataSimples = (iso: string) => {
 }
 
 /**
- * Conteúdo das três páginas de trilha. A trilha vem fixa da rota, não do
- * perfil de quem está vendo: qualquer membro acompanha qualquer trilha.
+ * Conteúdo das três páginas de frente. A frente vem fixa da rota, não do
+ * perfil de quem está vendo: qualquer membro acompanha qualquer frente.
  */
-export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
+export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   const { user, perfil } = await exigirPerfilCompleto()
 
   /*
    * Portão só da tela, espelhando a policy de 011: diretoria escreve em
-   * qualquer trilha; qualquer outro cargo, só na própria. Sem espelhar, o
+   * qualquer frente; qualquer outro cargo, só na própria. Sem espelhar, o
    * select ou apareceria para quem o banco vai recusar, ou sumiria para a
    * diretoria, que é justamente quem a 011 veio destravar.
    */
   const podeEscrever =
-    eDiretoria(perfil?.cargo) || (temCargo(perfil?.cargo) && perfil?.trilha?.trim() === trilha)
+    eDiretoria(perfil?.cargo) || (temCargo(perfil?.cargo) && perfil?.frente?.trim() === frente)
 
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("sprints")
-    .select("id, trilha, titulo, descricao, status, data_inicio, data_fim, updated_at")
-    .eq("trilha", trilha)
+    .select("id, frente, titulo, descricao, status, data_inicio, data_fim, updated_at")
+    .eq("frente", frente)
     .order("updated_at", { ascending: false })
 
   const sprints = (data ?? []) as Sprint[]
-  const eMinhaTrilha = perfil?.trilha?.trim() === trilha
+  const eMinhaFrente = perfil?.frente?.trim() === frente
 
   return (
     <SmoothScroll>
@@ -70,21 +70,21 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
           <Surge>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
           <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
-            Trilha
+            Frente
             <br />
-            <span className="italic">{trilha}</span>
+            <span className="italic">{frente}</span>
           </h1>
 
-          <TrilhaAbas atual={trilha} />
+          <FrenteAbas atual={frente} />
 
           <p className="mt-10 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-            Os sprints da trilha {trilha}. Qualquer membro acompanha as três; mudar status é de quem
-            tem cargo nesta trilha — ou da diretoria, em qualquer uma.
+            Os sprints da frente {frente}. Qualquer membro acompanha as três; mudar status é de quem
+            tem cargo nesta frente — ou da diretoria, em qualquer uma.
           </p>
 
           <p className="mt-8 font-mono text-xs tracking-[0.2em] text-muted-foreground">
             {sprints.length} SPRINT(S)
-            {eMinhaTrilha ? " · SUA TRILHA" : ""}
+            {eMinhaFrente ? " · SUA FRENTE" : ""}
           </p>
           </Surge>
 
@@ -92,7 +92,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
             <Aviso titulo="SPRINTS INDISPONÍVEIS" className="mt-10 max-w-2xl">
               {error.message}. Se a tabela não existe, rode{" "}
               <code>supabase/008_eventos_avisos_sprints.sql</code> e depois{" "}
-              <code>supabase/010_sprints_por_trilha.sql</code> e{" "}
+              <code>supabase/010_sprints_por_frente.sql</code> e{" "}
               <code>supabase/011_sprints_diretoria.sql</code> no SQL Editor do painel.
             </Aviso>
           )}
@@ -127,7 +127,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
                           <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground whitespace-pre-line">
                             {sprint.descricao}
                           </p>
-                          <p className="mt-3 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                          <p className="mt-3 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                             Atualizado em {dataLonga(sprint.updated_at)}
                           </p>
                         </div>
@@ -147,7 +147,7 @@ export async function TrilhaPainel({ trilha }: { trilha: TrilhaNome }) {
 
           {!error && sprints.length === 0 && (
             <p className="mt-10 max-w-2xl font-sans text-sm font-light text-muted-foreground">
-              Nenhum sprint registrado nesta trilha ainda.
+              Nenhum sprint registrado nesta frente ainda.
             </p>
           )}
 

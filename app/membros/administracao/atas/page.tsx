@@ -81,7 +81,7 @@ export default async function AtasPage() {
                 ...(ata.pendencias ? [{ rotulo: "Pendências", valor: ata.pendencias }] : []),
               ].map((linha) => (
                 <div key={linha.rotulo}>
-                  <dt className="font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
+                  <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
                     {linha.rotulo}
                   </dt>
                   <dd className="mt-1 max-w-[62ch] font-sans text-sm font-light leading-relaxed whitespace-pre-line">

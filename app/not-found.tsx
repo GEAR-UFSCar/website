@@ -38,11 +38,11 @@ export default function NotFound() {
               Voltar ao início
             </Link>
             <Link
-              href="/trilhas"
+              href="/frentes"
               data-cursor-hover
               className={`text-center ${botaoSecundario}`}
             >
-              Ver as trilhas
+              Ver as frentes
             </Link>
           </div>
         </section>

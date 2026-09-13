@@ -25,8 +25,8 @@ export function Aviso({ titulo, tom = "alerta", className = "", children, role }
 
   return (
     <div role={role} className={`border ${borda} bg-[var(--gear-navy)] p-5 ${className}`}>
-      <p className={`font-mono text-[9px] tracking-[0.3em] ${corTitulo} mb-2`}>{titulo}</p>
-      <div className={`font-sans text-sm font-light leading-relaxed ${corTexto}`}>
+      <p className={`font-mono text-[10px] md:text-[9px] tracking-[0.3em] ${corTitulo} mb-2`}>{titulo}</p>
+      <div className={`font-sans text-sm font-light leading-relaxed break-words ${corTexto}`}>
         {children}
       </div>
     </div>

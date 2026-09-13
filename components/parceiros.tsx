@@ -26,7 +26,7 @@ const valor = [
 ]
 
 /*
- * Necessidades da trilha de Competição. `quantidade` e `valor` seguem em branco
+ * Necessidades da frente de Competição. `quantidade` e `valor` seguem em branco
  * até o levantamento ser fechado — a página mostra "A DEFINIR" no lugar.
  */
 const necessidades = [
@@ -163,10 +163,10 @@ export function Parceiros() {
           transition={{ duration: 0.8 }}
           className="mb-16"
         >
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — TRILHA DE COMPETIÇÃO</p>
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — FRENTE DE COMPETIÇÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que falta, sem enfeitar</h2>
           <p className="mt-6 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-            A lista abaixo é o que hoje limita a trilha de Competição. Está em ordem de impacto, com a
+            A lista abaixo é o que hoje limita a frente de Competição. Está em ordem de impacto, com a
             justificativa técnica de cada item — o mesmo critério que usamos no Diário de Bordo.
           </p>
         </motion.div>

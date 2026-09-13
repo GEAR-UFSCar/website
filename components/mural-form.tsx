@@ -44,7 +44,7 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
 
   return (
     <form onSubmit={enviar} className="border border-white/10 p-6 space-y-5">
-      <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVO AVISO</p>
+      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVO AVISO</p>
 
       <div>
         <label htmlFor="titulo" className={rotuloBase}>

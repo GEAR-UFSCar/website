@@ -26,7 +26,7 @@ type Evento = {
   tipo: string
   data_inicio: string
   data_fim: string | null
-  trilha_vinculada: string | null
+  frente_vinculada: string | null
 }
 
 
@@ -41,12 +41,12 @@ export default async function CalendarioPage() {
   const [{ data: proximos, error }, { data: passados }] = await Promise.all([
     supabase
       .from("eventos")
-      .select("id, titulo, descricao, tipo, data_inicio, data_fim, trilha_vinculada")
+      .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
       .gte("data_inicio", corte)
       .order("data_inicio", { ascending: true }),
     supabase
       .from("eventos")
-      .select("id, titulo, descricao, tipo, data_inicio, data_fim, trilha_vinculada")
+      .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
       .lt("data_inicio", corte)
       .order("data_inicio", { ascending: false })
       .limit(10),
@@ -72,12 +72,12 @@ export default async function CalendarioPage() {
         </div>
 
         <div className="flex shrink-0 gap-2">
-          <span className="border border-white/20 px-2 py-1 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+          <span className="border border-white/20 px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
             {evento.tipo}
           </span>
-          {/* null = evento geral da entidade, não de uma trilha */}
-          <span className="border border-[var(--gear-amber)] px-2 py-1 font-mono text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
-            {evento.trilha_vinculada ?? "Geral"}
+          {/* null = evento geral da entidade, não de uma frente */}
+          <span className="border border-[var(--gear-amber)] px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
+            {evento.frente_vinculada ?? "Geral"}
           </span>
         </div>
       </div>

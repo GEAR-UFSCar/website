@@ -24,9 +24,9 @@ export default async function CompletarPerfilPage() {
   // Pré-preenche com o que o cadastro já mandou, para não digitar de novo.
   const { data: perfil } = await supabase
     .from("perfis")
-    .select("nome_completo, curso, trilha")
+    .select("nome_completo, curso, frente")
     .eq("id", user.id)
-    .maybeSingle<{ nome_completo: string | null; curso: string | null; trilha: string | null }>()
+    .maybeSingle<{ nome_completo: string | null; curso: string | null; frente: string | null }>()
 
   return (
     <SmoothScroll>
@@ -37,7 +37,7 @@ export default async function CompletarPerfilPage() {
           userId={user.id}
           nomeInicial={perfil?.nome_completo ?? ""}
           cursoInicial={perfil?.curso ?? ""}
-          trilhaInicial={perfil?.trilha ?? ""}
+          frenteInicial={perfil?.frente ?? ""}
         />
         <Footer />
       </main>

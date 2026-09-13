@@ -6,7 +6,7 @@ import { Carregando } from "@/components/carregando"
 /*
  * Um loading.tsx só, no topo do segmento /membros: o Next embrulha em Suspense
  * este segmento E todos os aninhados, então as 12 rotas de membro — incluindo
- * as de /administracao e as três de trilha — herdam esta tela sem precisar de
+ * as de /administracao e as três de frente — herdam esta tela sem precisar de
  * um arquivo cada.
  *
  * Navbar e Footer entram aqui para o esqueleto ocupar o mesmo lugar na página

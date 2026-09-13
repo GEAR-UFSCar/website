@@ -135,11 +135,11 @@ export function ProcessoSeletivo() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6"
           >
-            <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">CONDIÇÕES</p>
+            <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">CONDIÇÕES</p>
             <dl className="mt-4 space-y-4">
               {condicoes.map((linha) => (
                 <div key={linha.label}>
-                  <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                  <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                     {linha.label}
                   </dt>
                   <dd className="font-mono text-[11px] text-foreground mt-1">{linha.valor}</dd>

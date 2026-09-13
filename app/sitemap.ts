@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 
 import { SITE_URL } from "@/lib/site"
 
-const ROTAS = ["/", "/sobre", "/trilhas", "/processo-seletivo", "/time", "/parceiros"]
+const ROTAS = ["/", "/sobre", "/frentes", "/processo-seletivo", "/time", "/parceiros"]
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const atualizado = new Date()

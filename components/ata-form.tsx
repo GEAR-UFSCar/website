@@ -56,7 +56,7 @@ export function AtaForm({ usuarioId }: { usuarioId: string }) {
 
   return (
     <form onSubmit={enviar} className="border border-white/10 p-6 space-y-5">
-      <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVA ATA</p>
+      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVA ATA</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>

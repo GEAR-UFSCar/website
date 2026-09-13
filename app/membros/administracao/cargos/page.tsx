@@ -18,7 +18,7 @@ type Perfil = {
   id: string
   nome_completo: string | null
   curso: string | null
-  trilha: string | null
+  frente: string | null
   cargo: string | null
   cargo_atualizado_em: string | null
 }
@@ -49,7 +49,7 @@ export default async function CargosPage() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, trilha, cargo, cargo_atualizado_em")
+    .select("id, nome_completo, curso, frente, cargo, cargo_atualizado_em")
     .order("nome_completo", { nullsFirst: false })
 
   const perfis = (data ?? []) as Perfil[]
@@ -81,8 +81,8 @@ export default async function CargosPage() {
         <table className="w-full min-w-[46rem] border-collapse">
           <thead>
             <tr className="border-b border-white/15 text-left">
-              {["Membro", "Curso", "Trilha", "Cargo", "Alterado em"].map((h) => (
-                <th key={h} className="py-3 pr-4 font-mono text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
+              {["Membro", "Curso", "Frente", "Cargo", "Alterado em"].map((h) => (
+                <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
                 </th>
               ))}
@@ -99,11 +99,11 @@ export default async function CargosPage() {
                 <td className="py-4 pr-4">
                   <p className="font-sans text-base font-light">{p.nome_completo ?? "sem nome"}</p>
                   {p.id === user.id && (
-                    <span className="font-mono text-[9px] tracking-[0.2em] text-[var(--gear-amber)]">VOCÊ</span>
+                    <span className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] text-[var(--gear-amber)]">VOCÊ</span>
                   )}
                 </td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.curso ?? "—"}</td>
-                <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.trilha ?? "—"}</td>
+                <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.frente ?? "—"}</td>
                 <td className="py-4 pr-4 w-52"><CargoSelect perfilId={p.id} valor={p.cargo} /></td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">
                   {p.cargo_atualizado_em

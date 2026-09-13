@@ -53,7 +53,7 @@ export function SprintStatus({ id, valor, usuarioId }: { id: string; valor: stri
         ))}
       </select>
       {erro && (
-        <p role="alert" className="mt-1 font-mono text-[9px] leading-snug text-[var(--gear-amber)]">
+        <p role="alert" className="mt-1 font-mono text-[10px] md:text-[9px] leading-snug text-[var(--gear-amber)]">
           {erro}
         </p>
       )}

@@ -10,7 +10,7 @@ import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { dataHora, inicioDeHoje } from "@/lib/datas"
-import { rotaDaTrilha, temCargo } from "@/lib/administracao"
+import { rotaDaFrente, temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
@@ -28,7 +28,7 @@ type EventoPrevia = {
   titulo: string
   tipo: string
   data_inicio: string
-  trilha_vinculada: string | null
+  frente_vinculada: string | null
 }
 
 /** Sai pelo servidor: limpa o cookie de sessão de verdade, não só no browser. */
@@ -54,7 +54,7 @@ export default async function MembrosPage() {
     redirect("/membros/completar-perfil")
   }
 
-  const trilha = perfil?.trilha?.trim() || null
+  const frente = perfil?.frente?.trim() || null
   const cargo = perfil?.cargo?.trim() || null
   const comCargo = temCargo(cargo)
 
@@ -74,7 +74,7 @@ export default async function MembrosPage() {
         .limit(PREVIA),
       supabase
         .from("eventos")
-        .select("id, titulo, tipo, data_inicio, trilha_vinculada")
+        .select("id, titulo, tipo, data_inicio, frente_vinculada")
         .gte("data_inicio", inicioDeHoje())
         .order("data_inicio", { ascending: true })
         .limit(PREVIA),
@@ -90,15 +90,15 @@ export default async function MembrosPage() {
   const ficha = [
     { label: "E-mail", valor: user.email ?? "—" },
     { label: "Curso", valor: perfil?.curso?.trim() || "não informado" },
-    // trilha null = ainda não escolheu; é um estado válido, não um erro
-    { label: "Trilha", valor: trilha || "a definir" },
+    // frente null = ainda não escolheu; é um estado válido, não um erro
+    { label: "Frente", valor: frente || "a definir" },
     ...(cargo ? [{ label: "Cargo", valor: cargo }] : []),
     ...(membroDesde ? [{ label: "Membro desde", valor: membroDesde }] : []),
   ]
 
   /*
-   * Atalhos. As trilhas são visíveis a todo mundo — o atalho só abre direto
-   * na trilha de quem está vendo, quando há uma; sem trilha, cai na primeira
+   * Atalhos. As frentes são visíveis a todo mundo — o atalho só abre direto
+   * na frente de quem está vendo, quando há uma; sem frente, cai na primeira
    * aba e as outras duas ficam a um clique. Administração continua exigindo
    * cargo, que é a única condição real de acesso aqui.
    */
@@ -111,7 +111,7 @@ export default async function MembrosPage() {
     {
       href: "/membros/diretorio",
       nome: "Diretório",
-      texto: "Quem está na GEAR, por trilha, com curso e cargo.",
+      texto: "Quem está na GEAR, por frente, com curso e cargo.",
     },
     {
       href: "/membros/calendario",
@@ -129,11 +129,11 @@ export default async function MembrosPage() {
       texto: "Regimento, manuais e normas institucionais.",
     },
     {
-      href: rotaDaTrilha(trilha),
-      nome: trilha ? `Trilha ${trilha}` : "Trilhas",
-      texto: trilha
-        ? "Os sprints da sua trilha e onde cada um está."
-        : "Sprints das três trilhas: Competição, Pesquisa e Projetos.",
+      href: rotaDaFrente(frente),
+      nome: frente ? `Frente ${frente}` : "Frentes",
+      texto: frente
+        ? "Os sprints da sua frente e onde cada um está."
+        : "Sprints das três frentes: Competição, Pesquisa e Projetos.",
     },
     ...(comCargo
       ? [
@@ -163,7 +163,7 @@ export default async function MembrosPage() {
 
           <div className="mt-6 flex flex-wrap gap-2">
             <span className="border border-[var(--gear-amber)] px-3 py-1.5 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
-              {trilha ? `Trilha ${trilha}` : "Trilha a definir"}
+              {frente ? `Frente ${frente}` : "Frente a definir"}
             </span>
             {cargo && (
               <span className="border border-white/20 px-3 py-1.5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
@@ -213,7 +213,7 @@ export default async function MembrosPage() {
                         <Link href="/membros/mural" data-cursor-hover className="group block">
                           <div className="flex items-baseline gap-3">
                             {aviso.fixado && (
-                              <span className="shrink-0 font-mono text-[9px] tracking-[0.2em] text-[var(--gear-amber)]">
+                              <span className="shrink-0 font-mono text-[10px] md:text-[9px] tracking-[0.2em] text-[var(--gear-amber)]">
                                 FIXADO
                               </span>
                             )}
@@ -221,7 +221,7 @@ export default async function MembrosPage() {
                               {aviso.titulo}
                             </p>
                           </div>
-                          <p className="mt-1 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                          <p className="mt-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                             {dataHora(aviso.created_at)}
                           </p>
                         </Link>
@@ -260,14 +260,14 @@ export default async function MembrosPage() {
                       <li key={evento.id} className="border-t border-white/10 py-4">
                         <Link href="/membros/calendario" data-cursor-hover className="group block">
                           <div className="flex items-baseline gap-3">
-                            <span className="shrink-0 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                              {evento.trilha_vinculada ?? "Geral"}
+                            <span className="shrink-0 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                              {evento.frente_vinculada ?? "Geral"}
                             </span>
                             <p className="font-sans text-base font-light leading-snug transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
                               {evento.titulo}
                             </p>
                           </div>
-                          <p className="mt-1 font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                          <p className="mt-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                             {dataHora(evento.data_inicio)} · {evento.tipo}
                           </p>
                         </Link>
@@ -316,11 +316,11 @@ export default async function MembrosPage() {
 
             <div className="mt-8 flex flex-col lg:flex-row gap-10 lg:gap-16">
               <div className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6">
-                <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">FICHA</p>
+                <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">FICHA</p>
                 <dl className="mt-4 space-y-4">
                   {ficha.map((linha) => (
                     <div key={linha.label}>
-                      <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                      <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                         {linha.label}
                       </dt>
                       <dd className="font-mono text-[11px] text-foreground mt-1 break-words">

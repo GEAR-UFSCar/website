@@ -39,7 +39,7 @@ export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
           </option>
         ))}
       </select>
-      {erro && <p className="mt-1 font-mono text-[9px] text-[var(--gear-amber)]">{erro}</p>}
+      {erro && <p className="mt-1 font-mono text-[10px] md:text-[9px] text-[var(--gear-amber)]">{erro}</p>}
     </div>
   )
 }

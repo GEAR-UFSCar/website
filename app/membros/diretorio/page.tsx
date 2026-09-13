@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
 /*
  * Ordem dos grupos na tela. "Diretoria" junta quem tem cargo mas ainda não
- * definiu trilha. "Em formação" recolhe quem não tem nem cargo nem trilha —
+ * definiu frente. "Em formação" recolhe quem não tem nem cargo nem frente —
  * sem esse grupo, quem está na Academia sumiria de um diretório que existe
  * justamente para as pessoas se acharem.
  */
@@ -35,14 +35,14 @@ type Membro = {
   id: string
   nome_completo: string | null
   curso: string | null
-  trilha: string | null
+  frente: string | null
   cargo: string | null
 }
 
-/** Trilha manda; sem trilha, cargo joga na Diretoria; sem os dois, formação. */
+/** Frente manda; sem frente, cargo joga na Diretoria; sem os dois, formação. */
 function grupoDe(membro: Membro) {
-  const trilha = membro.trilha?.trim()
-  if (trilha) return trilha
+  const frente = membro.frente?.trim()
+  if (frente) return frente
   return temCargo(membro.cargo) ? "Diretoria" : "Em formação"
 }
 
@@ -53,7 +53,7 @@ export default async function DiretorioPage() {
   // Sem e-mail na consulta: a coluna não existe em `perfis` e não deve existir.
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, trilha, cargo")
+    .select("id, nome_completo, curso, frente, cargo")
     .order("nome_completo", { nullsFirst: false })
 
   const membros = (data ?? []) as Membro[]
@@ -79,7 +79,7 @@ export default async function DiretorioPage() {
           </h1>
 
           <p className="mt-12 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-            Quem está na GEAR e em que trilha. Nome, curso, trilha e cargo — nada de contato pessoal:
+            Quem está na GEAR e em que frente. Nome, curso, frente e cargo — nada de contato pessoal:
             e-mail não aparece aqui para ninguém.
           </p>
 
@@ -133,7 +133,7 @@ export default async function DiretorioPage() {
 
                       <dl className="mt-4 space-y-3">
                         <div>
-                          <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                          <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                             Curso
                           </dt>
                           <dd className="font-mono text-[11px] text-foreground mt-0.5 break-words">
@@ -141,17 +141,17 @@ export default async function DiretorioPage() {
                           </dd>
                         </div>
                         <div>
-                          <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                            Trilha
+                          <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                            Frente
                           </dt>
                           <dd className="font-mono text-[11px] text-foreground mt-0.5">
-                            {membro.trilha?.trim() || "a definir"}
+                            {membro.frente?.trim() || "a definir"}
                           </dd>
                         </div>
                       </dl>
 
                       {temCargo(membro.cargo) && (
-                        <p className="mt-4 inline-block border border-[var(--gear-amber)] px-2 py-1 font-mono text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
+                        <p className="mt-4 inline-block border border-[var(--gear-amber)] px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
                           {membro.cargo}
                         </p>
                       )}

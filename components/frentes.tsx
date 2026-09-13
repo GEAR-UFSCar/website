@@ -4,7 +4,7 @@ import Link from "next/link"
 import { motion } from "framer-motion"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
-const trilhas = [
+const frentes = [
   {
     nome: "Competição",
     resumo: "RoboCup Rescue Simulation — robôs de busca e resgate em ambiente simulado.",
@@ -13,7 +13,7 @@ const trilhas = [
     ficha: [
       { label: "Frente", valor: "RoboCup Rescue Simulation" },
       { label: "Stack", valor: "Webots · ROS 2 · SLAM" },
-      { label: "Squad", valor: "João (líder) · Nasser · Guilherme" },
+      { label: "Squad", valor: "João (diretor) · Nasser · Guilherme" },
     ],
   },
   {
@@ -25,22 +25,22 @@ const trilhas = [
       { label: "Frente", valor: "RL · Safe RL" },
       { label: "Orientação", valor: "Prof. Iago Pacheco Gomes" },
       { label: "Meta", valor: "SBC · CBA" },
-      { label: "Squad", valor: "Mateus (líder) · Pedro · Thomaz" },
+      { label: "Squad", valor: "Mateus (diretor) · Pedro · Thomaz" },
     ],
   },
   {
     nome: "Projetos",
     resumo: "Automação aplicada, com o AI Rover como projeto piloto.",
     detalhe:
-      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a trilha — e as decisões dele, incluindo o que ainda não funciona, estão registradas no Diário de Bordo. Diferente da competição, aqui o sistema não pode só funcionar uma vez.",
+      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente — e as decisões dele, incluindo o que ainda não funciona, estão registradas no Diário de Bordo. Diferente da competição, aqui o sistema não pode só funcionar uma vez.",
     ficha: [
       { label: "Piloto", valor: "AI Rover" },
-      { label: "Squad", valor: "Luiza (líder) · Julio · Elis" },
+      { label: "Squad", valor: "Luiza (diretor) · Julio · Elis" },
     ],
   },
 ]
 
-export function Trilhas() {
+export function Frentes() {
   return (
     <>
       {/* Cabeçalho */}
@@ -57,18 +57,18 @@ export function Trilhas() {
             <span className="italic">você entra</span>
           </h1>
           <p className="mt-8 max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            Toda pessoa que entra no GEAR passa pela mesma formação e só então escolhe uma trilha. Não é
+            Toda pessoa que entra no GEAR passa pela mesma formação e só então escolhe uma frente. Não é
             especialização precoce: é escolha feita com repertório, depois de já ter construído algo.
           </p>
         </motion.div>
       </section>
 
-      {/* As três trilhas */}
+      {/* As três frentes */}
       <section className="relative mx-auto max-w-4xl px-8 md:px-12 pb-24 md:pb-32">
         <div className="relative">
-          {trilhas.map((trilha, index) => (
+          {frentes.map((frente, index) => (
             <motion.div
-              key={trilha.nome}
+              key={frente.nome}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -81,20 +81,20 @@ export function Trilhas() {
                 </span>
 
                 <div className="flex-1">
-                  <h2 className="font-sans text-4xl md:text-6xl font-light tracking-tight">{trilha.nome}</h2>
-                  <p className="mt-5 max-w-[62ch] font-sans text-lg md:text-xl leading-relaxed">{trilha.resumo}</p>
+                  <h2 className="font-sans text-4xl md:text-6xl font-light tracking-tight">{frente.nome}</h2>
+                  <p className="mt-5 max-w-[62ch] font-sans text-lg md:text-xl leading-relaxed">{frente.resumo}</p>
                   <p className="mt-4 max-w-[62ch] font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-                    {trilha.detalhe}
+                    {frente.detalhe}
                   </p>
                 </div>
 
-                {/* ficha da trilha */}
+                {/* ficha da frente */}
                 <div className="w-full md:max-w-[17rem] shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-                  <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">TRILHA</p>
+                  <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">FRENTE</p>
                   <dl className="mt-4 space-y-4">
-                    {trilha.ficha.map((linha) => (
+                    {frente.ficha.map((linha) => (
                       <div key={linha.label}>
-                        <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                        <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                           {linha.label}
                         </dt>
                         <dd className="font-mono text-[11px] leading-relaxed text-foreground mt-1">{linha.valor}</dd>
@@ -128,7 +128,7 @@ export function Trilhas() {
             data-cursor-hover
             className={`text-center ${botaoSecundario}`}
           >
-            Quem assina cada trilha
+            Quem assina cada frente
           </Link>
         </motion.div>
       </section>

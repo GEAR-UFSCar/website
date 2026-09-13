@@ -29,7 +29,7 @@ const etapas = [
       "Conversa sobre o que foi construído: o que funcionou, o que não funcionou e por quê. As duas respostas contam.",
   },
   {
-    nome: "Escolha da Trilha",
+    nome: "Escolha da Frente",
     descricao:
       "Competição, Pesquisa ou Projetos. A decisão é de quem entrou — tomada com repertório, não no escuro.",
   },
@@ -113,7 +113,7 @@ export function Sobre() {
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — FORMAÇÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">A jornada completa</h2>
           <p className="mt-6 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-            Ninguém entra direto numa trilha. Todo mundo passa pelas mesmas seis etapas, na mesma ordem —
+            Ninguém entra direto numa frente. Todo mundo passa pelas mesmas seis etapas, na mesma ordem —
             é o que garante que a escolha do fim seja informada.
           </p>
         </motion.div>
@@ -181,11 +181,11 @@ export function Sobre() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6"
           >
-            <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">REGISTRO</p>
+            <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">REGISTRO</p>
             <dl className="mt-4 space-y-4">
               {registro.map((linha) => (
                 <div key={linha.label}>
-                  <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                  <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                     {linha.label}
                   </dt>
                   <dd className="font-mono text-[11px] text-foreground mt-1 break-words">{linha.valor}</dd>

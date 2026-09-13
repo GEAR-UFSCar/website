@@ -5,12 +5,12 @@ import { motion } from "framer-motion"
 type Membro = {
   nome: string
   cargo: string
-  /** Lideranças ganham destaque âmbar no cargo. */
-  lider?: boolean
+  /** Direções ganham destaque âmbar no cargo. */
+  diretor?: boolean
 }
 
 type Grupo = {
-  trilha: string
+  frente: string
   membros: Membro[]
 }
 
@@ -23,32 +23,32 @@ const iniciais = (nome: string) => nome.slice(0, 2).toUpperCase()
 
 const grupos: Grupo[] = [
   {
-    trilha: "Diretoria",
+    frente: "Diretoria",
     membros: [
-      { nome: "Michael", cargo: "Presidente", lider: true },
-      { nome: "Alan", cargo: "Vice-Presidente", lider: true },
+      { nome: "Michael", cargo: "Presidente", diretor: true },
+      { nome: "Alan", cargo: "Vice-Presidente", diretor: true },
     ],
   },
   {
-    trilha: "Competição",
+    frente: "Competição",
     membros: [
-      { nome: "João", cargo: "Líder Competição", lider: true },
+      { nome: "João", cargo: "Diretor Competição", diretor: true },
       { nome: "Nasser", cargo: "Competição" },
       { nome: "Guilherme", cargo: "Competição" },
     ],
   },
   {
-    trilha: "Pesquisa",
+    frente: "Pesquisa",
     membros: [
-      { nome: "Mateus", cargo: "Líder Pesquisa", lider: true },
+      { nome: "Mateus", cargo: "Diretor Pesquisa", diretor: true },
       { nome: "Pedro", cargo: "Pesquisa" },
       { nome: "Thomaz", cargo: "Pesquisa" },
     ],
   },
   {
-    trilha: "Projetos",
+    frente: "Projetos",
     membros: [
-      { nome: "Luiza", cargo: "Líder Projetos", lider: true },
+      { nome: "Luiza", cargo: "Diretor Projetos", diretor: true },
       { nome: "Julio", cargo: "Projetos" },
       { nome: "Elis", cargo: "Projetos" },
     ],
@@ -80,7 +80,7 @@ function Card({ membro, index }: { membro: Membro; index: number }) {
       <h3 className="mt-5 font-sans text-2xl md:text-3xl font-light tracking-tight">{membro.nome}</h3>
       <p
         className={`mt-2 font-mono text-[10px] tracking-[0.25em] uppercase ${
-          membro.lider ? "text-[var(--gear-amber)]" : "text-muted-foreground"
+          membro.diretor ? "text-[var(--gear-amber)]" : "text-muted-foreground"
         }`}
       >
         {membro.cargo}
@@ -110,9 +110,9 @@ export function Time() {
         </motion.div>
       </section>
 
-      {/* Grupos por trilha */}
+      {/* Grupos por frente */}
       {grupos.map((grupo, grupoIndex) => (
-        <section key={grupo.trilha} className="relative mx-auto max-w-6xl px-8 md:px-12 py-16 md:py-20">
+        <section key={grupo.frente} className="relative mx-auto max-w-6xl px-8 md:px-12 py-16 md:py-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -121,9 +121,9 @@ export function Time() {
             className="border-t border-white/10 pt-10 mb-12"
           >
             <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-              0{grupoIndex + 1} — {grupo.trilha.toUpperCase()}
+              0{grupoIndex + 1} — {grupo.frente.toUpperCase()}
             </p>
-            <h2 className="font-sans text-3xl md:text-5xl font-light italic">{grupo.trilha}</h2>
+            <h2 className="font-sans text-3xl md:text-5xl font-light italic">{grupo.frente}</h2>
           </motion.div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -170,11 +170,11 @@ export function Time() {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6"
           >
-            <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">ORIENTADOR</p>
+            <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">ORIENTADOR</p>
             <dl className="mt-4 space-y-4">
               {orientador.map((linha) => (
                 <div key={linha.label}>
-                  <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                  <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                     {linha.label}
                   </dt>
                   <dd className="font-mono text-[11px] text-foreground mt-1">{linha.valor}</dd>

@@ -19,7 +19,7 @@ type Entrada = {
 const entradas: Entrada[] = [
   {
     tema: "Estrutura",
-    titulo: "Por que três trilhas, e não uma entidade genérica de robótica",
+    titulo: "Por que três frentes, e não uma entidade genérica de robótica",
     texto:
       "Competição, Pesquisa e Projetos têm ritmos completamente diferentes — uma corre contra prazo de campeonato, outra não tem prazo externo nenhum, a terceira vive em sprints internos. Juntar tudo numa coisa só faria uma dessas partes sufocar as outras.",
     resumo: [
@@ -30,10 +30,10 @@ const entradas: Entrada[] = [
   },
   {
     tema: "Formação",
-    titulo: "Por que ninguém escolhe a trilha no primeiro dia",
+    titulo: "Por que ninguém escolhe a frente no primeiro dia",
     texto:
-      "Todo mundo passa pela Academia GEAR antes — Bootcamp, formação técnica, Projeto de Validação. A escolha da trilha vem depois de aprender, não de uma decisão às cegas na hora da inscrição.",
-    resumo: [{ label: "Jornada", valor: "BOOTCAMP → ACADEMIA → VALIDAÇÃO → TRILHA" }],
+      "Todo mundo passa pela Academia GEAR antes — Bootcamp, formação técnica, Projeto de Validação. A escolha da frente vem depois de aprender, não de uma decisão às cegas na hora da inscrição.",
+    resumo: [{ label: "Jornada", valor: "BOOTCAMP → ACADEMIA → VALIDAÇÃO → FRENTE" }],
   },
   {
     tema: "Governança",
@@ -70,7 +70,16 @@ const entradas: Entrada[] = [
 
 export function Works() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null)
+  /*
+   * Guarda a última entrada apontada. Sem isto, ao sair o painel esvaziava e
+   * a altura ia a zero — e como o deslocamento vertical é em PORCENTAGEM da
+   * própria altura, a caixa saltava para outra posição enquanto sumia.
+   * Mantendo o conteúdo montado, a altura fica estável durante o fade.
+   */
+  const [ultimaEntrada, setUltimaEntrada] = useState<Entrada | null>(null)
   const containerRef = useRef<HTMLDivElement>(null)
+  /** Falso até a primeira leitura de posição do ponteiro. */
+  const posicionado = useRef(false)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -79,14 +88,30 @@ export function Works() {
   const springY = useSpring(mouseY, { stiffness: 150, damping: 20 })
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect()
-      mouseX.set(e.clientX - rect.left)
-      mouseY.set(e.clientY - rect.top)
+    if (!containerRef.current) return
+
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const y = e.clientY - rect.top
+
+    /*
+     * As molas nascem em (0,0) — o canto superior esquerdo do container. Na
+     * primeira leitura elas precisam SALTAR para o ponteiro; deixá-las animar
+     * a partir do zero é o que fazia o painel atravessar a tela na diagonal
+     * ao aparecer. Do segundo movimento em diante, molejo normal.
+     */
+    if (!posicionado.current) {
+      springX.jump(x)
+      springY.jump(y)
+      posicionado.current = true
     }
+
+    mouseX.set(x)
+    mouseY.set(y)
   }
 
-  const emFoco = hoveredIndex !== null ? entradas[hoveredIndex] : null
+  // durante o fade de saída ainda mostra a última entrada, para não colapsar
+  const emFoco = hoveredIndex !== null ? entradas[hoveredIndex] : ultimaEntrada
 
   return (
     <section className="relative py-32 px-8 md:px-12 md:py-24">
@@ -114,7 +139,10 @@ export function Works() {
             className={`relative border-t border-white/10 py-8 md:py-12 ${
               entrada.destaque ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8" : ""
             }`}
-            onMouseEnter={() => setHoveredIndex(index)}
+            onMouseEnter={() => {
+              setHoveredIndex(index)
+              setUltimaEntrada(entrada)
+            }}
             onMouseLeave={() => setHoveredIndex(null)}
             data-cursor-hover
           >
@@ -156,7 +184,13 @@ export function Works() {
             x: springX,
             y: springY,
             translateX: "-50%",
-            translateY: "-108%",
+            /*
+             * -108% era 8% da altura do painel como respiro acima do cursor.
+             * Com a foto, isso dava ~32px; sem ela o painel encolheu e o
+             * respiro caiu para ~11px, encostando no ponteiro. O gap agora é
+             * fixo em 16px e não depende mais da altura do conteúdo.
+             */
+            translateY: "calc(-100% - 16px)",
           }}
           animate={{
             opacity: hoveredIndex !== null ? 1 : 0,
@@ -166,14 +200,14 @@ export function Works() {
         >
           {emFoco && (
             <div className="p-4">
-              <p className="font-mono text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">EM RESUMO</p>
+              <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">EM RESUMO</p>
               <p className="font-mono text-[11px] tracking-wider text-foreground mt-2 pb-2 border-b border-white/10">
                 {emFoco.tema}
               </p>
               <dl className="mt-2 space-y-1.5">
                 {emFoco.resumo?.map((linha) => (
                   <div key={linha.label}>
-                    <dt className="font-mono text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                    <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                       {linha.label}
                     </dt>
                     <dd className="font-mono text-[11px] text-foreground mt-0.5">{linha.valor}</dd>

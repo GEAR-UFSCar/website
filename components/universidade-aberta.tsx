@@ -92,7 +92,13 @@ export function UniversidadeAberta() {
             <div
               key={foto.arquivo}
               className={`relative overflow-hidden bg-[var(--gear-ink)] ${
-                larga ? "col-span-2 aspect-[2/1]" : "aspect-square"
+                /*
+                 * No mobile todas as fotos ficam quadradas em 2 colunas: a
+                 * composição de 5 colunas só existe a partir de md, e uma foto
+                 * larga sozinha ocupando a linha inteira quebrava o ritmo da
+                 * grade. object-cover centraliza o corte.
+                 */
+                larga ? "aspect-square md:col-span-2 md:aspect-[2/1]" : "aspect-square"
               }`}
             >
               {faltando ? (
@@ -107,6 +113,14 @@ export function UniversidadeAberta() {
                   alt={foto.alt || `Universidade Aberta UFSCar 2026 — foto ${foto.arquivo.replace(/\D/g, "")}`}
                   width={foto.largura}
                   height={foto.altura}
+                  /*
+                   * Sem sizes, o Next escolhe o candidato do srcset pela
+                   * largura INTRÍNSECA (até 1600px) e não pela renderizada —
+                   * um celular baixava a foto inteira para exibi-la em ~180px.
+                   * O grid é 2 colunas no mobile e 5 a partir de md; as largas
+                   * ocupam o dobro.
+                   */
+                  sizes={larga ? "(min-width: 768px) 40vw, 100vw" : "(min-width: 768px) 20vw, 50vw"}
                   className="absolute inset-0 h-full w-full origin-center object-cover transition-transform duration-500 ease-out hover:scale-105"
                   onError={() => setAusentes((anterior) => ({ ...anterior, [foto.arquivo]: true }))}
                 />

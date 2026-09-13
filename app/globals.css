@@ -121,6 +121,14 @@
   }
 }
 
+/* Caminhos de arquivo citados nos avisos (supabase/008_eventos_avisos_sprints.sql
+   tem 39 caracteres) passam de 320px em monospace e não cabem nos 271px úteis
+   de uma tela de 375px. Sem isto o body corta — com overflow-x-hidden nem
+   barra de rolagem aparece, o texto some. anywhere quebra em qualquer ponto. */
+code {
+  overflow-wrap: anywhere;
+}
+
 /* Noise texture overlay */
 .noise-overlay {
   position: fixed;

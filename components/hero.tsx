@@ -29,8 +29,18 @@ export function Hero() {
         GEAR — Grupo de Extensão em Automação e Robótica, UFSCar Sorocaba
       </h1>
 
-      {/* 3D Sphere Background */}
-      <div className="absolute inset-0">
+      {/*
+       * 3D Sphere Background
+       *
+       * isolate (isolation: isolate) força o canvas a ser composto num buffer
+       * próprio ANTES de o cursor mesclar com ele. Sem isso, o
+       * mix-blend-difference do CustomCursor mescla direto contra a textura
+       * WebGL com alpha premultiplicado, e o resultado é o padrão de linhas
+       * coloridas dentro do círculo — artefato de composição, não de CSS:
+       * nenhum ancestral aqui cria stacking context (conferido um a um,
+       * incluindo o container do R3F em node_modules).
+       */}
+      <div className="absolute inset-0 isolate">
         <SentientGear />
       </div>
 
@@ -58,13 +68,13 @@ export function Hero() {
           className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
         >
           <MotionLink
-            href="/processo-seletivo"
+            href="/frentes"
             data-cursor-hover
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             className="relative inline-block px-8 py-4 border border-white/20 rounded-full font-mono text-sm tracking-widest uppercase bg-transparent backdrop-blur-sm hover:bg-white hover:text-black transition-colors duration-500 pointer-events-auto"
           >
-            Processo Seletivo
+            Conheça as Frentes
             <span className="absolute -top-1 -right-1 w-2 h-2 bg-[var(--gear-amber)] rounded-full animate-pulse" />
           </MotionLink>
         </motion.div>

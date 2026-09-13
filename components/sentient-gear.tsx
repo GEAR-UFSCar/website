@@ -297,11 +297,28 @@ function GearSystem({ drag }: { drag: MutableRefObject<DragState> }) {
 
 export function SentientGear() {
   const [mounted, setMounted] = useState(false)
+  /*
+   * WebGL só a partir de md. Abaixo disso a engrenagem custava caro e não
+   * devolvia nada: o canvas ocupava 100vh rodando três geometrias tesseladas
+   * com shader de ruído a 60fps, e o arrasto já é desabilitado no toque
+   * (o gesto fica reservado para a rolagem). Era bateria e GPU para um
+   * elemento decorativo e inerte.
+   *
+   * A decisão precisa rodar em JS, não em CSS: `hidden md:block` esconderia
+   * o canvas mas continuaria montando o Canvas e girando o useFrame.
+   */
+  const [comWebGL, setComWebGL] = useState(false)
   const [grabbing, setGrabbing] = useState(false)
   const drag = useRef<DragState>({ active: false, lastX: 0, lastTime: 0, pending: 0, velocity: 0 })
 
   useEffect(() => {
     setMounted(true)
+
+    const consulta = window.matchMedia("(min-width: 768px)")
+    const aplicar = () => setComWebGL(consulta.matches)
+    aplicar()
+    consulta.addEventListener("change", aplicar)
+    return () => consulta.removeEventListener("change", aplicar)
   }, [])
 
   // O toque fica reservado para a rolagem da página; arrasto só com mouse/caneta.
@@ -340,10 +357,21 @@ export function SentientGear() {
     if (event.timeStamp - d.lastTime > 120) d.velocity = 0
   }
 
-  if (!mounted) {
+  /*
+   * Mesma silhueta para os dois casos de saída — antes da hidratação e no
+   * mobile. Só CSS: dois anéis concêntricos em âmbar sobre o fundo do hero,
+   * girando devagar. O `animate-[spin_24s_linear_infinite]` é neutralizado
+   * pela regra de prefers-reduced-motion em globals.css, ao contrário do
+   * loop em WebGL, que CSS nenhum alcança.
+   */
+  if (!mounted || !comWebGL) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <div className="w-64 h-64 rounded-full border border-accent/20 animate-pulse" />
+      <div className="w-full h-full flex items-center justify-center" aria-hidden="true">
+        <div className="relative h-56 w-56 sm:h-72 sm:w-72">
+          <div className="absolute inset-0 rounded-full border border-[var(--gear-amber)]/30 animate-[spin_24s_linear_infinite]" />
+          <div className="absolute inset-[18%] rounded-full border border-[var(--gear-amber)]/20" />
+          <div className="absolute inset-[42%] rounded-full border border-[var(--gear-amber)]/40" />
+        </div>
       </div>
     )
   }
