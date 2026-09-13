@@ -27,3 +27,23 @@ export const OG_IMAGE = {
  * aceitou a versão anterior continua com o registro dela, não com esta.
  */
 export const VERSAO_TERMOS = "1.0"
+
+/**
+ * Canal público da entidade. Estava repetido em parceiros.tsx, footer.tsx e
+ * privacidade/page.tsx — três lugares para trocar quando o endereço mudar.
+ */
+export const EMAIL_CONTATO = "gearufscar@gmail.com"
+
+/**
+ * Destino terminal de quem quer entrar na GEAR.
+ *
+ * Enquanto não há processo seletivo aberto, o site precisava de ALGUM ponto de
+ * chegada: a auditoria mostrou que /frentes e /projetos apontavam um para o
+ * outro num anel fechado, e /sobre e /time não levavam a lugar nenhum. Sem um
+ * destino terminal, o candidato circula e sai sem fazer nada.
+ */
+export const CONTATO_INGRESSO =
+  `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Quero fazer parte da GEAR")}`
+
+export const CONTATO_PARCERIA =
+  `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Parceria GEAR")}`
