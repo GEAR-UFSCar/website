@@ -1,29 +1,14 @@
 "use client"
 
+import Link from "next/link"
 import { motion } from "framer-motion"
+
+import { CONTATO_PARCERIA, EMAIL_CONTATO } from "@/lib/site"
+import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
 import { Aviso } from "@/components/aviso"
 import { botaoPrimario } from "@/lib/ui"
 
-/* Canal de contato do grupo. Vazio faz a página exibir o aviso de indisponível. */
-const EMAIL_CONTATO = "gearufscar@gmail.com"
 
-const valor = [
-  {
-    titulo: "Visibilidade",
-    texto:
-      "Marca aplicada nos robôs que entram em competição, no material técnico publicado e nesta página. O Diário de Bordo é conteúdo de engenharia aberto — quem apoia aparece junto do trabalho, não de um banner solto.",
-  },
-  {
-    titulo: "Acesso a talento técnico",
-    texto:
-      "Contato direto com estudantes de graduação da UFSCar Sorocaba, de qualquer curso, formados dentro de um processo que termina em projeto entregue e defendido. Todo ciclo entram até 20 pessoas novas.",
-  },
-  {
-    titulo: "Associação institucional",
-    texto:
-      "O GEAR é atividade de extensão registrada na ProEx-UFSCar, com orientação docente e prestação de contas à universidade. O apoio vai para uma estrutura formal, não para um coletivo informal.",
-  },
-]
 
 /*
  * Necessidades da frente de Competição. `quantidade` e `valor` seguem em branco
@@ -67,36 +52,6 @@ const necessidades = [
   },
 ]
 
-/*
- * Níveis de patrocínio. Sem valor em R$ de propósito: a contrapartida é
- * fechada caso a caso, e publicar uma tabela de preço engessaria a conversa.
- * `herda` sai como linha própria em vez de virar mais um item da lista —
- * é referência a outro nível, não um benefício em si.
- */
-const niveis = [
-  {
-    nome: "Bronze",
-    herda: null,
-    beneficios: [
-      "Logo da empresa na página de Parceiros do site",
-      "Menção em posts de redes sociais sobre resultados da equipe",
-    ],
-  },
-  {
-    nome: "Prata",
-    herda: "Tudo do nível Bronze",
-    beneficios: ["Nome/logo na camiseta da equipe de Competição"],
-  },
-  {
-    nome: "Ouro",
-    herda: "Tudo do nível Prata",
-    beneficios: [
-      "Logo em posição de destaque no robô de competição",
-      "Agradecimento especial em apresentações públicas da GEAR (como a Universidade Aberta UFSCar)",
-    ],
-    destaque: true,
-  },
-]
 
 export function Parceiros() {
   return (
@@ -133,7 +88,7 @@ export function Parceiros() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {valor.map((bloco, index) => (
+          {VALOR.map((bloco, index) => (
             <motion.div
               key={bloco.titulo}
               initial={{ opacity: 0, y: 30 }}
@@ -167,7 +122,7 @@ export function Parceiros() {
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que falta, sem enfeitar</h2>
           <p className="mt-6 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
             A lista abaixo é o que hoje limita a frente de Competição. Está em ordem de impacto, com a
-            justificativa técnica de cada item — o mesmo critério que usamos no Diário de Bordo.
+            justificativa técnica de cada item — o mesmo critério das fichas em Projetos.
           </p>
         </motion.div>
 
@@ -229,8 +184,8 @@ export function Parceiros() {
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Níveis de patrocínio</h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {niveis.map((nivel, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {NIVEIS.map((nivel, index) => (
             <motion.div
               key={nivel.nome}
               initial={{ opacity: 0, y: 30 }}
@@ -244,7 +199,7 @@ export function Parceiros() {
               }`}
             >
               <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
-                Nível 0{index + 1}
+                {nivel.apoioIndividual ? "Apoio individual" : `Nível 0${index}`}
               </p>
               <h3 className="mt-4 font-sans text-2xl md:text-3xl font-light tracking-tight uppercase">
                 {nivel.nome}
@@ -278,8 +233,29 @@ export function Parceiros() {
           className="mt-10 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground"
         >
           Valores e contrapartidas adicionais são definidos em conversa direta — entre em contato pelo
-          e-mail abaixo.
+          e-mail abaixo. Para levar a proposta a um comitê interno, há uma versão imprimível com
+          tudo o que está nesta página:{" "}
+          <Link
+            href="/parceiros/proposta"
+            data-cursor-hover
+            className="text-[var(--gear-amber)] hover:underline"
+          >
+            proposta de patrocínio
+          </Link>
+          .
         </motion.p>
+
+        {/*
+         * Quem responde por patrocínio. A RoboJackets nomeia a pessoa e usa um
+         * e-mail dedicado; empresa quer saber com quem vai falar, não escrever
+         * para um contato genérico. Sem nome definido, mostra a pendência em
+         * vez de inventar alguém.
+         */}
+        <p className="mt-6 max-w-2xl font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+          {RESPONSAVEL_PATROCINIO.nome
+            ? `Responde por patrocínio: ${RESPONSAVEL_PATROCINIO.nome} · ${RESPONSAVEL_PATROCINIO.cargo}`
+            : `Responde por patrocínio: ${RESPONSAVEL_PATROCINIO.cargo} — nome a designar pela diretoria`}
+        </p>
       </section>
 
       {/* 04 — Contato */}
@@ -310,7 +286,7 @@ export function Parceiros() {
 
           {EMAIL_CONTATO ? (
             <a
-              href={`mailto:${EMAIL_CONTATO}?subject=Parceria%20GEAR`}
+              href={CONTATO_PARCERIA}
               data-cursor-hover
               className={`mt-10 inline-block ${botaoPrimario}`}
             >

@@ -189,6 +189,19 @@ code {
   animation: marquee-right 50s linear infinite;
 }
 
+/* Impressão: a proposta de patrocínio (/parceiros/proposta) é feita para sair
+   em papel. O body do site é escuro por padrão e gastaria toner sem melhorar a
+   leitura; aqui ele vira branco e o overlay de ruído sai da frente. */
+@media print {
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+  .noise-overlay {
+    display: none !important;
+  }
+}
+
 /* Respeita quem pediu menos movimento no sistema.
    Cobre o que é CSS: o marquee infinito, o pulse, o ping e todas as
    transições. As animações em JS (springs do framer-motion e o loop da
