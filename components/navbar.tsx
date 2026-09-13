@@ -11,9 +11,10 @@ import { AuthLink } from "@/components/auth-link"
 const navLinks = [
   { label: "Sobre", href: "/sobre" },
   { label: "Projetos", href: "/projetos" },
-  { label: "Frentes", href: "/frentes" },
+  { label: "Academia", href: "/academia" },
   { label: "Time", href: "/time" },
   { label: "Parceiros", href: "/parceiros" },
+  { label: "Ingressar", href: "/ingressar" },
 ]
 
 export function Navbar() {

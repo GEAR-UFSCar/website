@@ -5,7 +5,9 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 
-const EMAIL = "gearufscar@gmail.com"
+import { EMAIL_CONTATO } from "@/lib/site"
+
+const EMAIL = EMAIL_CONTATO
 
 const sociais = [
   { nome: "Instagram", href: "https://www.instagram.com/gear.ufscar/" },
@@ -110,6 +112,20 @@ export function Footer() {
           {/* Assinatura + privacidade (exigência de LGPD: aviso acessível de
               qualquer página) */}
           <div className="flex flex-col sm:flex-row items-center gap-4">
+            <Link
+              href="/ingressar"
+              data-cursor-hover
+              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+            >
+              INGRESSAR
+            </Link>
+            <Link
+              href="/entrar"
+              data-cursor-hover
+              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+            >
+              ÁREA DE MEMBROS
+            </Link>
             <Link
               href="/privacidade"
               data-cursor-hover
