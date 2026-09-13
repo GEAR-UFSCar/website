@@ -1,7 +1,0 @@
-- Entidade: GEAR (Grupo de Extensão em Automação e Robótica), UFSCar Sorocaba
-- Paleta: navy #0B2138, âmbar #FF7A2F, ink #081726, slate #5A6B7A, mist #AEBAC4, fog #EDF1F4
-- Tipografia: Playfair Display (itálico, títulos editoriais) + Space Mono (labels/dados técnicos)
-- Direção estética: brutalista dark + editorial cinematográfico, baseado no template "Brutalist Void Portfolio" (Next.js + Framer Motion + Three.js)
-- Stack: Next.js, Tailwind, Supabase (auth/DB), Vercel (deploy)
-- 3 trilhas: Competição , Pesquisa, Projetos
-- Nunca usar linguagem corporativa genérica; manter tom direto e honesto até sobre limitações técnicas
