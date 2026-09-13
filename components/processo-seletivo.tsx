@@ -1,5 +1,20 @@
 "use client"
 
+/*
+ * DORMENTE — a rota /processo-seletivo foi removida enquanto não há inscrição
+ * aberta. Este componente ficou de propósito: o conteúdo (cronograma, fases,
+ * condições) é real e custou para ser escrito.
+ *
+ * PARA REATIVAR, sem depender de git:
+ *   1. crie app/processo-seletivo/page.tsx renderizando <ProcessoSeletivo />
+ *      — use app/parceiros/page.tsx como molde, inclusive o bloco openGraph;
+ *   2. devolva o item a navLinks em components/navbar.tsx;
+ *   3. devolva "/processo-seletivo" a ROTAS em app/sitemap.ts;
+ *   4. aponte de volta os CTAs de components/frentes.tsx e app/projetos/page.tsx.
+ *
+ * Confira as datas do cronograma antes: são do ciclo anterior.
+ */
+
 import { useState } from "react"
 import type React from "react"
 import { motion } from "framer-motion"

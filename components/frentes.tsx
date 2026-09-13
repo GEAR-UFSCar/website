@@ -117,11 +117,11 @@ export function Frentes() {
           className="mt-16 flex flex-col sm:flex-row gap-5"
         >
           <Link
-            href="/processo-seletivo"
+            href="/projetos"
             data-cursor-hover
             className={`text-center ${botaoPrimario}`}
           >
-            Processo Seletivo
+            Ver os projetos
           </Link>
           <Link
             href="/time"

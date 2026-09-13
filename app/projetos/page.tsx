@@ -248,8 +248,8 @@ export default function ProjetosPage() {
           ))}
 
           <div className="mt-20 flex flex-col sm:flex-row gap-5">
-            <Link href="/processo-seletivo" data-cursor-hover className={`text-center ${botaoPrimario}`}>
-              Quero construir isso
+            <Link href="/frentes" data-cursor-hover className={`text-center ${botaoPrimario}`}>
+              Conheça as frentes
             </Link>
             <Link href="/parceiros" data-cursor-hover className={`text-center ${botaoSecundario}`}>
               Apoiar os projetos
