@@ -9,7 +9,7 @@ import { Aviso } from "@/components/aviso"
 import { EventoForm } from "@/components/evento-form"
 import { createClient } from "@/lib/supabase/server"
 import { dataHora, inicioDeHoje } from "@/lib/datas"
-import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
@@ -31,7 +31,7 @@ type Evento = {
 
 
 export default async function CalendarioPage() {
-  const { user, perfil } = await exigirPerfilCompleto()
+  const { user, perfil } = await exigirMembroAprovado()
   // Portão só da tela; a RLS de 008 é quem barra de fato.
   const podeEscrever = temCargo(perfil?.cargo)
 

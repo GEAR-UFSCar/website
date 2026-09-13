@@ -8,7 +8,7 @@ import { SmoothScroll } from "@/components/smooth-scroll"
 import { ModuloCheckbox } from "@/components/modulo-checkbox"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
-import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
@@ -37,7 +37,7 @@ type Progresso = {
 export default async function AprendizagemPage() {
   // mesmo portão de /membros: sem sessão vai ao login, perfil incompleto ao
   // formulário de primeiro acesso.
-  const { user } = await exigirPerfilCompleto()
+  const { user } = await exigirMembroAprovado()
 
   const supabase = await createClient()
   const [{ data: modulos, error: erroModulos }, { data: progresso }] = await Promise.all([

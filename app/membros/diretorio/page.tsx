@@ -7,7 +7,7 @@ import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
-import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
@@ -47,7 +47,7 @@ function grupoDe(membro: Membro) {
 }
 
 export default async function DiretorioPage() {
-  await exigirPerfilCompleto()
+  await exigirMembroAprovado()
 
   const supabase = await createClient()
   // Sem e-mail na consulta: a coluna não existe em `perfis` e não deve existir.

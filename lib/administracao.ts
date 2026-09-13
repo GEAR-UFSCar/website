@@ -46,6 +46,14 @@ export function rotaDaFrente(nome: string | null | undefined) {
   return `/membros/frentes/${(achada ?? FRENTES_ROTAS[0]).slug}`
 }
 
+/**
+ * Membro validado pela diretoria. Espelha perfis.aprovado e a função
+ * e_membro() em 014 — é o que separa "tem conta" de "enxerga o interno".
+ */
+export function estaAprovado(aprovado: boolean | null | undefined) {
+  return aprovado === true
+}
+
 /** Um cargo em branco conta como "sem cargo". */
 export function temCargo(cargo: string | null | undefined) {
   return Boolean(cargo?.trim())

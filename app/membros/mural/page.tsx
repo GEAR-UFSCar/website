@@ -10,7 +10,7 @@ import { MuralForm } from "@/components/mural-form"
 import { MuralFixar } from "@/components/mural-fixar"
 import { createClient } from "@/lib/supabase/server"
 import { dataHora } from "@/lib/datas"
-import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
@@ -31,7 +31,7 @@ type AvisoMural = {
 
 
 export default async function MuralPage() {
-  const { user, perfil } = await exigirPerfilCompleto()
+  const { user, perfil } = await exigirMembroAprovado()
   // Portão só da tela; a RLS de 008 é quem barra de fato.
   const podeEscrever = temCargo(perfil?.cargo)
 

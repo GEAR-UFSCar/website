@@ -8,7 +8,7 @@ import { SmoothScroll } from "@/components/smooth-scroll"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
-import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
@@ -37,7 +37,7 @@ const eExterno = (valor: string) => /^https?:\/\//i.test(valor)
 
 
 export default async function DocumentacaoPage() {
-  await exigirPerfilCompleto()
+  await exigirMembroAprovado()
 
   const supabase = await createClient()
   const { data, error } = await supabase

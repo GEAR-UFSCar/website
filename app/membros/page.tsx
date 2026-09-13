@@ -54,6 +54,15 @@ export default async function MembrosPage() {
     redirect("/membros/completar-perfil")
   }
 
+  /*
+   * Segundo portão: conta existe, perfil preenchido, mas a diretoria ainda não
+   * validou o vínculo. Espelha e_membro() (014) — sem aprovação a RLS já
+   * devolveria tudo vazio, e um painel de blocos vazios não explicaria por quê.
+   */
+  if (!erro && !perfil?.aprovado) {
+    redirect("/membros/aguardando")
+  }
+
   const frente = perfil?.frente?.trim() || null
   const cargo = perfil?.cargo?.trim() || null
   const comCargo = temCargo(cargo)

@@ -8,7 +8,7 @@ import { Aviso } from "@/components/aviso"
 import { FrenteAbas } from "@/components/frente-abas"
 import { SprintStatus } from "@/components/sprint-status"
 import { createClient } from "@/lib/supabase/server"
-import { exigirPerfilCompleto } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { dataLonga } from "@/lib/datas"
 import { STATUS_SPRINT, eDiretoria, temCargo, type FrenteNome } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
@@ -40,7 +40,7 @@ const dataSimples = (iso: string) => {
  * perfil de quem está vendo: qualquer membro acompanha qualquer frente.
  */
 export async function FrentePainel({ frente }: { frente: FrenteNome }) {
-  const { user, perfil } = await exigirPerfilCompleto()
+  const { user, perfil } = await exigirMembroAprovado()
 
   /*
    * Portão só da tela, espelhando a policy de 011: diretoria escreve em

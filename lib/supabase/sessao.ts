@@ -10,6 +10,7 @@ export type Perfil = {
   curso: string | null
   frente: string | null
   cargo: string | null
+  aprovado: boolean
   created_at: string
 }
 
@@ -48,7 +49,7 @@ export const getPerfil = cache(async (): Promise<{ perfil: Perfil | null; erro: 
   // A RLS já limita ao próprio usuário; o eq() deixa a intenção explícita.
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, frente, cargo, created_at")
+    .select("id, nome_completo, curso, frente, cargo, aprovado, created_at")
     .eq("id", user.id)
     .maybeSingle<Perfil>()
 
@@ -67,6 +68,32 @@ export const exigirPerfilCompleto = cache(async (): Promise<{ user: User; perfil
 
   if (!erro && !perfil?.nome_completo?.trim()) {
     redirect("/membros/completar-perfil")
+  }
+
+  return { user, perfil }
+})
+
+/**
+ * Portão de tudo que é interno: exige sessão, perfil preenchido E aprovação
+ * da diretoria. É o espelho de e_membro() (014) na tela.
+ *
+ * A ordem importa. Primeiro o perfil, depois a aprovação: quem acaba de se
+ * cadastrar precisa informar nome e curso ANTES de esperar, senão a diretoria
+ * recebe uma linha em branco e não tem como saber quem aprovar.
+ *
+ * Isto é conveniência de interface, não a barreira. A barreira é a RLS — sem
+ * aprovação, as consultas voltam vazias mesmo que alguém chegue à página por
+ * outro caminho.
+ */
+export const exigirMembroAprovado = cache(async (): Promise<{ user: User; perfil: Perfil | null }> => {
+  const { user, perfil } = await exigirPerfilCompleto()
+  const { erro } = await getPerfil()
+
+  // Consulta falhou (tabela ausente, coluna nova ainda não migrada): deixa a
+  // página seguir e mostrar o próprio aviso, em vez de prender todo mundo
+  // numa sala de espera por causa de um erro de schema.
+  if (!erro && !perfil?.aprovado) {
+    redirect("/membros/aguardando")
   }
 
   return { user, perfil }

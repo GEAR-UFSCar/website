@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { CargoSelect } from "@/components/cargo-select"
+import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
@@ -20,6 +21,7 @@ type Perfil = {
   curso: string | null
   frente: string | null
   cargo: string | null
+  aprovado: boolean
   cargo_atualizado_em: string | null
 }
 
@@ -49,11 +51,14 @@ export default async function CargosPage() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, frente, cargo, cargo_atualizado_em")
+    .select("id, nome_completo, curso, frente, cargo, aprovado, cargo_atualizado_em")
+    // pendentes primeiro: é o que a diretoria vem resolver nesta tela
+    .order("aprovado", { ascending: true })
     .order("nome_completo", { nullsFirst: false })
 
   const perfis = (data ?? []) as Perfil[]
   const comCargo = perfis.filter((p) => p.cargo?.trim()).length
+  const pendentes = perfis.filter((p) => !p.aprovado).length
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
@@ -61,13 +66,15 @@ export default async function CargosPage() {
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Cargos</h1>
       <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {perfis.length} PERFIL(S) · {comCargo} COM CARGO
+        {perfis.length} PERFIL(S) · {comCargo} COM CARGO · {pendentes} AGUARDANDO APROVAÇÃO
       </p>
       </Surge>
 
       <Aviso titulo="ATENÇÃO" tom="neutro" className="mt-8 max-w-3xl">
-        Qualquer cargo preenchido dá acesso ao painel de Patrimônio e Atas. Só Presidente e
-        Vice-Presidente conseguem alterar cargos. Remover o próprio cargo tira o seu acesso.
+        Aprovar é o que abre a área de membros: sem isso a conta existe mas não lê diretório,
+        documentos, avisos nem calendário. Qualquer cargo preenchido dá acesso ao painel de
+        Patrimônio e Atas, e exige aprovação. Só Presidente e Vice-Presidente alteram cargo e
+        aprovação — e ninguém altera a própria. Revogar corta leitura e escrita de uma vez.
       </Aviso>
 
       {error && (
@@ -81,7 +88,7 @@ export default async function CargosPage() {
         <table className="w-full min-w-[46rem] border-collapse">
           <thead>
             <tr className="border-b border-white/15 text-left">
-              {["Membro", "Curso", "Frente", "Cargo", "Alterado em"].map((h) => (
+              {["Membro", "Curso", "Frente", "Aprovação", "Cargo", "Alterado em"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
                 </th>
@@ -90,7 +97,7 @@ export default async function CargosPage() {
           </thead>
           <tbody>
             {perfis.length === 0 && !error && (
-              <tr><td colSpan={5} className="py-8 font-sans text-sm font-light text-muted-foreground">
+              <tr><td colSpan={6} className="py-8 font-sans text-sm font-light text-muted-foreground">
                 Nenhum perfil cadastrado.
               </td></tr>
             )}
@@ -104,6 +111,9 @@ export default async function CargosPage() {
                 </td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.curso ?? "—"}</td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.frente ?? "—"}</td>
+                <td className="py-4 pr-4 w-44">
+                  <AprovacaoToggle perfilId={p.id} aprovado={p.aprovado} ehVoce={p.id === user.id} />
+                </td>
                 <td className="py-4 pr-4 w-52"><CargoSelect perfilId={p.id} valor={p.cargo} /></td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">
                   {p.cargo_atualizado_em

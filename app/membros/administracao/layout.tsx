@@ -5,18 +5,18 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
-import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
+import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
 export default async function AdministracaoLayout({ children }: { children: ReactNode }) {
-  // Sem sessão vai para o login antes de qualquer coisa.
-  await exigirUsuario()
-
-  // getPerfil() é memoizado por request: as páginas filhas releem daqui, sem
-  // nova ida ao banco.
-  const { perfil } = await getPerfil()
+  /*
+   * Sessão, perfil preenchido e aprovação, nessa ordem — depois o cargo.
+   * Memoizado por request: as páginas filhas releem daqui, sem nova ida ao
+   * banco.
+   */
+  const { perfil } = await exigirMembroAprovado()
 
   // Sem cargo: mostra o aviso no lugar do conteúdo, sem deslogar nem
   // redirecionar. A RLS no banco é a barreira de verdade; isto é a da tela.
