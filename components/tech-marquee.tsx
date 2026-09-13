@@ -13,15 +13,19 @@ const techItems = [
   "C++",
 ]
 
-const concepts = [
-  "AUTONOMIA",
-  "PRECISÃO",
-  "ENGENHARIA",
-  "ITERAÇÃO",
-  "ROBUSTEZ",
-  "DISCIPLINA",
-  "CURIOSIDADE",
-  "ORIGEM",
+/*
+ * Segunda faixa. Antes eram oito adjetivos — AUTONOMIA, PRECISÃO, DISCIPLINA
+ * — que qualquer entidade de robótica assinaria, e que não diziam nada sobre
+ * esta. Trocados pelo que a GEAR de fato tem: os robôs, a liga, a linha de
+ * pesquisa e o vínculo. Tudo verificável em /projetos, /frentes e /sobre.
+ */
+const contexto = [
+  "AI ROVER",
+  "NAVEGADOR MECANUM",
+  "ROBOCUP RESCUE",
+  "SAFE RL",
+  "PROEX-UFSCAR",
+  "EXTENSÃO",
 ]
 
 function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?: "left" | "right" }) {
@@ -77,7 +81,7 @@ export function TechMarquee() {
       {/* Marquee Rows */}
       <div className="space-y-4">
         <MarqueeRow items={techItems} direction="left" />
-        <MarqueeRow items={concepts} direction="right" />
+        <MarqueeRow items={contexto} direction="right" />
       </div>
     </section>
   )

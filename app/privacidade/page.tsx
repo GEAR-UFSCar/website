@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { OG_IMAGE } from "@/lib/site"
+import { EMAIL_CONTATO, OG_IMAGE } from "@/lib/site"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
@@ -33,7 +33,6 @@ export const metadata: Metadata = {
  * publicar: não invento encarregado nem endereço. A página mostra o aviso de
  * pendência enquanto estiverem assim.
  */
-const ENCARREGADO_EMAIL = "gearufscar@gmail.com"
 
 const secoes = [
   {
@@ -98,6 +97,10 @@ const secoes = [
   },
 ]
 
+/** Âncora estável: acento e espaço fora, para o link não depender de encoding. */
+const slug = (t: string) =>
+  t.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "-")
+
 export default function PrivacidadePage() {
   return (
     <SmoothScroll>
@@ -126,13 +129,38 @@ export default function PrivacidadePage() {
             políticas do banco, não de um modelo genérico.
           </Aviso>
 
+          {/*
+            * Índice. São 10 seções e 628 palavras: sem salto, quem procura
+            * "meus direitos" percorre a página inteira. É também o que dá ao
+            * leitor de tela uma rota curta pelo documento.
+            */}
+          <nav aria-label="Seções desta página" className="mt-12 border-t border-white/10 pt-8">
+            <p className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
+              Nesta página
+            </p>
+            <ol className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+              {secoes.map((secao, indice) => (
+                <li key={secao.titulo}>
+                  <a
+                    href={`#${slug(secao.titulo)}`}
+                    data-cursor-hover
+                    className="font-mono text-[11px] tracking-wider text-muted-foreground transition-colors duration-300 hover:text-[var(--gear-amber)]"
+                  >
+                    <span className="text-[var(--gear-amber)] mr-2">0{indice + 1}</span>
+                    {secao.titulo}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+
           {secoes.map((secao, indice) => (
-            <section key={secao.titulo} className="mt-16">
+            <section key={secao.titulo} id={slug(secao.titulo)} className="mt-16 scroll-mt-24">
               <div className="border-t border-white/10 pt-8">
                 <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
                   0{indice + 1}
                 </p>
-                <h2 className="font-sans text-2xl md:text-4xl font-light italic">{secao.titulo}</h2>
+                <h2 className="font-sans text-2xl md:text-3xl font-light italic">{secao.titulo}</h2>
               </div>
 
               {secao.conteudo?.map((paragrafo) => (
@@ -172,11 +200,11 @@ export default function PrivacidadePage() {
               Para exercer qualquer um dos direitos acima, escreva para:
             </p>
             <a
-              href={`mailto:${ENCARREGADO_EMAIL}?subject=LGPD%20-%20solicitacao%20de%20titular`}
+              href={`mailto:${EMAIL_CONTATO}?subject=LGPD%20-%20solicitacao%20de%20titular`}
               data-cursor-hover
               className="mt-4 inline-block font-mono text-sm tracking-wider text-[var(--gear-amber)] hover:underline"
             >
-              {ENCARREGADO_EMAIL}
+              {EMAIL_CONTATO}
             </a>
           </section>
 

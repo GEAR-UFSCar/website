@@ -148,6 +148,21 @@ export function Entrar() {
           )}
         </h1>
 
+        {/*
+          * A página tinha 46 palavras e não dizia o que há atrás do login. A
+          * área de membros é mais completa que a de qualquer referência que
+          * analisamos, e nenhum candidato descobria isso. Só descreve o que já
+          * existe — nada aqui é promessa.
+          */}
+        <p className="mt-8 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
+          Atrás do login ficam o mural de avisos, o calendário da entidade, o diretório de membros,
+          a documentação institucional, o quadro de sprints de cada frente e a Academia GEAR com o
+          seu progresso na formação.
+        </p>
+        <p className="mt-4 max-w-[62ch] font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+          O acesso abre após a diretoria confirmar seu vínculo com a entidade
+        </p>
+
         {/* Alternância */}
         <div className="mt-10 flex border border-white/15">
           {(["entrar", "criar"] as Modo[]).map((opcao) => (

@@ -17,8 +17,14 @@ export default function Home() {
       <main>
         <Hero />
         <SectionBlend />
-        <About />
+        {/*
+         * Works antes de About de propósito. "Como Construímos a GEAR" traz
+         * decisão com justificativa; o bloco seguinte traz o estado atual da
+         * entidade. Na ordem anterior, a leitura interpretativa vinha antes da
+         * evidência que a sustenta.
+         */}
         <Works />
+        <About />
         <UniversidadeAberta />
         <TechMarquee />
         <Footer />

@@ -123,7 +123,7 @@ export function Works() {
         transition={{ duration: 0.8 }}
         className="mb-24"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — DECISÕES QUE NOS DEFINEM</p>
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — DECISÕES QUE NOS DEFINEM</p>
         <h2 className="font-sans text-3xl md:text-5xl font-light italic">Como Construímos a GEAR</h2>
       </motion.div>
 

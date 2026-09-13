@@ -87,11 +87,14 @@ export function Hero() {
           className="self-end text-right"
         >
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">02 — ENGENHARIA REAL</p>
-          <h2 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
-            PROJETOS
-            <br />
-            <span className="italic">em campo</span>
-          </h2>
+          {/* prometia "projetos" e não levava a /projetos */}
+          <MotionLink href="/projetos" data-cursor-hover className="group pointer-events-auto inline-block">
+            <h2 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
+              PROJETOS
+              <br />
+              <span className="italic">em campo</span>
+            </h2>
+          </MotionLink>
         </motion.div>
       </motion.div>
 

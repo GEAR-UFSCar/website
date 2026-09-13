@@ -1,6 +1,10 @@
 "use client"
 
+import Link from "next/link"
 import { motion } from "framer-motion"
+
+import { CONTATO_INGRESSO } from "@/lib/site"
+import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 type Membro = {
   nome: string
@@ -32,7 +36,7 @@ const grupos: Grupo[] = [
   {
     frente: "Competição",
     membros: [
-      { nome: "João", cargo: "Diretor Competição", diretor: true },
+      { nome: "João", cargo: "Direção de Competição", diretor: true },
       { nome: "Nasser", cargo: "Competição" },
       { nome: "Guilherme", cargo: "Competição" },
     ],
@@ -40,7 +44,7 @@ const grupos: Grupo[] = [
   {
     frente: "Pesquisa",
     membros: [
-      { nome: "Mateus", cargo: "Diretor Pesquisa", diretor: true },
+      { nome: "Mateus", cargo: "Direção de Pesquisa", diretor: true },
       { nome: "Pedro", cargo: "Pesquisa" },
       { nome: "Thomaz", cargo: "Pesquisa" },
     ],
@@ -48,7 +52,7 @@ const grupos: Grupo[] = [
   {
     frente: "Projetos",
     membros: [
-      { nome: "Luiza", cargo: "Diretor Projetos", diretor: true },
+      { nome: "Luiza", cargo: "Direção de Projetos", diretor: true },
       { nome: "Julio", cargo: "Projetos" },
       { nome: "Elis", cargo: "Projetos" },
     ],
@@ -183,6 +187,26 @@ export function Time() {
             </dl>
           </motion.div>
         </div>
+
+        {/*
+         * Destino terminal do candidato. Sem processo seletivo aberto, esta é a
+         * única porta de entrada do site — quem se identificou com o time
+         * precisa poder agir aqui, não voltar para o começo.
+         */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+          className="mt-16 flex flex-col sm:flex-row gap-5"
+        >
+          <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoPrimario}`}>
+            Quero fazer parte
+          </a>
+          <Link href="/projetos" data-cursor-hover className={`text-center ${botaoSecundario}`}>
+            Ver os projetos
+          </Link>
+        </motion.div>
       </section>
     </>
   )
