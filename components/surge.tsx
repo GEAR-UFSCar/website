@@ -26,6 +26,7 @@ const ATRASO_MAXIMO = 0.4
 
 const TAGS = {
   div: motion.div,
+  p: motion.p,
   li: motion.li,
   tr: motion.tr,
   article: motion.article,

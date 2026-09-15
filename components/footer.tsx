@@ -14,6 +14,13 @@ const sociais = [
   { nome: "LinkedIn", href: "https://www.linkedin.com/company/gearufscar/" },
 ]
 
+/*
+ * O relógio re-renderiza o rodapé inteiro uma vez por segundo. Cada transition
+ * inline era um objeto novo por segundo, por elemento animado — fixos aqui.
+ */
+const SUAVE = { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } as const
+const RAPIDA = { duration: 0.3 } as const
+
 export function Footer() {
   const [hora, setHora] = useState("")
   const [isHovered, setIsHovered] = useState(false)
@@ -47,7 +54,7 @@ export function Footer() {
           className="absolute inset-0 bg-[var(--gear-amber)]"
           initial={{ y: "100%" }}
           animate={{ y: isHovered ? "0%" : "100%" }}
-          transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={SUAVE}
         />
 
         {/* Conteúdo */}
@@ -58,7 +65,7 @@ export function Footer() {
               animate={{
                 color: isHovered ? "#081726" : "#EDF1F4",
               }}
-              transition={{ duration: 0.3 }}
+              transition={RAPIDA}
             >
               Vamos <span className="italic">construir</span> juntos
             </motion.h2>
@@ -68,7 +75,7 @@ export function Footer() {
                 rotate: isHovered ? 45 : 0,
                 color: isHovered ? "#081726" : "#EDF1F4",
               }}
-              transition={{ duration: 0.3 }}
+              transition={RAPIDA}
             >
               <ArrowUpRight className="w-12 h-12 md:w-16 md:h-16" />
             </motion.div>
@@ -76,7 +83,7 @@ export function Footer() {
 
           <motion.p
             animate={{ color: isHovered ? "#081726" : "#AEBAC4" }}
-            transition={{ duration: 0.3 }}
+            transition={RAPIDA}
             className="relative mt-6 font-mono text-xs tracking-widest text-center md:text-left"
           >
             {EMAIL}

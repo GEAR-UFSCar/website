@@ -1,6 +1,3 @@
-"use client"
-
-import { motion } from "framer-motion"
 
 /*
  * Áreas de apoio. Os cargos Tesouraria e Comunicação existem em
@@ -14,6 +11,8 @@ import { motion } from "framer-motion"
  * A descrição é curta de propósito: descreve a função pelo que o cargo já faz
  * na estrutura, sem inventar atribuição que a diretoria não definiu.
  */
+import { Surge } from "@/components/surge"
+
 const apoio = [
   {
     nome: "Comunicação",
@@ -68,30 +67,17 @@ export function Frentes() {
     <>
       {/* As três frentes */}
       <section id="frentes" className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32 scroll-mt-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-12"
-        >
+        <Surge className="mb-12">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — AS TRÊS FRENTES</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde você entra</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
             Toda pessoa passa pela mesma formação e só então escolhe uma frente. Não é especialização
             precoce: é escolha feita com repertório.
           </p>
-        </motion.div>
+        </Surge>
         <div className="relative">
           {frentes.map((frente, index) => (
-            <motion.div
-              key={frente.nome}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="border-t border-white/10 py-12 md:py-16 transition-colors duration-300 hover:border-t-[var(--gear-amber)]"
-            >
+            <Surge key={frente.nome} delay={index * 0.1} className="border-t border-white/10 py-12 md:py-16 transition-colors duration-300 hover:border-t-[var(--gear-amber)]">
               <div className="flex flex-col md:flex-row gap-6 md:gap-12">
                 <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)] shrink-0 md:w-16 md:pt-3">
                   0{index + 1}
@@ -120,19 +106,13 @@ export function Frentes() {
                   </dl>
                 </div>
               </div>
-            </motion.div>
+            </Surge>
           ))}
           <div className="border-t border-white/10" />
         </div>
 
         {/* Áreas de apoio — pares das frentes técnicas, não subordinadas */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-20 border-t border-white/10 pt-10"
-        >
+        <Surge className="mt-20 border-t border-white/10 pt-10">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
             04 — ÁREAS DE APOIO
           </p>
@@ -155,7 +135,7 @@ export function Frentes() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </Surge>
       </section>
     </>
   )

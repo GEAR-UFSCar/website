@@ -134,12 +134,10 @@ export default async function CalendarioPage({
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-
         <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          Reuniões, sprints e prazos da GEAR na mesma grade das suas metas e das que a equipe
-          tornou públicas. Qualquer membro lê; criar evento é de quem tem cargo, e meta continua
-          sendo de quem a escreveu.
-        </p>
+              Reuniões, sprints e prazos da GEAR na mesma grade das suas metas e das que a equipe
+              tornou públicas. Criar evento é de quem tem cargo.
+            </p>
       </Surge>
 
       {erroEventos && (

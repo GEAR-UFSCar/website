@@ -4,6 +4,7 @@ import { useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
 import { SentientGear } from "./sentient-gear"
+import { HeroCursor } from "@/components/hero-cursor"
 
 const MotionLink = motion.create(Link)
 
@@ -18,7 +19,15 @@ export function Hero() {
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8])
 
   return (
-    <section ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#050505]">
+    /*
+     * A classe "hero" é o alvo de lib/hero-bounds.ts (isPointInHero). Não é
+     * estilo: é o marcador que diz ao cursor global onde ele deve sumir e ao
+     * cursor do Hero onde ele deve aparecer. Remover quebra os dois.
+     */
+    <section
+      ref={containerRef}
+      className="hero relative h-screen w-full overflow-hidden bg-[#050505]"
+    >
       {/*
        * O h1 da home. As duas frases grandes abaixo são h2 de propósito — são
        * chamadas visuais, não o título do site — e mudá-las para h1 poria
@@ -43,6 +52,12 @@ export function Hero() {
       <div className="absolute inset-0 isolate">
         <SentientGear />
       </div>
+
+      {/*
+       * Cursor local, dentro da seção: enquanto o ponteiro está aqui, o cursor
+       * global some e este desenha — sem mix-blend-mode em estado nenhum.
+       */}
+      <HeroCursor />
 
       {/* Typography Overlay */}
       <motion.div style={{ opacity, scale }} className="relative z-10 h-full flex flex-col justify-between p-8 md:p-12 md:px-12 md:py-20 pointer-events-none">

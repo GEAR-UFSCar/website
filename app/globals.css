@@ -197,6 +197,27 @@ code {
     background: #fff !important;
     color: #111 !important;
   }
+
+  /* A aba ProEx (/membros/metricas) é feita para sair em papel e virar anexo.
+     Fora dela, nada disso atrapalha: `.nao-imprimir` só existe onde foi posto,
+     e header/nav/footer some de qualquer página impressa — navegação em papel
+     é tinta gasta. */
+  .nao-imprimir,
+  header,
+  nav,
+  footer {
+    display: none !important;
+  }
+
+  /* O <pre> do texto de apoio precisa quebrar linha no papel em vez de ser
+     cortado na margem direita. */
+  pre {
+    white-space: pre-wrap !important;
+    word-break: break-word;
+    border-color: #999 !important;
+    background: #fff !important;
+    color: #111 !important;
+  }
   .noise-overlay {
     display: none !important;
   }

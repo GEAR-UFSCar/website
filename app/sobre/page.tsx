@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Sobre } from "@/components/sobre"
+import { VitrineMetricas } from "@/components/vitrine-metricas"
 
 export const metadata: Metadata = {
   title: "Sobre | GEAR",
@@ -23,6 +24,14 @@ export const metadata: Metadata = {
   },
 }
 
+/*
+ * Revalidação de hora em hora: a página lê os números do semestre do banco,
+ * mas eles mudam quando alguém fecha um indicador — não a cada visita. Sem
+ * isto, /sobre deixaria de ser estática e passaria a render por requisição
+ * para mostrar um número que muda uma vez por semana.
+ */
+export const revalidate = 3600
+
 export default function SobrePage() {
   return (
     <SmoothScroll>
@@ -30,6 +39,7 @@ export default function SobrePage() {
       <Navbar />
       <main>
         <Sobre />
+        <VitrineMetricas />
         <Footer />
       </main>
     </SmoothScroll>

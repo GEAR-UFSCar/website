@@ -102,7 +102,6 @@ export default async function AprendizagemPage() {
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-
       {/* Barra de progresso */}
       <div className="mt-10 max-w-2xl">
         <div className="flex items-baseline justify-between gap-4">

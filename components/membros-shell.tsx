@@ -6,6 +6,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import {
   CalendarDays,
+  ChartNoAxesColumn,
   ChevronDown,
   FileText,
   GitBranch,
@@ -23,6 +24,7 @@ import { ABAS, abaAtual, migalha } from "@/lib/navegacao"
 
 const ICONES: Record<string, LucideIcon> = {
   LayoutDashboard,
+  ChartNoAxesColumn,
   CalendarDays,
   GraduationCap,
   Target,

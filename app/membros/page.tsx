@@ -154,6 +154,11 @@ export default async function MembrosPage() {
       texto: "Comunicados da diretoria, fixados primeiro.",
     },
     {
+      href: "/membros/metricas",
+      nome: "Métricas",
+      texto: "Insumos, atividades, resultados e impacto do semestre.",
+    },
+    {
       href: "/membros/documentacao",
       nome: "Documentação",
       texto: "Regimento, manuais e normas institucionais.",
@@ -180,10 +185,8 @@ export default async function MembrosPage() {
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       {/* Topo: saudação */}
       <Surge>
-      <h2 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
-        Bem-vindo(a),
-        <br />
-        <span className="italic break-words">{perfil?.nome_completo ?? user.email}</span>
+      <h2 className="font-sans text-3xl md:text-4xl font-light tracking-tight text-balance">
+        Bem-vindo(a), <span className="italic break-words">{perfil?.nome_completo ?? user.email}</span>
       </h2>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -220,7 +223,7 @@ export default async function MembrosPage() {
         rolasse, e uma meta que só aparece a quem procura não lembra
         ninguém de nada.
       */}
-      <Surge as="section" className="mt-16 border-t border-white/10 pt-8">
+      <Surge as="section" className="mt-10 border-t border-white/10 pt-8">
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="font-sans text-2xl md:text-3xl font-light italic">
             Minhas próximas metas

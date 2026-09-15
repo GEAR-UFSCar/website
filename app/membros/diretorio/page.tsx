@@ -64,7 +64,6 @@ export default async function DiretorioPage() {
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-
       <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
         Quem está na GEAR e em que frente. Nome, curso, frente e cargo — nada de contato pessoal:
         e-mail não aparece aqui para ninguém.

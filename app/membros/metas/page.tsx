@@ -62,11 +62,9 @@ export default async function MetasPage() {
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-
         <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          O calendário é da entidade; isto aqui é seu. Cada meta nasce privada. Tornar pública
-          mostra ela — e o seu nome — para os outros membros, e nada além disso: continua sendo
-          você quem edita, conclui e apaga.
+          O calendário é da entidade; isto aqui é seu. Cada meta nasce privada — o formulário
+          abaixo explica o que muda ao torná-la pública.
         </p>
 
         <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">

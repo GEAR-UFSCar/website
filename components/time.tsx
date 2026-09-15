@@ -1,7 +1,5 @@
-"use client"
-
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { Surge } from "@/components/surge"
 
 import { CONTATO_INGRESSO } from "@/lib/site"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
@@ -67,13 +65,7 @@ const orientador = [
 
 function Card({ membro, index }: { membro: Membro; index: number }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.7, delay: index * 0.08 }}
-      className="group border border-white/10 p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]"
-    >
+    <Surge delay={index * 0.08} className="group border border-white/10 p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]">
       {/* Placeholder da foto — substituir por <Image> quando houver retrato */}
       <div className="w-16 h-16 flex items-center justify-center border border-[var(--gear-amber)] bg-[var(--gear-navy)]">
         <span className="font-mono text-lg tracking-widest text-[var(--gear-amber)]">
@@ -89,7 +81,7 @@ function Card({ membro, index }: { membro: Membro; index: number }) {
       >
         {membro.cargo}
       </p>
-    </motion.div>
+    </Surge>
   )
 }
 
@@ -98,11 +90,7 @@ export function Time() {
     <>
       {/* Cabeçalho */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
+        <Surge delay={0.1}>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
             11 MEMBROS FUNDADORES
           </p>
@@ -111,24 +99,18 @@ export function Time() {
             <br />
             <span className="italic">assina</span>
           </h1>
-        </motion.div>
+        </Surge>
       </section>
 
       {/* Grupos por frente */}
       {grupos.map((grupo, grupoIndex) => (
         <section key={grupo.frente} className="relative mx-auto max-w-6xl px-8 md:px-12 py-16 md:py-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="border-t border-white/10 pt-10 mb-12"
-          >
+          <Surge className="border-t border-white/10 pt-10 mb-12">
             <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
               0{grupoIndex + 1} — {grupo.frente.toUpperCase()}
             </p>
             <h2 className="font-sans text-3xl md:text-5xl font-light italic">{grupo.frente}</h2>
-          </motion.div>
+          </Surge>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {grupo.membros.map((membro, index) => (
@@ -140,40 +122,22 @@ export function Time() {
 
       {/* Orientação institucional */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="border-t border-white/10 pt-10 mb-12"
-        >
+        <Surge className="border-t border-white/10 pt-10 mb-12">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
             05 — ORIENTAÇÃO INSTITUCIONAL
           </p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem orienta</h2>
-        </motion.div>
+        </Surge>
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
-          <motion.p
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground"
-          >
+          <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
             A atividade de extensão do GEAR é orientada pelo{" "}
             <span className="text-foreground">Prof. Iago Pacheco Gomes</span>, docente da UFSCar
             Sorocaba. A orientação docente é o que separa grupo de extensão registrado de coletivo
             informal — e o que dá respaldo institucional ao que é produzido aqui.
-          </motion.p>
+          </Surge>
 
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6"
-          >
+          <Surge delay={0.2} className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6">
             <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">ORIENTADOR</p>
             <dl className="mt-4 space-y-4">
               {orientador.map((linha) => (
@@ -185,7 +149,7 @@ export function Time() {
                 </div>
               ))}
             </dl>
-          </motion.div>
+          </Surge>
         </div>
 
         {/*
@@ -193,20 +157,14 @@ export function Time() {
          * única porta de entrada do site — quem se identificou com o time
          * precisa poder agir aqui, não voltar para o começo.
          */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mt-16 flex flex-col sm:flex-row gap-5"
-        >
+        <Surge className="mt-16 flex flex-col sm:flex-row gap-5">
           <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoPrimario}`}>
             Quero fazer parte
           </a>
           <Link href="/projetos" data-cursor-hover className={`text-center ${botaoSecundario}`}>
             Ver os projetos
           </Link>
-        </motion.div>
+        </Surge>
       </section>
     </>
   )

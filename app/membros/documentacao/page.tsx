@@ -2,10 +2,21 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { ErroDados } from "@/components/erro-dados"
+import { DocumentoForm } from "@/components/documento-form"
+import { DocumentoAnexo } from "@/components/documento-anexo"
 import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
+import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import {
+  BUCKET,
+  CATEGORIAS,
+  COLUNAS_DOCUMENTO,
+  VALIDADE_LINK,
+  eExterno,
+  type Documento,
+} from "@/lib/documentos"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -13,32 +24,19 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-/** Ordem das seções na tela — espelha o CHECK de supabase/006_documentos.sql. */
-const CATEGORIAS = ["Governança", "Técnico", "Marca", "Financeiro", "Segurança"] as const
-
-/** Bucket privado: o link só existe assinado, e por uma hora. */
-const BUCKET = "documentos"
-const VALIDADE_LINK = 60 * 60
-
-type Documento = {
-  id: string
-  titulo: string
-  categoria: string
-  arquivo_url: string | null
-  versao: string | null
-  atualizado_em: string
-}
-
-const eExterno = (valor: string) => /^https?:\/\//i.test(valor)
-
-
 export default async function DocumentacaoPage() {
-  await exigirMembroAprovado()
+  const { perfil } = await exigirMembroAprovado()
+  /*
+   * Portão só da tela. A RLS de 006 (escrita com cargo, na tabela e no bucket)
+   * é quem barra de fato — quem não tem cargo e chamar o endpoint direto
+   * recebe 42501, com ou sem estes botões renderizados.
+   */
+  const podeEscrever = temCargo(perfil?.cargo)
 
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("documentos")
-    .select("id, titulo, categoria, arquivo_url, versao, atualizado_em")
+    .select(COLUNAS_DOCUMENTO)
     .order("categoria")
     .order("titulo")
 
@@ -87,10 +85,9 @@ export default async function DocumentacaoPage() {
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-
       <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-        Regimento, manuais e normas da entidade, abertos a qualquer membro. Os arquivos estão
-        sendo exportados aos poucos — o que ainda não tem PDF aparece listado, mas sem link.
+        Regimento, manuais e normas da entidade, abertos a qualquer membro. O que ainda não tem
+        arquivo aparece listado mesmo assim — e quem tem cargo anexa ali na linha.
       </p>
 
       <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
@@ -145,27 +142,54 @@ export default async function DocumentacaoPage() {
                     </p>
                   </div>
 
-                  {documento.link ? (
-                    <a
-                      href={documento.link}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      data-cursor-hover
-                      className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
-                    >
-                      ABRIR DOCUMENTO →
-                    </a>
-                  ) : (
-                    <span className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
-                      ARQUIVO AINDA NÃO ANEXADO
-                    </span>
-                  )}
+                  <div className="flex shrink-0 flex-wrap items-center gap-4">
+                    {documento.link ? (
+                      <a
+                        href={documento.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        data-cursor-hover
+                        className="font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
+                      >
+                        ABRIR DOCUMENTO →
+                      </a>
+                    ) : (
+                      <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
+                        ARQUIVO AINDA NÃO ANEXADO
+                      </span>
+                    )}
+
+                    {/* Link externo não se substitui por upload: trocar a origem
+                        do documento é edição de cadastro, não anexo. */}
+                    {podeEscrever && !eExterno(documento.arquivo_url ?? "") && (
+                      <DocumentoAnexo
+                        documentoId={documento.id}
+                        titulo={documento.titulo}
+                        temArquivo={Boolean(documento.link)}
+                      />
+                    )}
+                  </div>
                 </Surge>
               ))}
             </ul>
           </section>
         )
       })}
+
+      {podeEscrever && (
+        <section className="mt-20">
+          <div className="border-t border-white/10 pt-8">
+            <h2 className="font-sans text-2xl md:text-4xl font-light italic">Cadastrar documento</h2>
+            <p className="mt-3 max-w-2xl font-sans text-sm font-light leading-relaxed text-muted-foreground">
+              O arquivo vai para um bucket privado: ninguém abre sem sessão, e o link que aparece na
+              lista é assinado e expira em uma hora.
+            </p>
+          </div>
+          <div className="mt-8">
+            <DocumentoForm />
+          </div>
+        </section>
+      )}
 
       <div className="mt-16">
         <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>

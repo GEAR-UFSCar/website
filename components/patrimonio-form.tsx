@@ -13,6 +13,7 @@ const VAZIO = {
   item: "",
   categoria: CATEGORIAS[0] as string,
   quantidade: "1",
+  valor_estimado: "",
   status: STATUS[0] as string,
   responsavel_atual: "",
   frente_vinculada: "",
@@ -39,6 +40,12 @@ export function PatrimonioForm() {
       item: campos.item.trim(),
       categoria: campos.categoria,
       quantidade: Number(campos.quantidade) || 1,
+      /*
+       * Vazio grava null, não zero: "não estimado" e "vale zero" são coisas
+       * diferentes, e valor_patrimonio_atual() (019) soma o null como zero
+       * sem que o inventário precise mentir que o item não vale nada.
+       */
+      valor_estimado: campos.valor_estimado.trim() === "" ? null : Number(campos.valor_estimado),
       status: campos.status,
       // strings vazias viram null, para o banco não guardar "" como valor
       responsavel_atual: campos.responsavel_atual.trim() || null,
@@ -78,6 +85,14 @@ export function PatrimonioForm() {
         <div>
           <label htmlFor="quantidade" className={rotuloBase}>Quantidade</label>
           <input id="quantidade" type="number" min="0" required value={campos.quantidade} onChange={set("quantidade")} disabled={salvando} className={campoBase} />
+        </div>
+
+        <div>
+          <label htmlFor="valor_estimado" className={rotuloBase}>Valor unitário estimado (R$)</label>
+          <input id="valor_estimado" type="number" min="0" step="0.01" placeholder="opcional" value={campos.valor_estimado} onChange={set("valor_estimado")} disabled={salvando} className={campoBase} />
+          <p className="mt-2 font-mono text-[10px] tracking-wider text-muted-foreground">
+            ALIMENTA O INSUMO &quot;VALOR DO PATRIMÔNIO&quot; EM /MEMBROS/METRICAS
+          </p>
         </div>
 
         <div>

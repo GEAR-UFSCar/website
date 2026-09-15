@@ -34,6 +34,7 @@ a anterior não rodou.
 | 016 | `autoria_e_predicados.sql` | autoria carimbada, predicados fechados | 014 |
 | 017 | `metas.sql` | `metas` pessoais, leitura mista dono/pública | 016 |
 | 018 | `perfil_do_proprio_dono.sql` | perfil que falta criado pelo dono; fecha o INSERT | 014 |
+| 019 | `metricas.sql` | `metricas_periodo`, valor no patrimônio, view pública | 016 |
 
 Duas armadilhas conhecidas:
 

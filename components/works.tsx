@@ -3,6 +3,7 @@
 import type React from "react"
 
 import { useState, useRef } from "react"
+import Image from "next/image"
 import { motion, useMotionValue, useSpring } from "framer-motion"
 
 type Entrada = {
@@ -14,11 +15,18 @@ type Entrada = {
   destaque?: boolean
   /** Pares mostrados no painel flutuante; só o que a própria narrativa sustenta. */
   resumo?: { label: string; valor: string }[]
+  /**
+   * Fundo do painel flutuante. Opcional de propósito: sem foto — ou com
+   * caminho que não resolve — o painel cai no navy sólido que já era o fundo
+   * dele, sem buraco e sem quebrar o build.
+   */
+  foto?: string
 }
 
 const entradas: Entrada[] = [
   {
     tema: "Estrutura",
+    foto: "/fotos/universidade-aberta/foto-05.jpg",
     titulo: "Por que três frentes, e não uma entidade genérica de robótica",
     texto:
       "Competição, Pesquisa e Projetos têm ritmos completamente diferentes — uma corre contra prazo de campeonato, outra não tem prazo externo nenhum, a terceira vive em sprints internos. Juntar tudo numa coisa só faria uma dessas partes sufocar as outras.",
@@ -30,6 +38,7 @@ const entradas: Entrada[] = [
   },
   {
     tema: "Formação",
+    foto: "/fotos/universidade-aberta/foto-01.jpg",
     titulo: "Por que ninguém escolhe a frente no primeiro dia",
     texto:
       "Todo mundo passa pela Academia GEAR antes — Bootcamp, formação técnica, Projeto de Validação. A escolha da frente vem depois de aprender, não de uma decisão às cegas na hora da inscrição.",
@@ -37,6 +46,7 @@ const entradas: Entrada[] = [
   },
   {
     tema: "Governança",
+    foto: "/fotos/universidade-aberta/foto-02.jpg",
     titulo: "Por que cargo não é hierarquia aqui",
     texto:
       "Cargos existem pra organizar responsabilidade e garantir continuidade entre gestões — não pra criar distância. Qualquer membro pode falar direto com a Presidência, independente de cargo ou tempo de casa.",
@@ -47,6 +57,7 @@ const entradas: Entrada[] = [
   },
   {
     tema: "Processo Seletivo",
+    foto: "/fotos/universidade-aberta/foto-06.jpg",
     titulo: "Por que não exigimos experiência prévia",
     texto:
       "A Academia GEAR nivela todo mundo. Se exigíssemos conhecimento prévio, estaríamos filtrando por quem já teve acesso antes, não por quem tem potencial agora.",
@@ -57,6 +68,7 @@ const entradas: Entrada[] = [
   },
   {
     tema: "Transparência",
+    foto: "/fotos/ai-rover.jpg",
     titulo: "Por que a gente fala sobre o que não sabe",
     texto:
       "Preferimos admitir uma limitação em público do que deixar alguém descobrir sozinho depois. Isso vale pra um robô, pra um cronograma, ou pra qualquer parte da entidade.",
@@ -199,7 +211,31 @@ export function Works() {
           transition={{ duration: 0.2 }}
         >
           {emFoco && (
-            <div className="p-4">
+            <div className="relative">
+              {/*
+                Camada de fundo. `fill` posiciona a imagem em inset-0 do
+                wrapper, cuja altura vem da faixa de texto abaixo — por isso o
+                wrapper é `relative` e a faixa fica em fluxo normal. Ordem no
+                DOM resolve a pilha: imagem primeiro, faixa depois, sem z-index.
+
+                `alt=""` porque a foto é textura, não informação: o painel já
+                diz tudo em texto, e um alt descritivo aqui faria o leitor de
+                tela anunciar uma imagem decorativa a cada hover.
+              */}
+              {emFoco.foto && (
+                <Image
+                  src={emFoco.foto}
+                  alt=""
+                  fill
+                  /* O painel tem largura fixa de w-80; sem `sizes` o Next
+                     serviria a foto no tamanho da viewport. */
+                  sizes="320px"
+                  className="object-cover"
+                />
+              )}
+
+              {/* 85% de navy: o texto continua legível e a foto continua lá. */}
+              <div className="relative bg-[var(--gear-navy)]/85 p-4">
               <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">EM RESUMO</p>
               <p className="font-mono text-[11px] tracking-wider text-foreground mt-2 pb-2 border-b border-white/10">
                 {emFoco.tema}
@@ -214,6 +250,7 @@ export function Works() {
                   </div>
                 ))}
               </dl>
+              </div>
             </div>
           )}
         </motion.div>

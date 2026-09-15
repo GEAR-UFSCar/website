@@ -60,7 +60,6 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-
       <FrenteAbas atual={frente} />
 
       <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">

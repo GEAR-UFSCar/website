@@ -14,7 +14,7 @@ export type Aba = {
   href: string
   rotulo: string
   /** Nome do ícone em lucide-react; o componente resolve. */
-  icone: "LayoutDashboard" | "CalendarDays" | "GraduationCap" | "Target" | "GitBranch" | "Megaphone" | "Users" | "FileText" | "Settings"
+  icone: "LayoutDashboard" | "CalendarDays" | "GraduationCap" | "Target" | "GitBranch" | "Megaphone" | "Users" | "FileText" | "ChartNoAxesColumn" | "Settings"
   /** Prefixo que marca a aba como atual — cobre as subrotas. */
   prefixo: string
   /** Só para quem tem cargo. */
@@ -30,6 +30,7 @@ export const ABAS: Aba[] = [
   { href: "/membros/mural", rotulo: "Mural", icone: "Megaphone", prefixo: "/membros/mural" },
   { href: "/membros/diretorio", rotulo: "Diretório", icone: "Users", prefixo: "/membros/diretorio" },
   { href: "/membros/documentacao", rotulo: "Documentação", icone: "FileText", prefixo: "/membros/documentacao" },
+  { href: "/membros/metricas", rotulo: "Métricas", icone: "ChartNoAxesColumn", prefixo: "/membros/metricas" },
   { href: "/membros/administracao", rotulo: "Administração", icone: "Settings", prefixo: "/membros/administracao", exigeCargo: true },
 ]
 
@@ -57,6 +58,7 @@ const MIGALHAS: Record<string, Migalha> = {
   "/membros/mural": { secao: "COMUNICAÇÃO · AVISOS", titulo: "Mural" },
   "/membros/diretorio": { secao: "PESSOAS · MEMBROS", titulo: "Diretório" },
   "/membros/documentacao": { secao: "INSTITUCIONAL · ARQUIVOS", titulo: "Documentação" },
+  "/membros/metricas": { secao: "GESTÃO · IMPACTO", titulo: "Métricas" },
   "/membros/sprints/competicao": { secao: "FRENTES · SPRINTS", titulo: "Competição" },
   "/membros/sprints/pesquisa": { secao: "FRENTES · SPRINTS", titulo: "Pesquisa" },
   "/membros/sprints/projetos": { secao: "FRENTES · SPRINTS", titulo: "Projetos" },

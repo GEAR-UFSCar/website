@@ -2,6 +2,8 @@
 
 import { motion } from "framer-motion"
 
+import { MarqueeRow } from "@/components/marquee-row"
+
 const techItems = [
   "ROS 2",
   "PYTHON",
@@ -27,42 +29,6 @@ const contexto = [
   "PROEX-UFSCAR",
   "EXTENSÃO",
 ]
-
-function MarqueeRow({ items, direction = "left" }: { items: string[]; direction?: "left" | "right" }) {
-  const duplicatedItems = [...items, ...items, ...items, ...items]
-
-  return (
-    <div className="relative overflow-hidden py-4">
-      <motion.div
-        className={`flex gap-8 ${direction === "left" ? "animate-marquee-left" : "animate-marquee-right"}`}
-        style={{ width: "fit-content" }}
-      >
-        {duplicatedItems.map((item, index) => (
-          <span
-            key={index}
-            className="group font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight whitespace-nowrap cursor-default"
-            style={{
-              WebkitTextStroke: "1px rgba(255,255,255,0.3)",
-              color: "transparent",
-              transition: "all 0.3s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = "white"
-              e.currentTarget.style.webkitTextStroke = "none"
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = "transparent"
-              e.currentTarget.style.webkitTextStroke = "1px rgba(255,255,255,0.3)"
-            }}
-          >
-            {item}
-            <span className="mx-8 text-white/20">•</span>
-          </span>
-        ))}
-      </motion.div>
-    </div>
-  )
-}
 
 export function TechMarquee() {
   return (

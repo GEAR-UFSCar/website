@@ -94,6 +94,7 @@ const TABELAS = [
   "atas",
   "termos_aceitos",
   "metas",
+  "metricas_periodo",
 ]
 
 /** Predicados de autorização — não deveriam ser chamáveis sem sessão (SEC-07). */

@@ -1,7 +1,7 @@
-"use client"
-
 import Link from "next/link"
-import { motion } from "framer-motion"
+import { Surge } from "@/components/surge"
+import { MarqueeLogos, type ParceiroLogo } from "@/components/marquee-row"
+import logoNta from "@/public/nta-logo.png"
 
 import { CONTATO_PARCERIA, EMAIL_CONTATO } from "@/lib/site"
 import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
@@ -14,6 +14,19 @@ import { botaoPrimario } from "@/lib/ui"
  * Necessidades da frente de Competição. `quantidade` e `valor` seguem em branco
  * até o levantamento ser fechado — a página mostra "A DEFINIR" no lugar.
  */
+/*
+ * Quem já apoia. Uma fileira só, e não duas em sentidos opostos como no
+ * Arsenal Técnico: o contraponto de direções precisa de volume para ler como
+ * ritmo — com um item, lê como erro. Quando a lista crescer, a segunda
+ * fileira volta com <MarqueeLogos direction="right">.
+ *
+ * O logo vem por import estático: se o arquivo sumir do repositório, o build
+ * quebra, em vez de a página ir ao ar com um retângulo vazio.
+ */
+const parceiros: ParceiroLogo[] = [
+  { nome: "NTA — Núcleo de Tecnologia Assistiva", logo: logoNta, url: "https://www.nta.ufscar.br/" },
+]
+
 const necessidades = [
   {
     item: "Encoders de roda",
@@ -58,11 +71,7 @@ export function Parceiros() {
     <>
       {/* Cabeçalho */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        >
+        <Surge delay={0.1}>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
             PARCERIAS · PATROCÍNIO
           </p>
@@ -71,32 +80,19 @@ export function Parceiros() {
             <br />
             <span className="italic">quem constrói</span>
           </h1>
-        </motion.div>
+        </Surge>
       </section>
 
       {/* 01 — Proposta de valor */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
+        <Surge className="mb-16">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">01 — O QUE O APOIO COMPRA</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Proposta de valor</h2>
-        </motion.div>
+        </Surge>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {VALOR.map((bloco, index) => (
-            <motion.div
-              key={bloco.titulo}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: index * 0.1 }}
-              className="border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
-            >
+            <Surge key={bloco.titulo} delay={index * 0.1} className="border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]">
               <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
                 0{index + 1}
               </p>
@@ -104,42 +100,29 @@ export function Parceiros() {
               <p className="mt-4 font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
                 {bloco.texto}
               </p>
-            </motion.div>
+            </Surge>
           ))}
         </div>
       </section>
 
       {/* 02 — Necessidades */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
+        <Surge className="mb-16">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — FRENTE DE COMPETIÇÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que falta, sem enfeitar</h2>
           <p className="mt-6 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
             A lista abaixo é o que hoje limita a frente de Competição. Está em ordem de impacto, com a
             justificativa técnica de cada item — o mesmo critério das fichas em Projetos.
           </p>
-        </motion.div>
+        </Surge>
 
         <div className="relative">
           {necessidades.map((necessidade, index) => (
-            <motion.div
-              key={necessidade.item}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className={`border-t border-white/10 py-8 md:py-10 ${
+            <Surge key={necessidade.item} delay={index * 0.1} className={`border-t border-white/10 py-8 md:py-10 ${
                 necessidade.prioridade === "ALTA"
                   ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8"
                   : ""
-              }`}
-            >
+              }`}>
               <div className="flex flex-col md:flex-row md:items-baseline gap-3 md:gap-10">
                 <span className="font-mono text-xs tracking-widest text-muted-foreground shrink-0 md:w-28">
                   PRIORIDADE{" "}
@@ -165,39 +148,36 @@ export function Parceiros() {
                   </p>
                 </div>
               </div>
-            </motion.div>
+            </Surge>
           ))}
           <div className="border-t border-white/10" />
         </div>
       </section>
 
-      {/* 03 — Níveis de patrocínio */}
+      {/* 03 — Parceiros — quem já apoia vem antes de como apoiar */}
+      <section className="relative overflow-hidden py-24 md:py-32">
+        <Surge className="px-8 md:px-12 mb-16 mx-auto max-w-6xl">
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — PARCEIROS</p>
+          <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem já está junto</h2>
+        </Surge>
+
+        <MarqueeLogos items={parceiros} />
+      </section>
+
+      {/* 04 — Níveis de patrocínio */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — CONTRAPARTIDAS</p>
+        <Surge className="mb-16">
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — CONTRAPARTIDAS</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Níveis de patrocínio</h2>
-        </motion.div>
+        </Surge>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {NIVEIS.map((nivel, index) => (
-            <motion.div
-              key={nivel.nome}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: index * 0.1 }}
-              className={`flex flex-col border p-7 transition-colors duration-300 ${
+            <Surge key={nivel.nome} delay={index * 0.1} className={`flex flex-col border p-7 transition-colors duration-300 ${
                 nivel.destaque
                   ? "border-[var(--gear-amber)] bg-[var(--gear-navy)]"
                   : "border-white/10 hover:border-[var(--gear-amber)]"
-              }`}
-            >
+              }`}>
               <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
                 {nivel.apoioIndividual ? "Apoio individual" : `Nível 0${index}`}
               </p>
@@ -221,17 +201,11 @@ export function Parceiros() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </Surge>
           ))}
         </div>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="mt-10 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground"
-        >
+        <Surge as="p" delay={0.2} className="mt-10 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
           Valores e contrapartidas adicionais são definidos em conversa direta — entre em contato pelo
           e-mail abaixo. Para levar a proposta a um comitê interno, há uma versão imprimível com
           tudo o que está nesta página:{" "}
@@ -243,7 +217,7 @@ export function Parceiros() {
             proposta de patrocínio
           </Link>
           .
-        </motion.p>
+        </Surge>
 
         {/*
          * Quem responde por patrocínio. A RoboJackets nomeia a pessoa e usa um
@@ -258,26 +232,14 @@ export function Parceiros() {
         </p>
       </section>
 
-      {/* 04 — Contato */}
+      {/* 05 — Contato */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-16"
-        >
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — CONTATO</p>
+        <Surge className="mb-16">
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">05 — CONTATO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Falar com a gente</h2>
-        </motion.div>
+        </Surge>
 
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-          className="max-w-3xl"
-        >
+        <Surge delay={0.1} className="max-w-3xl">
           <p className="font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
             Apoio pode ser equipamento, verba, serviço ou mentoria técnica — não precisa ser dinheiro.
             Escreva dizendo o que faz sentido para a sua empresa e respondemos com o que isso destrava
@@ -299,7 +261,7 @@ export function Parceiros() {
               e-mail automaticamente no lugar deste aviso.
             </Aviso>
           )}
-        </motion.div>
+        </Surge>
       </section>
     </>
   )
