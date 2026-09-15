@@ -10,11 +10,23 @@ type Props = {
   usuarioId: string
   moduloId: string
   concluido: boolean
-  /** Todos os módulos anteriores do mesmo nível já foram concluídos. */
+  /**
+   * Módulo destravado: os anteriores do mesmo nível estão concluídos E o nível
+   * anterior fechou. A segunda metade é regra só de interface — o trigger
+   * validar_ordem_progresso() do banco checa apenas a ordem dentro do nível.
+   */
   liberado: boolean
+  /** Texto do title quando travado; explica QUAL das duas ordens falta. */
+  motivoBloqueio?: string
 }
 
-export function ModuloCheckbox({ usuarioId, moduloId, concluido, liberado }: Props) {
+export function ModuloCheckbox({
+  usuarioId,
+  moduloId,
+  concluido,
+  liberado,
+  motivoBloqueio = "Conclua o módulo anterior primeiro",
+}: Props) {
   const router = useRouter()
   const [salvando, iniciarSalvamento] = useTransition()
   const [erro, setErro] = useState<string | null>(null)
@@ -62,7 +74,7 @@ export function ModuloCheckbox({ usuarioId, moduloId, concluido, liberado }: Pro
          * de 24px, metade do mínimo recomendado.
          */
         className="flex h-11 w-11 -m-2.5 shrink-0 items-center justify-center"
-        title={habilitado ? undefined : "Conclua o módulo anterior primeiro"}
+        title={habilitado ? undefined : motivoBloqueio}
       >
         <span
           aria-hidden="true"

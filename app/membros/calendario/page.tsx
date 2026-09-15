@@ -1,18 +1,24 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { ErroDados } from "@/components/erro-dados"
 import { EventoForm } from "@/components/evento-form"
+import { CalendarioMensal } from "@/components/calendario-mensal"
+import { Surge } from "@/components/surge"
 import { createClient } from "@/lib/supabase/server"
-import { dataHora, inicioDeHoje } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
-import { Surge } from "@/components/surge"
+import { hojeISO } from "@/lib/datas"
+import { COLUNAS_META, estaVencida, type Meta } from "@/lib/metas"
+import {
+  chaveDeMesValida,
+  chaveDoTimestamp,
+  dataDaChave,
+  intervaloDaGrade,
+  mesDaChave,
+  type ItemAgenda,
+} from "@/lib/agenda"
 
 export const metadata: Metadata = {
   title: "Calendário | GEAR",
@@ -29,136 +35,150 @@ type Evento = {
   frente_vinculada: string | null
 }
 
+const hora = (iso: string) =>
+  new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
 
-export default async function CalendarioPage() {
+export default async function CalendarioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ mes?: string }>
+}) {
   const { user, perfil } = await exigirMembroAprovado()
   // Portão só da tela; a RLS de 008 é quem barra de fato.
   const podeEscrever = temCargo(perfil?.cargo)
 
+  const hoje = hojeISO()
+  const mes = chaveDeMesValida((await searchParams).mes, mesDaChave(hoje))
+
+  /*
+   * A consulta cobre a GRADE, não o mês: a primeira e a última semana trazem
+   * dias do mês vizinho, e eles são células reais da tela. Buscar só o mês
+   * deixaria a última linha sempre vazia, o que se lê como "nada marcado".
+   */
+  const { primeira, ultima } = intervaloDaGrade(mes)
+  const inicio = dataDaChave(primeira)
+  const fimExclusivo = dataDaChave(ultima)
+  fimExclusivo.setDate(fimExclusivo.getDate() + 1)
+
   const supabase = await createClient()
-  const corte = inicioDeHoje()
 
-  const [{ data: proximos, error }, { data: passados }] = await Promise.all([
-    supabase
-      .from("eventos")
-      .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
-      .gte("data_inicio", corte)
-      .order("data_inicio", { ascending: true }),
-    supabase
-      .from("eventos")
-      .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
-      .lt("data_inicio", corte)
-      .order("data_inicio", { ascending: false })
-      .limit(10),
-  ])
+  /*
+   * Três consultas, nenhum join — o mesmo motivo do mural e de /membros/metas:
+   * a FK aponta para auth.users, não para perfis, e o PostgREST não tem
+   * relação para embutir.
+   *
+   * Em `metas` não há filtro de dono: a RLS da 017 já devolve exatamente as
+   * minhas (privadas inclusive) mais as públicas dos outros. Repetir a regra
+   * aqui seria uma segunda definição do mesmo acesso, livre para divergir.
+   */
+  const [{ data: eventosData, error: erroEventos }, { data: metasData, error: erroMetas }, { data: pessoas }] =
+    await Promise.all([
+      supabase
+        .from("eventos")
+        .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
+        .gte("data_inicio", inicio.toISOString())
+        .lt("data_inicio", fimExclusivo.toISOString())
+        .order("data_inicio", { ascending: true }),
+      supabase
+        .from("metas")
+        .select(COLUNAS_META)
+        .gte("prazo", primeira)
+        .lte("prazo", ultima)
+        .order("prazo", { ascending: true }),
+      supabase.from("perfis").select("id, nome_completo"),
+    ])
 
-  const agenda = (proximos ?? []) as Evento[]
-  const historico = (passados ?? []) as Evento[]
+  const eventos = (eventosData ?? []) as Evento[]
+  const metas = (metasData ?? []) as Meta[]
 
-  const linha = (evento: Evento, indice: number) => (
-    <Surge as="article" index={indice} key={evento.id} className="border-t border-white/10 py-6">
-      <div className="flex flex-col gap-2 sm:flex-row sm:items-baseline sm:justify-between sm:gap-8">
-        <div className="flex-1">
-          <h3 className="font-sans text-lg md:text-xl font-light leading-snug">{evento.titulo}</h3>
-          <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-            {dataHora(evento.data_inicio)}
-            {evento.data_fim ? ` → ${dataHora(evento.data_fim)}` : ""}
-          </p>
-          {evento.descricao && (
-            <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground whitespace-pre-line">
-              {evento.descricao}
-            </p>
-          )}
-        </div>
-
-        <div className="flex shrink-0 gap-2">
-          <span className="border border-white/20 px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-            {evento.tipo}
-          </span>
-          {/* null = evento geral da entidade, não de uma frente */}
-          <span className="border border-[var(--gear-amber)] px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
-            {evento.frente_vinculada ?? "Geral"}
-          </span>
-        </div>
-      </div>
-    </Surge>
+  const nomes = new Map(
+    ((pessoas ?? []) as { id: string; nome_completo: string | null }[])
+      .filter((p) => p.nome_completo?.trim())
+      .map((p) => [p.id, p.nome_completo as string]),
   )
 
+  /** Primeiro nome basta na etiqueta: o painel é estreito e o dia tem dono. */
+  const primeiroNome = (id: string) => (nomes.get(id) ?? "Membro").split(" ")[0]
+
+  const itens: ItemAgenda[] = [
+    ...eventos.map((e) => ({
+      id: `evento-${e.id}`,
+      origem: "evento" as const,
+      titulo: e.titulo,
+      dia: chaveDoTimestamp(e.data_inicio),
+      hora: hora(e.data_inicio),
+      descricao: e.descricao,
+      rotulo: e.tipo,
+      frente: e.frente_vinculada,
+    })),
+    ...metas.map((m) => ({
+      id: `meta-${m.id}`,
+      origem: "meta" as const,
+      titulo: m.titulo,
+      dia: m.prazo.slice(0, 10),
+      hora: null,
+      descricao: m.descricao,
+      rotulo: m.usuario_id === user.id ? "Sua meta" : `Meta de ${primeiroNome(m.usuario_id)}`,
+      frente: m.frente_vinculada,
+      atrasada: estaVencida(m),
+      concluida: m.concluida,
+    })),
+  ].sort((a, b) => {
+    // Dentro do dia: evento antes de meta (evento tem hora marcada, meta é
+    // prazo do dia inteiro), e evento por horário.
+    if (a.dia !== b.dia) return a.dia.localeCompare(b.dia)
+    if (a.origem !== b.origem) return a.origem === "evento" ? -1 : 1
+    return (a.hora ?? "").localeCompare(b.hora ?? "")
+  })
+
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-          <Surge>
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
-          <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
-            Calendário
-            <br />
-            <span className="italic">da entidade</span>
-          </h1>
+    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+      <Surge>
 
-          <p className="mt-12 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-            Reuniões, sprints e prazos. Qualquer membro lê; criar evento é de quem tem cargo.
-          </p>
+        <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
+          Reuniões, sprints e prazos da GEAR na mesma grade das suas metas e das que a equipe
+          tornou públicas. Qualquer membro lê; criar evento é de quem tem cargo, e meta continua
+          sendo de quem a escreveu.
+        </p>
+      </Surge>
 
-          <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-            {agenda.length} EVENTO(S) À FRENTE
-          </p>
-          </Surge>
+      {erroEventos && (
+        <ErroDados titulo="CALENDÁRIO INDISPONÍVEL" erro={erroEventos} className="mt-10 max-w-2xl">
+          Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code> no
+          SQL Editor do painel.
+        </ErroDados>
+      )}
 
-          {error && (
-            <ErroDados titulo="CALENDÁRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
-              Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code> no
-              SQL Editor do painel.
-            </ErroDados>
-          )}
+      {/* Metas são complemento: sem a 017, a grade continua de pé só com eventos. */}
+      {erroMetas && (
+        <ErroDados titulo="METAS FORA DA GRADE" erro={erroMetas} className="mt-6 max-w-2xl">
+          A grade segue mostrando os eventos. Para as metas, rode{" "}
+          <code>supabase/017_metas.sql</code>.
+        </ErroDados>
+      )}
 
-          <section className="mt-16 max-w-4xl">
-            <div className="border-t border-white/10 pt-8">
-              <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-                01 — A SEGUIR
-              </p>
-              <h2 className="font-sans text-2xl md:text-4xl font-light italic">Próximos</h2>
-            </div>
+      <Surge className="mt-16">
+        <CalendarioMensal mes={mes} itens={itens} hoje={hoje} />
+      </Surge>
 
-            <div className="mt-8">
-              {agenda.length === 0 && !error ? (
-                <p className="font-sans text-sm font-light text-muted-foreground">
-                  Nenhum evento marcado daqui para frente.
-                </p>
-              ) : (
-                agenda.map(linha)
-              )}
-            </div>
-          </section>
+      {podeEscrever && (
+        <div className="mt-20 max-w-4xl">
+          <EventoForm usuarioId={user.id} />
+        </div>
+      )}
 
-          {historico.length > 0 && (
-            <section className="mt-16 max-w-4xl">
-              <div className="border-t border-white/10 pt-8">
-                <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-                  02 — JÁ ACONTECERAM
-                </p>
-                <h2 className="font-sans text-2xl md:text-4xl font-light italic">Anteriores</h2>
-              </div>
-              <div className="mt-8 opacity-60">{historico.map(linha)}</div>
-            </section>
-          )}
-
-          {podeEscrever && (
-            <div className="mt-14 max-w-4xl">
-              <EventoForm usuarioId={user.id} />
-            </div>
-          )}
-
-          <div className="mt-16">
-            <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-              Voltar para membros
-            </Link>
-          </div>
-        </section>
-        <Footer />
-      </main>
-    </SmoothScroll>
+      <div className="mt-16 flex flex-wrap gap-5">
+        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
+          Voltar para membros
+        </Link>
+        <Link
+          href="/membros/metas"
+          data-cursor-hover
+          className={`inline-block ${botaoSecundario}`}
+        >
+          Minhas metas
+        </Link>
+      </div>
+    </section>
   )
 }

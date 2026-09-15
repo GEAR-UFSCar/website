@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { CargoSelect } from "@/components/cargo-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
+import { AprovacaoPendentes, type Pendente } from "@/components/aprovacao-pendentes"
 import { Aviso } from "@/components/aviso"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
@@ -24,6 +25,7 @@ type Perfil = {
   cargo: string | null
   aprovado: boolean
   cargo_atualizado_em: string | null
+  created_at: string
 }
 
 export default async function CargosPage() {
@@ -34,9 +36,7 @@ export default async function CargosPage() {
   // O layout já barra quem não tem cargo; aqui a régua é mais alta.
   if (!eDiretoria(meu?.cargo)) {
     return (
-      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-        <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)] mb-4">ACESSO RESTRITO</p>
-        <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight">Cargos</h1>
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
         <p className="mt-8 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
           Só Presidente e Vice-Presidente atribuem cargos. Seu cargo atual é{" "}
           <span className="text-foreground">{meu?.cargo ?? "nenhum"}</span>.
@@ -52,17 +52,35 @@ export default async function CargosPage() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, frente, cargo, aprovado, cargo_atualizado_em")
+    .select("id, nome_completo, curso, frente, cargo, aprovado, cargo_atualizado_em, created_at")
     // pendentes primeiro: é o que a diretoria vem resolver nesta tela
     .order("aprovado", { ascending: true })
     .order("nome_completo", { nullsFirst: false })
 
   const perfis = (data ?? []) as Perfil[]
   const comCargo = perfis.filter((p) => p.cargo?.trim()).length
+
+  /*
+   * A própria linha fica fora da fila: guardar_cargo() (014) recusa quem tenta
+   * mexer na própria aprovação, então oferecê-la para marcação só produziria
+   * um erro do banco no fim do lote. Quem espera há mais tempo vem primeiro —
+   * é a ordem em que a demora dói.
+   */
+  const fila = perfis
+    .filter((p) => !p.aprovado && p.id !== user.id)
+    .sort((a, b) => a.created_at.localeCompare(b.created_at))
+    .map(({ id, nome_completo, curso, frente, created_at }) => ({
+      id,
+      nome_completo,
+      curso,
+      frente,
+      created_at,
+    })) satisfies Pendente[]
+
   const pendentes = perfis.filter((p) => !p.aprovado).length
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Cargos</h1>
@@ -84,7 +102,16 @@ export default async function CargosPage() {
         </ErroDados>
       )}
 
-      <div className="mt-12 overflow-x-auto">
+      {!error && <AprovacaoPendentes pendentes={fila} />}
+
+      <div className="mt-16 border-t border-white/10 pt-8">
+        <h2 className="font-sans text-2xl md:text-3xl font-light italic">Todos os perfis</h2>
+        <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
+          Cargo, frente e histórico de alteração. Aprovados e pendentes, na mesma lista.
+        </p>
+      </div>
+
+      <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[46rem] border-collapse">
           <thead>
             <tr className="border-b border-white/15 text-left">

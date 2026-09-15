@@ -32,6 +32,8 @@ a anterior não rodou.
 | 014 | `aprovacao_de_membros.sql` | `aprovado`, `e_membro()`, fecha 6 `using(true)` | 013 |
 | 015 | `limites_de_texto.sql` | 16 CHECKs de tamanho | 014 |
 | 016 | `autoria_e_predicados.sql` | autoria carimbada, predicados fechados | 014 |
+| 017 | `metas.sql` | `metas` pessoais, leitura mista dono/pública | 016 |
+| 018 | `perfil_do_proprio_dono.sql` | perfil que falta criado pelo dono; fecha o INSERT | 014 |
 
 Duas armadilhas conhecidas:
 

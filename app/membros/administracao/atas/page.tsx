@@ -42,10 +42,8 @@ export default async function AtasPage() {
   }
 
   return (
-    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
-      <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
-      <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Atas</h1>
       <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
         {atas.length} ATA(S) REGISTRADA(S)
       </p>

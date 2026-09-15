@@ -1,6 +1,3 @@
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { Carregando } from "@/components/carregando"
 
 /*
@@ -16,12 +13,6 @@ import { Carregando } from "@/components/carregando"
  */
 export default function MembrosLoading() {
   return (
-    <SmoothScroll>
-      <Navbar />
-      <main>
-        <Carregando />
-        <Footer />
-      </main>
-    </SmoothScroll>
+    <Carregando />
   )
 }

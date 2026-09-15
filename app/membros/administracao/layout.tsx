@@ -1,10 +1,6 @@
 import type { ReactNode } from "react"
 import Link from "next/link"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
@@ -22,11 +18,7 @@ export default async function AdministracaoLayout({ children }: { children: Reac
   // redirecionar. A RLS no banco é a barreira de verdade; isto é a da tela.
   if (!temCargo(perfil?.cargo)) {
     return (
-      <SmoothScroll>
-        <CustomCursor />
-        <Navbar />
-        <main>
-          <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
             <Surge>
             <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)] mb-4">
               ACESSO RESTRITO
@@ -48,19 +40,11 @@ export default async function AdministracaoLayout({ children }: { children: Reac
               Voltar para membros
             </Link>
             </Surge>
-          </section>
-          <Footer />
-        </main>
-      </SmoothScroll>
+      </section>
     )
   }
 
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>{children}</main>
-      <Footer />
-    </SmoothScroll>
+    <>{children}</>
   )
 }

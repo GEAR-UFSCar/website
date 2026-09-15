@@ -3,9 +3,10 @@
 import { useState } from "react"
 import type React from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
+import Link from "next/link"
 
 import { Aviso } from "@/components/aviso"
+import { AcessoQuadro, linkAcesso } from "@/components/acesso-quadro"
 import { createClient } from "@/lib/supabase/client"
 import { VERSAO_TERMOS } from "@/lib/site"
 import { mensagemSegura } from "@/lib/erros"
@@ -125,47 +126,14 @@ export function Entrar() {
   }
 
   return (
-    <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="mx-auto max-w-md"
-      >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
-        <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">
-          {modo === "entrar" ? (
-            <>
-              ENTRAR
-              <br />
-              <span className="italic">na GEAR</span>
-            </>
-          ) : (
-            <>
-              CRIAR
-              <br />
-              <span className="italic">sua conta</span>
-            </>
-          )}
-        </h1>
-
-        {/*
-          * A página tinha 46 palavras e não dizia o que há atrás do login. A
-          * área de membros é mais completa que a de qualquer referência que
-          * analisamos, e nenhum candidato descobria isso. Só descreve o que já
-          * existe — nada aqui é promessa.
-          */}
-        <p className="mt-8 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
-          Atrás do login ficam o mural de avisos, o calendário da entidade, o diretório de membros,
-          a documentação institucional, o quadro de sprints de cada frente e a Academia GEAR com o
-          seu progresso na formação.
-        </p>
-        <p className="mt-4 max-w-[62ch] font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-          O acesso abre após a diretoria confirmar seu vínculo com a entidade
-        </p>
-
+    <AcessoQuadro
+      etiqueta="ÁREA DE MEMBROS"
+      titulo={modo === "entrar" ? "ENTRAR" : "CRIAR"}
+      destaque={modo === "entrar" ? "na GEAR" : "sua conta"}
+      corpo={
+        <>
         {/* Alternância */}
-        <div className="mt-10 flex border border-white/15">
+        <div className="flex border border-white/15">
           {(["entrar", "criar"] as Modo[]).map((opcao) => (
             <button
               key={opcao}
@@ -315,7 +283,34 @@ export function Entrar() {
             {carregando ? "Enviando…" : modo === "entrar" ? "Entrar" : "Criar conta"}
           </button>
         </form>
-      </motion.div>
-    </section>
+        </>
+      }
+      rodape={
+        /*
+         * Só no modo entrar: em "criar conta" a pessoa ainda não tem senha a
+         * recuperar, e oferecer a saída ali só sugere que ela já errou algo.
+         */
+        modo === "entrar" ? (
+          <Link href="/entrar/recuperar" data-cursor-hover className={linkAcesso}>
+            Esqueci minha senha
+          </Link>
+        ) : null
+      }
+    >
+      {/*
+        * A página tinha 46 palavras e não dizia o que há atrás do login. A
+        * área de membros é mais completa que a de qualquer referência que
+        * analisamos, e nenhum candidato descobria isso. Só descreve o que já
+        * existe — nada aqui é promessa.
+        */}
+      <p>
+        Atrás do login ficam o mural de avisos, o calendário da entidade, o diretório de membros, a
+        documentação institucional, o quadro de sprints de cada frente e a Academia GEAR com o seu
+        progresso na formação.
+      </p>
+      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase">
+        O acesso abre após a diretoria confirmar seu vínculo com a entidade
+      </p>
+    </AcessoQuadro>
   )
 }

@@ -1,10 +1,6 @@
 import type { Metadata } from "next"
 import { redirect } from "next/navigation"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { CompletarPerfil } from "@/components/completar-perfil"
 import { createClient } from "@/lib/supabase/server"
 
@@ -29,18 +25,11 @@ export default async function CompletarPerfilPage() {
     .maybeSingle<{ nome_completo: string | null; curso: string | null; frente: string | null }>()
 
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <CompletarPerfil
-          userId={user.id}
-          nomeInicial={perfil?.nome_completo ?? ""}
-          cursoInicial={perfil?.curso ?? ""}
-          frenteInicial={perfil?.frente ?? ""}
-        />
-        <Footer />
-      </main>
-    </SmoothScroll>
+    <CompletarPerfil
+      userId={user.id}
+      nomeInicial={perfil?.nome_completo ?? ""}
+      cursoInicial={perfil?.curso ?? ""}
+      frenteInicial={perfil?.frente ?? ""}
+    />
   )
 }

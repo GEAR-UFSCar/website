@@ -3,9 +3,9 @@
 import { useState } from "react"
 import type React from "react"
 import { useRouter } from "next/navigation"
-import { motion } from "framer-motion"
 
 import { Aviso } from "@/components/aviso"
+import { AcessoQuadro, linkAcesso } from "@/components/acesso-quadro"
 import { createClient } from "@/lib/supabase/client"
 import { FRENTES } from "@/lib/administracao"
 import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
@@ -34,15 +34,28 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
 
     const supabase = createClient()
 
+    /*
+     * UPSERT, e não UPDATE. UPDATE em linha inexistente não é erro: afeta zero
+     * linhas e volta calado. Quem tinha conta no auth sem linha em `perfis`
+     * preenchia isto, era devolvido para cá e não tinha como sair — o primeiro
+     * acesso era um beco sem saída, e a mensagem mandava a pessoa rodar SQL.
+     *
+     * A policy "perfis: criar o próprio" (001) já autorizava o insert; o
+     * trigger guardar_perfil_novo() (018) garante que a linha criada assim
+     * nasça do próprio dono, não aprovada e sem cargo.
+     */
     const { data, error } = await supabase
       .from("perfis")
-      .update({
-        nome_completo: nome.trim(),
-        curso: curso.trim(),
-        // "Ainda não decidido" grava null: é o que o CHECK da coluna aceita
-        frente: frente === "" ? null : frente,
-      })
-      .eq("id", userId)
+      .upsert(
+        {
+          id: userId,
+          nome_completo: nome.trim(),
+          curso: curso.trim(),
+          // "Ainda não decidido" grava null: é o que o CHECK da coluna aceita
+          frente: frente === "" ? null : frente,
+        },
+        { onConflict: "id" },
+      )
       .select("id")
 
     if (error) {
@@ -51,11 +64,10 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
       return
     }
 
-    // update sem erro mas sem linha afetada = perfil não existe no banco
+    // Com upsert isto é quase inalcançável, mas "quase" não é "nunca": a RLS
+    // pode recusar sem erro se a sessão expirar entre abrir a página e enviar.
     if (!data || data.length === 0) {
-      setErro(
-        "Nenhum perfil encontrado para esta conta. Rode supabase/001_perfis.sql no SQL Editor do painel — ele cria a tabela e o perfil de quem já se cadastrou.",
-      )
+      setErro("Não foi possível salvar. Sua sessão pode ter expirado — entre novamente.")
       setCarregando(false)
       return
     }
@@ -64,27 +76,26 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
     router.push("/membros")
   }
 
+  /*
+   * Saída de emergência. Esta tela é obrigatória — os portões de /membros
+   * mandam para cá quem não tem nome preenchido — e até agora não tinha
+   * nenhuma porta: quem chegasse por engano, ou com a conta errada, ficava
+   * sem ação possível a não ser apagar o cookie na mão.
+   */
+  const sair = async () => {
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.refresh()
+    router.push("/")
+  }
+
   return (
-    <section className="relative px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
-        className="mx-auto max-w-md"
-      >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">PRIMEIRO ACESSO</p>
-        <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">
-          COMPLETE
-          <br />
-          <span className="italic">seu perfil</span>
-        </h1>
-
-        <p className="mt-6 font-sans text-base font-light leading-relaxed text-muted-foreground">
-          Faltam alguns dados antes de você entrar na área de membros. A frente pode ficar em aberto —
-          ela é escolhida ao fim da formação.
-        </p>
-
-        <form onSubmit={aoEnviar} className="mt-10 space-y-6">
+    <AcessoQuadro
+      etiqueta="PRIMEIRO ACESSO"
+      titulo="COMPLETE"
+      destaque="seu perfil"
+      corpo={
+        <form onSubmit={aoEnviar} className="space-y-6">
           <div>
             <label
               htmlFor="nome"
@@ -159,7 +170,17 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
             {carregando ? "Salvando…" : "Salvar e continuar"}
           </button>
         </form>
-      </motion.div>
-    </section>
+      }
+      rodape={
+        <button type="button" onClick={sair} data-cursor-hover className={linkAcesso}>
+          Sair desta conta
+        </button>
+      }
+    >
+      <p>
+        Faltam alguns dados antes de você entrar na área de membros. A frente pode ficar em aberto —
+        ela é escolhida ao fim da formação.
+      </p>
+    </AcessoQuadro>
   )
 }

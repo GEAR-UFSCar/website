@@ -1,10 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
@@ -89,106 +85,93 @@ export default async function DocumentacaoPage() {
   }
 
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-          <Surge>
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ÁREA DE MEMBROS</p>
-          <h1 className="font-sans text-4xl md:text-6xl lg:text-7xl font-light tracking-tight text-balance">
-            Documentação
-            <br />
-            <span className="italic">institucional</span>
-          </h1>
+    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+      <Surge>
 
-          <p className="mt-12 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-            Regimento, manuais e normas da entidade, abertos a qualquer membro. Os arquivos estão
-            sendo exportados aos poucos — o que ainda não tem PDF aparece listado, mas sem link.
-          </p>
+      <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
+        Regimento, manuais e normas da entidade, abertos a qualquer membro. Os arquivos estão
+        sendo exportados aos poucos — o que ainda não tem PDF aparece listado, mas sem link.
+      </p>
 
-          <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-            {documentos.length} DOCUMENTO(S) · {anexados} COM ARQUIVO
-          </p>
-          </Surge>
+      <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
+        {documentos.length} DOCUMENTO(S) · {anexados} COM ARQUIVO
+      </p>
+      </Surge>
 
-          {error && (
-            <ErroDados titulo="DOCUMENTOS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
-              Se a tabela não existe, rode <code>supabase/006_documentos.sql</code> no SQL Editor do
-              painel — ele cria a tabela, as políticas, o bucket e cadastra os documentos já
-              conhecidos.
-            </ErroDados>
-          )}
+      {error && (
+        <ErroDados titulo="DOCUMENTOS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
+          Se a tabela não existe, rode <code>supabase/006_documentos.sql</code> no SQL Editor do
+          painel — ele cria a tabela, as políticas, o bucket e cadastra os documentos já
+          conhecidos.
+        </ErroDados>
+      )}
 
-          {!error && documentos.length === 0 && (
-            <p className="mt-10 max-w-2xl font-sans text-sm font-light text-muted-foreground">
-              Nenhum documento cadastrado ainda.
-            </p>
-          )}
+      {!error && documentos.length === 0 && (
+        <p className="mt-10 max-w-2xl font-sans text-sm font-light text-muted-foreground">
+          Nenhum documento cadastrado ainda.
+        </p>
+      )}
 
-          {/* Uma seção por categoria */}
-          {CATEGORIAS.map((categoria, indice) => {
-            const daCategoria = porCategoria.get(categoria)
-            if (!daCategoria?.length) return null
+      {/* Uma seção por categoria */}
+      {CATEGORIAS.map((categoria, indice) => {
+        const daCategoria = porCategoria.get(categoria)
+        if (!daCategoria?.length) return null
 
-            return (
-              <section key={categoria} className="mt-16">
-                <div className="border-t border-white/10 pt-8">
-                  <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-                    0{indice + 1} — {categoria.toUpperCase()}
-                  </p>
-                  <h2 className="font-sans text-2xl md:text-4xl font-light italic">{categoria}</h2>
-                </div>
+        return (
+          <section key={categoria} className="mt-16">
+            <div className="border-t border-white/10 pt-8">
+              <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
+                0{indice + 1} — {categoria.toUpperCase()}
+              </p>
+              <h2 className="font-sans text-2xl md:text-4xl font-light italic">{categoria}</h2>
+            </div>
 
-                <ul className="mt-8 space-y-px">
-                  {daCategoria.map((documento, i) => (
-                    <Surge
-                      as="li"
-                      index={i}
-                      key={documento.id}
-                      className="flex flex-col gap-3 border-t border-white/10 py-6 sm:flex-row sm:items-baseline sm:justify-between"
+            <ul className="mt-8 space-y-px">
+              {daCategoria.map((documento, i) => (
+                <Surge
+                  as="li"
+                  index={i}
+                  key={documento.id}
+                  className="flex flex-col gap-3 border-t border-white/10 py-6 sm:flex-row sm:items-baseline sm:justify-between"
+                >
+                  <div className="flex-1">
+                    <h3 className="font-sans text-lg md:text-xl font-light leading-snug">
+                      {documento.titulo}
+                    </h3>
+                    <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+                      {documento.versao?.trim() ? `Versão ${documento.versao}` : "Versão —"}
+                      {" · "}
+                      Atualizado em {dataLonga(documento.atualizado_em)}
+                    </p>
+                  </div>
+
+                  {documento.link ? (
+                    <a
+                      href={documento.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      data-cursor-hover
+                      className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
                     >
-                      <div className="flex-1">
-                        <h3 className="font-sans text-lg md:text-xl font-light leading-snug">
-                          {documento.titulo}
-                        </h3>
-                        <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-                          {documento.versao?.trim() ? `Versão ${documento.versao}` : "Versão —"}
-                          {" · "}
-                          Atualizado em {dataLonga(documento.atualizado_em)}
-                        </p>
-                      </div>
+                      ABRIR DOCUMENTO →
+                    </a>
+                  ) : (
+                    <span className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
+                      ARQUIVO AINDA NÃO ANEXADO
+                    </span>
+                  )}
+                </Surge>
+              ))}
+            </ul>
+          </section>
+        )
+      })}
 
-                      {documento.link ? (
-                        <a
-                          href={documento.link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          data-cursor-hover
-                          className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
-                        >
-                          ABRIR DOCUMENTO →
-                        </a>
-                      ) : (
-                        <span className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
-                          ARQUIVO AINDA NÃO ANEXADO
-                        </span>
-                      )}
-                    </Surge>
-                  ))}
-                </ul>
-              </section>
-            )
-          })}
-
-          <div className="mt-16">
-            <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-              Voltar para membros
-            </Link>
-          </div>
-        </section>
-        <Footer />
-      </main>
-    </SmoothScroll>
+      <div className="mt-16">
+        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
+          Voltar para membros
+        </Link>
+      </div>
+    </section>
   )
 }
