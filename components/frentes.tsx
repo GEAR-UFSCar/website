@@ -66,7 +66,7 @@ export function Frentes() {
   return (
     <>
       {/* As três frentes */}
-      <section id="frentes" className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32 scroll-mt-24">
+      <section id="frentes" className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32 scroll-mt-24">
         <Surge className="mb-12">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — AS TRÊS FRENTES</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde você entra</h2>
@@ -75,32 +75,49 @@ export function Frentes() {
             precoce: é escolha feita com repertório.
           </p>
         </Surge>
-        <div className="relative">
+        {/*
+          As três lado a lado, e não empilhadas: a página existe para a pessoa
+          COMPARAR as frentes antes de escolher uma, e comparação em coluna
+          única vira memória — quando se chega na terceira, a primeira já saiu
+          da tela. `items-stretch` + `h-full` mantêm os três cards da mesma
+          altura, para a ficha alinhar no rodapé de cada um.
+        */}
+        <div className="grid grid-cols-1 items-stretch gap-px bg-white/10 lg:grid-cols-3">
           {frentes.map((frente, index) => (
-            <Surge key={frente.nome} delay={index * 0.1} className="border-t border-white/10 py-12 md:py-16 transition-colors duration-300 hover:border-t-[var(--gear-amber)]">
-              <div className="flex flex-col md:flex-row gap-6 md:gap-12">
-                <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)] shrink-0 md:w-16 md:pt-3">
-                  0{index + 1}
-                </span>
+            <Surge
+              key={frente.nome}
+              delay={index * 0.05}
+              className="flex h-full flex-col bg-[var(--gear-ink)] p-7 transition-colors duration-300 hover:bg-[var(--gear-navy)]"
+            >
+              <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)]">
+                0{index + 1}
+              </span>
 
-                <div className="flex-1">
-                  <h2 className="font-sans text-4xl md:text-6xl font-light tracking-tight">{frente.nome}</h2>
-                  <p className="mt-5 max-w-[62ch] font-sans text-lg md:text-xl leading-relaxed">{frente.resumo}</p>
-                  <p className="mt-4 max-w-[62ch] font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-                    {frente.detalhe}
+              <h2 className="mt-4 font-sans text-3xl md:text-4xl font-light tracking-tight">
+                {frente.nome}
+              </h2>
+
+              <p className="mt-4 font-sans text-base md:text-lg leading-relaxed">{frente.resumo}</p>
+
+              <p className="mt-4 font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                {frente.detalhe}
+              </p>
+
+              {/* mt-auto prende a ficha no rodapé do card, alinhada entre os três */}
+              <div className="mt-auto pt-7">
+                <div className="border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
+                  <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">
+                    FRENTE
                   </p>
-                </div>
-
-                {/* ficha da frente */}
-                <div className="w-full md:max-w-[17rem] shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-5">
-                  <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">FRENTE</p>
                   <dl className="mt-4 space-y-4">
                     {frente.ficha.map((linha) => (
                       <div key={linha.label}>
                         <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
                           {linha.label}
                         </dt>
-                        <dd className="font-mono text-[11px] leading-relaxed text-foreground mt-1">{linha.valor}</dd>
+                        <dd className="mt-1 font-mono text-[11px] leading-relaxed text-foreground">
+                          {linha.valor}
+                        </dd>
                       </div>
                     ))}
                   </dl>
@@ -108,7 +125,6 @@ export function Frentes() {
               </div>
             </Surge>
           ))}
-          <div className="border-t border-white/10" />
         </div>
 
         {/* Áreas de apoio — pares das frentes técnicas, não subordinadas */}

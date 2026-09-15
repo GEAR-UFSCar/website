@@ -1,4 +1,6 @@
 import Link from "next/link"
+import Image from "next/image"
+
 import { Surge } from "@/components/surge"
 
 import { Frentes } from "@/components/frentes"
@@ -51,7 +53,7 @@ export function Sobre() {
   return (
     <>
       {/* Cabeçalho */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <Surge delay={0.1}>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
             UFSCAR SOROCABA · EXTENSÃO
@@ -65,13 +67,19 @@ export function Sobre() {
       </section>
 
       {/* 01 — Missão */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">01 — MISSÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Por que existimos</h2>
         </Surge>
 
-        <Surge delay={0.1} className="max-w-3xl space-y-6 font-sans text-lg md:text-2xl font-light leading-relaxed">
+        {/*
+          Duas colunas a partir de lg: a prosa em 7 de 12, a foto em 5. A
+          medida de leitura não muda — o parágrafo continua estreito; o que
+          era espaço vazio à direita virou a foto.
+        */}
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
+        <Surge delay={0.1} className="lg:col-span-7 space-y-6 font-sans text-lg md:text-xl font-light leading-relaxed">
           <p>
             O GEAR é o Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Existimos para que
             estudantes de graduação construam sistemas reais — que saem da bancada, falham, são
@@ -87,10 +95,26 @@ export function Sobre() {
             a universidade e para fora dela — em competição, em artigo e em projeto aplicado.
           </p>
         </Surge>
+
+        <Surge delay={0.2} className="lg:col-span-5">
+          <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/10">
+            <Image
+              src="/fotos/universidade-aberta/foto-01.jpg"
+              alt="Estudantes em computadores durante a Universidade Aberta na UFSCar Sorocaba"
+              fill
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+          </div>
+          <p className="mt-3 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+            Universidade Aberta · UFSCar Sorocaba
+          </p>
+        </Surge>
+        </div>
       </section>
 
       {/* 02 — Formação */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — FORMAÇÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">A jornada completa</h2>
@@ -100,23 +124,29 @@ export function Sobre() {
           </p>
         </Surge>
 
-        <div className="relative">
+        {/*
+          Seis etapas em grade de 3. A ordem continua legível — o número 01…06
+          é quem a carrega — e a comparação entre elas passa a ser lado a lado,
+          em vez de seis blocos de altura inteira exigindo rolagem.
+        */}
+        <div className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
           {etapas.map((etapa, index) => (
-            <Surge key={etapa.nome} delay={index * 0.1} className="border-t border-white/10 py-8 md:py-10">
-              <div className="flex flex-col md:flex-row md:items-baseline gap-3 md:gap-10">
-                <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)] shrink-0 md:w-16">
-                  0{index + 1}
-                </span>
-                <div className="flex-1">
-                  <h3 className="font-sans text-2xl md:text-4xl font-light tracking-tight">{etapa.nome}</h3>
-                  <p className="mt-3 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-                    {etapa.descricao}
-                  </p>
-                </div>
-              </div>
+            <Surge
+              key={etapa.nome}
+              delay={index * 0.05}
+              className="flex h-full flex-col bg-[var(--gear-ink)] p-6 transition-colors duration-300 hover:bg-[var(--gear-navy)]"
+            >
+              <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)]">
+                0{index + 1}
+              </span>
+              <h3 className="mt-4 font-sans text-xl md:text-2xl font-light tracking-tight">
+                {etapa.nome}
+              </h3>
+              <p className="mt-3 font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                {etapa.descricao}
+              </p>
             </Surge>
           ))}
-          <div className="border-t border-white/10" />
         </div>
       </section>
 
@@ -124,7 +154,7 @@ export function Sobre() {
       <Frentes />
 
       {/* 05 — Vínculo institucional */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
             05 — VÍNCULO INSTITUCIONAL

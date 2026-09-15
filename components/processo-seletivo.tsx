@@ -166,7 +166,7 @@ export function ProcessoSeletivo() {
       </section>
 
       {/* 02 — Cronograma */}
-      <section className="relative mx-auto max-w-4xl px-8 md:px-12 py-24 md:py-32">
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -178,35 +178,41 @@ export function ProcessoSeletivo() {
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">O ciclo, do começo ao fim</h2>
         </motion.div>
 
-        <div className="relative">
+        {/*
+          Linha do tempo: as fases lado a lado, com a régua âmbar no topo de
+          cada uma marcando a passagem. Empilhadas, seis fases custavam uma
+          tela inteira de rolagem para responder "quando é a inscrição?" — que
+          é a única pergunta que traz alguém a esta seção.
+        */}
+        <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {cronograma.map((etapa, index) => (
             <motion.div
               key={etapa.fase}
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className="border-t border-white/10 py-8 md:py-10"
+              transition={{ duration: 0.8, delay: index * 0.05 }}
+              className="border-t-2 border-[var(--gear-amber)] pt-5"
             >
-              <div className="flex flex-col md:flex-row md:items-baseline gap-3 md:gap-10">
-                <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)] shrink-0 md:w-16">
+              <div className="flex items-baseline gap-3">
+                <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)]">
                   0{index + 1}
                 </span>
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2">
-                    <h3 className="font-sans text-2xl md:text-4xl font-light tracking-tight">{etapa.fase}</h3>
-                    <span className="font-mono text-xs tracking-widest text-muted-foreground shrink-0">
-                      {etapa.quando || "DATA A DEFINIR"}
-                    </span>
-                  </div>
-                  <p className="mt-3 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-                    {etapa.detalhe}
-                  </p>
-                </div>
+                <h3 className="font-sans text-xl md:text-2xl font-light tracking-tight">
+                  {etapa.fase}
+                </h3>
               </div>
+
+              {/* A data é o dado que a pessoa vem buscar: ganha peso e contraste. */}
+              <p className="mt-3 font-mono text-[11px] tracking-widest uppercase text-foreground">
+                {etapa.quando || "DATA A DEFINIR"}
+              </p>
+
+              <p className="mt-3 font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                {etapa.detalhe}
+              </p>
             </motion.div>
           ))}
-          <div className="border-t border-white/10" />
         </div>
       </section>
 

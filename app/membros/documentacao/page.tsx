@@ -83,7 +83,7 @@ export default async function DocumentacaoPage() {
   }
 
   return (
-    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       <Surge>
       <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
         Regimento, manuais e normas da entidade, abertos a qualquer membro. O que ainda não tem
@@ -123,13 +123,19 @@ export default async function DocumentacaoPage() {
               <h2 className="font-sans text-2xl md:text-4xl font-light italic">{categoria}</h2>
             </div>
 
-            <ul className="mt-8 space-y-px">
+            {/*
+              Grade em vez de lista: cada documento é título, versão e um
+              botão — três linhas curtas que, empilhadas em coluna única,
+              deixavam dois terços da largura vazios e transformavam uma
+              categoria de seis itens em meia tela de rolagem.
+            */}
+            <ul className="mt-8 grid grid-cols-1 gap-px bg-white/10 lg:grid-cols-2">
               {daCategoria.map((documento, i) => (
                 <Surge
                   as="li"
                   index={i}
                   key={documento.id}
-                  className="flex flex-col gap-3 border-t border-white/10 py-6 sm:flex-row sm:items-baseline sm:justify-between"
+                  className="flex h-full flex-col justify-between gap-4 bg-[var(--gear-ink)] p-6"
                 >
                   <div className="flex-1">
                     <h3 className="font-sans text-lg md:text-xl font-light leading-snug">
