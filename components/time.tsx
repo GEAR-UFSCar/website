@@ -7,8 +7,6 @@ import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 type Membro = {
   nome: string
   cargo: string
-  /** Direções ganham destaque âmbar no cargo. */
-  diretor?: boolean
 }
 
 type Grupo = {
@@ -23,18 +21,29 @@ type Grupo = {
  */
 const iniciais = (nome: string) => nome.slice(0, 2).toUpperCase()
 
+/*
+ * Sem cargo de direção: a diretoria ainda não foi definida, e publicar nome
+ * com "Presidente" ou "Direção de <Frente>" seria anunciar uma estrutura que
+ * a entidade não formalizou. Cada card diz a frente em que a pessoa está —
+ * que é o que de fato existe hoje.
+ *
+ * Quando a designação acontecer, é aqui que ela entra: o `cargo` volta a ser
+ * o cargo, e o destaque de quem tem cargo pode voltar junto. Os valores
+ * válidos já estão em lib/administracao.ts (CARGOS), que é o que o banco
+ * aceita no CHECK de `perfis.cargo`.
+ */
 const grupos: Grupo[] = [
   {
-    frente: "Diretoria",
+    frente: "Fundação",
     membros: [
-      { nome: "Michael", cargo: "Presidente", diretor: true },
-      { nome: "Alan", cargo: "Vice-Presidente", diretor: true },
+      { nome: "Michael", cargo: "Membro fundador" },
+      { nome: "Alan", cargo: "Membro fundador" },
     ],
   },
   {
     frente: "Competição",
     membros: [
-      { nome: "João", cargo: "Direção de Competição", diretor: true },
+      { nome: "João", cargo: "Competição" },
       { nome: "Nasser", cargo: "Competição" },
       { nome: "Guilherme", cargo: "Competição" },
     ],
@@ -42,7 +51,7 @@ const grupos: Grupo[] = [
   {
     frente: "Pesquisa",
     membros: [
-      { nome: "Mateus", cargo: "Direção de Pesquisa", diretor: true },
+      { nome: "Mateus", cargo: "Pesquisa" },
       { nome: "Pedro", cargo: "Pesquisa" },
       { nome: "Thomaz", cargo: "Pesquisa" },
     ],
@@ -50,7 +59,7 @@ const grupos: Grupo[] = [
   {
     frente: "Projetos",
     membros: [
-      { nome: "Luiza", cargo: "Direção de Projetos", diretor: true },
+      { nome: "Luiza", cargo: "Projetos" },
       { nome: "Julio", cargo: "Projetos" },
       { nome: "Elis", cargo: "Projetos" },
     ],
@@ -74,11 +83,7 @@ function Card({ membro, index }: { membro: Membro; index: number }) {
       </div>
 
       <h3 className="mt-5 font-sans text-2xl md:text-3xl font-light tracking-tight">{membro.nome}</h3>
-      <p
-        className={`mt-2 font-mono text-[10px] tracking-[0.25em] uppercase ${
-          membro.diretor ? "text-[var(--gear-amber)]" : "text-muted-foreground"
-        }`}
-      >
+      <p className="mt-2 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
         {membro.cargo}
       </p>
     </Surge>
