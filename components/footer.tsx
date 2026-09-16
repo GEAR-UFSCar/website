@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-import Image from "next/image"
 import Link from "next/link"
 import { ArrowUpRight, Github, Instagram, Linkedin } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
-
-/* Import estático, como o logo do NTA: se o arquivo sumir, o build quebra em
-   vez de a página ir ao ar com um retângulo vazio no rodapé de toda página. */
-import logoUfscar from "@/public/ufscar-logo-dark.png"
 
 import { EMAIL_CONTATO } from "@/lib/site"
 
@@ -158,33 +153,6 @@ export function Footer() {
               GEAR · UFSCAR SOROCABA · {new Date().getFullYear()}
             </p>
           </div>
-        </div>
-
-        {/*
-         * Vínculo institucional — não é patrocínio. O logo do NTA, que é
-         * parceiro, mora na seção 03 de /parceiros e continua com placa clara
-         * atrás por ser arte sobre fundo branco; este PNG já vem com fundo
-         * escuro e se funde com o ink do rodapé, então não leva card nenhum.
-         */}
-        <div className="mt-8 flex flex-col items-center gap-3 border-t border-white/10 pt-8 md:items-start">
-          <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
-            Vínculo institucional
-          </p>
-          <a
-            href="https://www.ufscar.br/"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor-hover
-            className="inline-block opacity-80 transition-opacity duration-300 hover:opacity-100"
-          >
-            {/* h-* com w-auto define as duas dimensões em CSS, que é como o
-                next/image aceita redimensionamento sem avisar de proporção. */}
-            <Image
-              src={logoUfscar}
-              alt="UFSCar — abre o site da universidade"
-              className="h-10 w-auto md:h-12"
-            />
-          </a>
         </div>
       </div>
     </footer>

@@ -259,10 +259,41 @@ function Gear({ radius, teeth, position, ratio, phase, opacity, amplitude, spin,
   )
 }
 
-function GearSystem({ drag, leve }: { drag: MutableRefObject<DragState>; leve: boolean }) {
+/*
+ * Envelope horizontal da engrenagem principal: raio do topo do dente (1.5)
+ * mais a amplitude do ruído (0.16), que empurra vértice para fora do raio
+ * nominal. É esse envelope — não o raio — que decide se ela encosta na borda.
+ */
+const RAIO_ENVELOPE = 1.5 + 0.16
+/** Quanto da largura visível a engrenagem principal ocupa no celular. */
+const FRACAO_LARGURA = 0.8
+
+function GearSystem({ drag, telaPequena }: { drag: MutableRefObject<DragState>; telaPequena: boolean }) {
   const groupRef = useRef<Group>(null)
-  const { pointer } = useThree()
+  const { pointer, viewport } = useThree()
   const spin = useRef(0)
+
+  /*
+   * A câmera enquadra uma altura fixa (2·tan(fov/2)·distância ≈ 4,14 unidades,
+   * independente do aspecto) e uma largura que encolhe junto com a tela. Num
+   * celular em pé a largura visível fica em torno de 1,9–2,3 unidades, e a
+   * engrenagem principal sozinha tem ~3,3 de envelope: em escala 1 ela sai
+   * cortada nos dois lados.
+   *
+   * Daí a escala vir do viewport e não de um número fixo — 0.6 serve para um
+   * aparelho e não para o vizinho. `Math.min(1, …)` garante que o mobile nunca
+   * fique MAIOR que o desktop (celular deitado cai nesse caso), e o `? :` por
+   * `telaPequena` garante que de md para cima a escala é exatamente 1, isto é,
+   * o desktop segue idêntico ao que era.
+   *
+   * Escalar o grupo já reposiciona as satélites para perto do centro na mesma
+   * proporção — elas são filhas dele. Encolher as coordenadas delas por cima
+   * disso aplicaria o fator duas vezes e as enfiaria dentro da principal,
+   * quebrando o engrenamento que as posições atuais codificam.
+   */
+  const escala = telaPequena
+    ? Math.min(1, (viewport.width * FRACAO_LARGURA) / (RAIO_ENVELOPE * 2))
+    : 1
 
   useFrame((state, delta) => {
     const d = drag.current
@@ -291,8 +322,8 @@ function GearSystem({ drag, leve }: { drag: MutableRefObject<DragState>; leve: b
    * porque o raio é menor — proporcionalmente mais rápido (ratio = R/r).
    */
   return (
-    <group ref={groupRef}>
-      <Gear radius={1.5} teeth={TEETH} position={[0, 0, 0]} ratio={1} phase={0} opacity={0.62} amplitude={0.16} spin={spin} leve={leve} />
+    <group ref={groupRef} scale={escala}>
+      <Gear radius={1.5} teeth={TEETH} position={[0, 0, 0]} ratio={1} phase={0} opacity={0.62} amplitude={0.16} spin={spin} leve={telaPequena} />
       <Gear
         radius={0.9}
         teeth={5}
@@ -302,7 +333,7 @@ function GearSystem({ drag, leve }: { drag: MutableRefObject<DragState>; leve: b
         opacity={0.32}
         amplitude={0.1}
         spin={spin}
-        leve={leve}
+        leve={telaPequena}
       />
       <Gear
         radius={0.7}
@@ -313,7 +344,7 @@ function GearSystem({ drag, leve }: { drag: MutableRefObject<DragState>; leve: b
         opacity={0.24}
         amplitude={0.08}
         spin={spin}
-        leve={leve}
+        leve={telaPequena}
       />
     </group>
   )
@@ -426,7 +457,7 @@ export function SentientGear() {
         }}
       >
         <ambientLight intensity={0.5} />
-        <GearSystem drag={drag} leve={telaPequena} />
+        <GearSystem drag={drag} telaPequena={telaPequena} />
       </Canvas>
     </div>
   )
