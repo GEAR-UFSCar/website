@@ -1,3 +1,4 @@
+import Image from "next/image"
 import Link from "next/link"
 import { Surge } from "@/components/surge"
 import { MarqueeLogos, type ParceiroLogo } from "@/components/marquee-row"
@@ -15,10 +16,13 @@ import { botaoPrimario } from "@/lib/ui"
  * até o levantamento ser fechado — a página mostra "A DEFINIR" no lugar.
  */
 /*
- * Quem já apoia. Uma fileira só, e não duas em sentidos opostos como no
- * Arsenal Técnico: o contraponto de direções precisa de volume para ler como
- * ritmo — com um item, lê como erro. Quando a lista crescer, a segunda
- * fileira volta com <MarqueeLogos direction="right">.
+ * Quem já apoia.
+ *
+ * Com UM parceiro a faixa de rolagem não se sustenta: o marquee precisa
+ * repetir o mesmo logo quatro vezes só para ter largura, e o que lê na tela é
+ * repetição forçada, não ritmo. Por isso a seção 03 mostra um card único e
+ * grande enquanto `parceiros.length === 1`, e volta para <MarqueeLogos> a
+ * partir do segundo — sem mexer neste array, que já está no formato final.
  *
  * O logo vem por import estático: se o arquivo sumir do repositório, o build
  * quebra, em vez de a página ir ao ar com um retângulo vazio.
@@ -161,7 +165,41 @@ export function Parceiros() {
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem já está junto</h2>
         </Surge>
 
-        <MarqueeLogos items={parceiros} />
+        {parceiros.length > 1 ? (
+          <MarqueeLogos items={parceiros} />
+        ) : (
+          <div className="mx-auto max-w-6xl px-8 md:px-12">
+            {parceiros.map((parceiro, index) => (
+              <Surge key={parceiro.nome} delay={index * 0.1} className="flex flex-col items-center">
+                <a
+                  href={parceiro.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-cursor-hover
+                  /*
+                   * A placa clara é a mesma decisão do marquee: o PNG do NTA é
+                   * azul sólido com fundo transparente e some contra o ink do
+                   * site. O suporte é da nossa paleta (--gear-fog), a marca
+                   * continua deles — recolorir logo de terceiro não nos cabe.
+                   */
+                  className="group inline-block rounded border border-white/10 bg-[var(--gear-fog)] px-10 py-8 md:px-16 md:py-12 transition duration-300 hover:border-[var(--gear-amber)] hover:scale-[1.02]"
+                >
+                  <Image
+                    src={parceiro.logo}
+                    alt={`${parceiro.nome} — abre o site do parceiro`}
+                    /* h-* com w-auto define as duas dimensões em CSS, que é
+                       como o next/image aceita redimensionamento sem avisar de
+                       proporção. */
+                    className="h-24 w-auto md:h-32"
+                  />
+                </a>
+                <p className="mt-6 text-center font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
+                  {parceiro.nome}
+                </p>
+              </Surge>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* 04 — Níveis de patrocínio */}
