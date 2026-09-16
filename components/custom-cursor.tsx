@@ -3,13 +3,23 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { isPointInHero } from "@/lib/hero-bounds"
+import { useIsTouchDevice } from "@/lib/use-is-touch-device"
 
 export function CustomCursor() {
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null)
   const [isHovering, setIsHovering] = useState(false)
   const [insideHero, setInsideHero] = useState(false)
+  /*
+   * No toque não há cursor para substituir: `mousemove` só dispara no tap,
+   * e o resultado seria um ponto branco parado onde o dedo encostou por
+   * último. O hook fica antes de qualquer saída para a ordem dos hooks não
+   * mudar entre renders.
+   */
+  const isTouch = useIsTouchDevice()
 
   useEffect(() => {
+    if (isTouch) return
+
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY })
       setInsideHero(isPointInHero(e.clientX, e.clientY))
@@ -21,9 +31,9 @@ export function CustomCursor() {
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [isTouch])
 
-  if (!position) return null
+  if (isTouch || !position) return null
 
   const visible = !insideHero
 

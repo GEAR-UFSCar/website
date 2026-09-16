@@ -3,12 +3,17 @@
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { isPointInHero } from "@/lib/hero-bounds"
+import { useIsTouchDevice } from "@/lib/use-is-touch-device"
 
 export function HeroCursor() {
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null)
   const [visible, setVisible] = useState(false)
+  /* Mesma razão do CustomCursor: sem ponteiro fino, não há o que desenhar. */
+  const isTouch = useIsTouchDevice()
 
   useEffect(() => {
+    if (isTouch) return
+
     const handleMouseMove = (e: MouseEvent) => {
       setPosition({ x: e.clientX, y: e.clientY })
       setVisible(isPointInHero(e.clientX, e.clientY))
@@ -16,9 +21,9 @@ export function HeroCursor() {
 
     window.addEventListener("mousemove", handleMouseMove)
     return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+  }, [isTouch])
 
-  if (!position) return null
+  if (isTouch || !position) return null
 
   return (
     <motion.div

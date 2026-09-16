@@ -75,8 +75,25 @@ function createGearShape(teeth: number, rTip: number, rRoot: number, rHole: numb
   return shape
 }
 
-function useGearGeometry(radius: number, teeth: number) {
+/*
+ * Orçamento de malha por classe de aparelho.
+ *
+ * `maxEdgeLength` é o comprimento de aresta acima do qual o TessellateModifier
+ * continua dividindo o triângulo, e `iteracoes` o teto de passadas. Os dois
+ * andam juntos: aresta maior e menos passadas derrubam a contagem de vértices
+ * das três engrenagens somadas, que é o que pesa numa GPU de celular.
+ *
+ * O wireframe fica mais grosso no mobile — é a troca aceita para ele existir
+ * lá. O desktop segue com os números originais.
+ */
+const MALHA = {
+  cheia: { arestaMax: 0.22, iteracoes: 4, curvas: 20 },
+  leve: { arestaMax: 0.45, iteracoes: 2, curvas: 10 },
+} as const
+
+function useGearGeometry(radius: number, teeth: number, leve: boolean) {
   return useMemo<BufferGeometry>(() => {
+    const orcamento = leve ? MALHA.leve : MALHA.cheia
     const depth = radius * 0.22
     const shape = createGearShape(teeth, radius, radius * R_ROOT, radius * R_HOLE)
     const geometry = new ExtrudeGeometry(shape, {
@@ -85,15 +102,18 @@ function useGearGeometry(radius: number, teeth: number) {
       bevelThickness: depth * 0.2,
       bevelSize: radius * 0.02,
       bevelSegments: 1,
-      curveSegments: 20,
+      curveSegments: orcamento.curvas,
     })
     geometry.center()
     // O extrude sai com triângulos grandes demais para o wireframe respirar;
     // subdividir dá densidade para o ruído do vertex shader aparecer.
-    const tessellated = new TessellateModifier(radius * 0.22, 4).modify(geometry)
+    const tessellated = new TessellateModifier(
+      radius * orcamento.arestaMax,
+      orcamento.iteracoes,
+    ).modify(geometry)
     tessellated.computeVertexNormals()
     return tessellated
-  }, [radius, teeth])
+  }, [radius, teeth, leve])
 }
 
 const vertexShader = `
@@ -194,12 +214,14 @@ type GearProps = {
   opacity: number
   amplitude: number
   spin: MutableRefObject<number>
+  /** Malha reduzida — ver MALHA. */
+  leve: boolean
 }
 
-function Gear({ radius, teeth, position, ratio, phase, opacity, amplitude, spin }: GearProps) {
+function Gear({ radius, teeth, position, ratio, phase, opacity, amplitude, spin, leve }: GearProps) {
   const meshRef = useRef<Mesh>(null)
   const materialRef = useRef<ShaderMaterial>(null)
-  const geometry = useGearGeometry(radius, teeth)
+  const geometry = useGearGeometry(radius, teeth, leve)
 
   const uniforms = useMemo(
     () => ({
@@ -237,7 +259,7 @@ function Gear({ radius, teeth, position, ratio, phase, opacity, amplitude, spin 
   )
 }
 
-function GearSystem({ drag }: { drag: MutableRefObject<DragState> }) {
+function GearSystem({ drag, leve }: { drag: MutableRefObject<DragState>; leve: boolean }) {
   const groupRef = useRef<Group>(null)
   const { pointer } = useThree()
   const spin = useRef(0)
@@ -270,7 +292,7 @@ function GearSystem({ drag }: { drag: MutableRefObject<DragState> }) {
    */
   return (
     <group ref={groupRef}>
-      <Gear radius={1.5} teeth={TEETH} position={[0, 0, 0]} ratio={1} phase={0} opacity={0.62} amplitude={0.16} spin={spin} />
+      <Gear radius={1.5} teeth={TEETH} position={[0, 0, 0]} ratio={1} phase={0} opacity={0.62} amplitude={0.16} spin={spin} leve={leve} />
       <Gear
         radius={0.9}
         teeth={5}
@@ -280,6 +302,7 @@ function GearSystem({ drag }: { drag: MutableRefObject<DragState> }) {
         opacity={0.32}
         amplitude={0.1}
         spin={spin}
+        leve={leve}
       />
       <Gear
         radius={0.7}
@@ -290,6 +313,7 @@ function GearSystem({ drag }: { drag: MutableRefObject<DragState> }) {
         opacity={0.24}
         amplitude={0.08}
         spin={spin}
+        leve={leve}
       />
     </group>
   )
@@ -298,24 +322,24 @@ function GearSystem({ drag }: { drag: MutableRefObject<DragState> }) {
 export function SentientGear() {
   const [mounted, setMounted] = useState(false)
   /*
-   * WebGL só a partir de md. Abaixo disso a engrenagem custava caro e não
-   * devolvia nada: o canvas ocupava 100vh rodando três geometrias tesseladas
-   * com shader de ruído a 60fps, e o arrasto já é desabilitado no toque
-   * (o gesto fica reservado para a rolagem). Era bateria e GPU para um
-   * elemento decorativo e inerte.
+   * Antes havia aqui um portão `(min-width: 768px)` que impedia o Canvas de
+   * montar no celular — a engrenagem não "sumia" no mobile, ela nunca era
+   * criada. O portão saiu: a engrenagem agora monta em qualquer largura.
    *
-   * A decisão precisa rodar em JS, não em CSS: `hidden md:block` esconderia
-   * o canvas mas continuaria montando o Canvas e girando o useFrame.
+   * O que sobrou dele é a razão que o justificava, que continua real —
+   * três geometrias tesseladas com shader de ruído a 60fps custam caro numa
+   * GPU de celular. Em vez de não desenhar, desenhamos mais barato: malha
+   * reduzida (MALHA.leve) e teto de dpr menor. Ver `telaPequena` abaixo.
    */
-  const [comWebGL, setComWebGL] = useState(false)
+  const [telaPequena, setTelaPequena] = useState(false)
   const [grabbing, setGrabbing] = useState(false)
   const drag = useRef<DragState>({ active: false, lastX: 0, lastTime: 0, pending: 0, velocity: 0 })
 
   useEffect(() => {
     setMounted(true)
 
-    const consulta = window.matchMedia("(min-width: 768px)")
-    const aplicar = () => setComWebGL(consulta.matches)
+    const consulta = window.matchMedia("(max-width: 767px)")
+    const aplicar = () => setTelaPequena(consulta.matches)
     aplicar()
     consulta.addEventListener("change", aplicar)
     return () => consulta.removeEventListener("change", aplicar)
@@ -358,13 +382,13 @@ export function SentientGear() {
   }
 
   /*
-   * Mesma silhueta para os dois casos de saída — antes da hidratação e no
-   * mobile. Só CSS: dois anéis concêntricos em âmbar sobre o fundo do hero,
+   * Saída antes da hidratação — e só ela, agora que o mobile também recebe o
+   * Canvas. Só CSS: dois anéis concêntricos em âmbar sobre o fundo do hero,
    * girando devagar. O `animate-[spin_24s_linear_infinite]` é neutralizado
    * pela regra de prefers-reduced-motion em globals.css, ao contrário do
    * loop em WebGL, que CSS nenhum alcança.
    */
-  if (!mounted || !comWebGL) {
+  if (!mounted) {
     return (
       <div className="w-full h-full flex items-center justify-center" aria-hidden="true">
         <div className="relative h-56 w-56 sm:h-72 sm:w-72">
@@ -387,14 +411,22 @@ export function SentientGear() {
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
         className="w-full my-0 h-full py-0"
-        dpr={[1, 2]}
+        /*
+         * O teto do dpr multiplica a área do buffer de desenho: num aparelho
+         * de dpr 3, `2` pede 4x os pixels de `1`, para um canvas que já ocupa
+         * a tela inteira. 1.5 é o meio-termo que mantém o wireframe nítido
+         * sem pedir um buffer que a GPU do celular tenha de recusar.
+         */
+        dpr={telaPequena ? [1, 1.5] : [1, 2]}
         gl={{
-          antialias: true,
+          // Antialias sobre um buffer desse tamanho é custo repetido por
+          // frame; no mobile o wireframe aguenta a serrilha.
+          antialias: !telaPequena,
           alpha: true,
         }}
       >
         <ambientLight intensity={0.5} />
-        <GearSystem drag={drag} />
+        <GearSystem drag={drag} leve={telaPequena} />
       </Canvas>
     </div>
   )
