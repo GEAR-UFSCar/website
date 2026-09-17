@@ -18,14 +18,18 @@ const techItems = [
 /*
  * Segunda faixa. Antes eram oito adjetivos — AUTONOMIA, PRECISÃO, DISCIPLINA
  * — que qualquer entidade de robótica assinaria, e que não diziam nada sobre
- * esta. Trocados pelo que a GEAR de fato tem: os robôs, a liga, a linha de
- * pesquisa e o vínculo. Tudo verificável em /projetos, /frentes e /sobre.
+ * esta. Trocados pelo que a GEAR de fato tem: os robôs, a estrutura de
+ * frentes e o vínculo institucional. Tudo verificável em /projetos e /sobre.
+ *
+ * Liga e linha de pesquisa saíram: a /sobre passou a tratar competição-alvo
+ * e tema de pesquisa como definidos por ciclo, e a faixa os anunciava como
+ * fechados.
  */
 const contexto = [
   "AI ROVER",
   "NAVEGADOR MECANUM",
-  "ROBOCUP RESCUE",
-  "SAFE RL",
+  "TRÊS FRENTES",
+  "ORIENTAÇÃO DOCENTE",
   "PROEX-UFSCAR",
   "EXTENSÃO",
 ]

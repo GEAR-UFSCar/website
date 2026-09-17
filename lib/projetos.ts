@@ -174,7 +174,17 @@ export const PROJETOS: Projeto[] = [
       "O controlador roda hoje com os termos proporcional e derivativo ajustados, mas o integral ainda não. Enquanto isso, desvio pequeno e constante não é corrigido — o robô segue a linha com um erro residual que só o termo integral elimina.",
     proximosPassos: ["Ajuste fino do termo integral", "Ensaio em pista de competição"],
     foto: "/fotos/mecanum.jpg",
+    /*
+     * Fotos já no repositório, hoje usadas só na galeria da home. O alt em
+     * components/universidade-aberta.tsx identifica as duas como sendo deste
+     * robô ("Robô Mecanum sendo demonstrado numa mesa com pista de linha" e
+     * "Robô Navegador Mecanum sobre a pista de testes"). Novas fotos entram
+     * aqui — a galeria da página cresce sozinha.
+     */
+    galeria: [
+      "/fotos/universidade-aberta/foto-05.jpg",
+      "/fotos/universidade-aberta/foto-04.jpg",
+    ],
   },
 ]
 
-export const FRENTES_PROJETO: Frente[] = ["Competição", "Pesquisa", "Projetos"]

@@ -8,6 +8,7 @@ import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { Aviso } from "@/components/aviso"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
+import { ETAPAS_FORMACAO } from "@/lib/formacao"
 
 const DESCRICAO =
   "Como entrar na GEAR UFSCar: sem pré-requisito técnico, aberto a qualquer curso de graduação do campus Sorocaba. O que esperar do processo e da formação."
@@ -36,39 +37,6 @@ export const metadata: Metadata = {
  * Quando o ciclo abrir, é trocar o bloco de estado por datas e formulário.
  */
 
-/** Etapas reais, espelhando a jornada descrita em /sobre. */
-const etapas = [
-  {
-    nome: "Processo Seletivo",
-    texto:
-      "Não é prova de conhecimento acumulado. Interessa como a pessoa pensa quando ainda não sabe a resposta.",
-  },
-  {
-    nome: "Bootcamp de Integração",
-    texto:
-      "Primeiro contato com as ferramentas, o repositório e o jeito como o grupo trabalha no dia a dia.",
-  },
-  {
-    nome: "Academia GEAR",
-    texto:
-      "Nove módulos em três níveis, de fundamentos a aprendizado por reforço. A ementa completa é pública.",
-  },
-  {
-    nome: "Projeto de Validação",
-    texto:
-      "Um projeto pequeno, do início ao fim. É onde a teoria encontra o fio solto e o que estava no papel passa a existir.",
-  },
-  {
-    nome: "Avaliação Técnica",
-    texto:
-      "Conversa sobre o que foi construído: o que funcionou, o que não funcionou e por quê. As duas respostas contam.",
-  },
-  {
-    nome: "Escolha da frente",
-    texto:
-      "Competição, Pesquisa ou Projetos. A decisão é de quem entrou — tomada com repertório, não no escuro.",
-  },
-]
 
 export default function IngressarPage() {
   return (
@@ -87,8 +55,8 @@ export default function IngressarPage() {
           </h1>
 
           <p className="mt-10 max-w-[62ch] font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            Não existe pré-requisito técnico. A Academia GEAR nivela todo mundo — se exigíssemos
-            conhecimento prévio, estaríamos filtrando por quem já teve acesso antes, não por quem tem
+            Não existe pré-requisito técnico, porque a Academia GEAR nivela todo mundo. Exigir
+            conhecimento prévio filtraria por quem já teve acesso antes, e não por quem tem
             potencial agora.
           </p>
 
@@ -111,7 +79,7 @@ export default function IngressarPage() {
             </div>
 
             <ol className="mt-8">
-              {etapas.map((etapa, indice) => (
+              {ETAPAS_FORMACAO.map((etapa, indice) => (
                 <li key={etapa.nome} className="flex gap-5 border-t border-white/10 py-6 md:gap-10">
                   <span className="shrink-0 font-mono text-xs tracking-widest text-[var(--gear-amber)] pt-1 md:w-10">
                     0{indice + 1}
@@ -138,7 +106,7 @@ export default function IngressarPage() {
               A GEAR é nova: onze pessoas, primeiro ciclo, nenhum robô em competição ainda. Quem
               entra agora constrói a estrutura junto, o que significa mais autonomia e menos trilho
               pronto. Se você procura uma equipe consolidada com histórico de competição, ainda não
-              somos isso — e preferimos dizer antes.
+              somos isso. Preferimos dizer antes.
             </p>
           </section>
 
@@ -146,7 +114,7 @@ export default function IngressarPage() {
             <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoPrimario}`}>
               Quero ser avisado
             </a>
-            <Link href="/academia" data-cursor-hover className={`text-center ${botaoSecundario}`}>
+            <Link href="/sobre" data-cursor-hover className={`text-center ${botaoSecundario}`}>
               Ver a formação
             </Link>
           </div>

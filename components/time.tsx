@@ -138,8 +138,8 @@ export function Time() {
           <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
             A atividade de extensão do GEAR é orientada pelo{" "}
             <span className="text-foreground">Prof. Iago Pacheco Gomes</span>, docente da UFSCar
-            Sorocaba. A orientação docente é o que separa grupo de extensão registrado de coletivo
-            informal — e o que dá respaldo institucional ao que é produzido aqui.
+            Sorocaba. A orientação docente separa grupo de extensão registrado de coletivo informal, e
+            dá respaldo institucional ao que é produzido aqui.
           </Surge>
 
           <Surge delay={0.2} className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6">

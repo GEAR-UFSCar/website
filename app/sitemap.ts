@@ -6,7 +6,6 @@ const ROTAS = [
   "/",
   "/sobre",
   "/projetos",
-  "/academia",
   "/time",
   "/parceiros",
   "/ingressar",

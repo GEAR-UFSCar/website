@@ -17,7 +17,7 @@ import { motion, useScroll, useTransform, useSpring } from "framer-motion"
  */
 const statements = [
   "Dois robôs em bancada: AI Rover e Navegador Mecanum.",
-  "ROS 2, Webots e SLAM — a mesma stack da liga em que competimos.",
+  "ROS 2, Webots e SLAM: a stack que roda nos robôs hoje.",
   "Extensão registrada na ProEx-UFSCar, com orientação docente.",
   "Toda decisão técnica publicada com a justificativa — e com o que não funcionou.",
   "Onze pessoas, três frentes, uma formação comum antes de escolher.",

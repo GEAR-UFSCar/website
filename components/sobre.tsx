@@ -2,44 +2,13 @@ import Link from "next/link"
 import Image from "next/image"
 
 import { Surge } from "@/components/surge"
+import { ETAPAS_FORMACAO } from "@/lib/formacao"
 
 import { Frentes } from "@/components/frentes"
 
 import { CONTATO_INGRESSO } from "@/lib/site"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
-const etapas = [
-  {
-    nome: "Processo Seletivo",
-    descricao:
-      "Não é prova de conhecimento acumulado. Interessa como a pessoa pensa quando ainda não sabe a resposta. O próximo ciclo ainda não tem data — quem quiser ser avisado pode escrever para a gente.",
-  },
-  {
-    nome: "Bootcamp de Integração",
-    descricao:
-      "Primeiro contato com as ferramentas, o repositório e o jeito como o grupo trabalha no dia a dia.",
-  },
-  {
-    nome: "Academia GEAR",
-    descricao:
-      "Fundamentos de eletrônica, programação e controle — o vocabulário comum que todo mundo precisa ter para conversar.",
-  },
-  {
-    nome: "Projeto de Validação",
-    descricao:
-      "Um projeto pequeno, do início ao fim. É onde a teoria encontra o fio solto e o que estava no papel passa a existir.",
-  },
-  {
-    nome: "Avaliação Técnica",
-    descricao:
-      "Conversa sobre o que foi construído: o que funcionou, o que não funcionou e por quê. As duas respostas contam.",
-  },
-  {
-    nome: "Escolha da Frente",
-    descricao:
-      "Competição, Pesquisa ou Projetos. A decisão é de quem entrou — tomada com repertório, não no escuro.",
-  },
-]
 
 const registro = [
   { label: "Natureza", valor: "ATIVIDADE DE EXTENSÃO" },
@@ -82,17 +51,17 @@ export function Sobre() {
         <Surge delay={0.1} className="lg:col-span-7 space-y-6 font-sans text-lg md:text-xl font-light leading-relaxed">
           <p>
             O GEAR é o Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Existimos para que
-            estudantes de graduação construam sistemas reais — que saem da bancada, falham, são
+            estudantes de graduação construam sistemas reais, que saem da bancada, falham, são
             consertados e voltam a funcionar.
           </p>
           <p className="text-muted-foreground">
-            Robótica se aprende com o robô na mão. Por isso a formação aqui termina em projeto, não em
-            prova, e por isso registramos as decisões técnicas em vez de só mostrar o resultado pronto:
-            o raciocínio que levou até ali é a parte que se leva embora.
+            Robótica se aprende com o robô na mão. A formação aqui termina em projeto, não em prova, e
+            registramos as decisões técnicas junto com o raciocínio que levou até elas, em vez de só
+            mostrar o resultado pronto.
           </p>
           <p className="text-muted-foreground">
             Extensão significa que nada disso fica dentro do laboratório. O que é construído volta para
-            a universidade e para fora dela — em competição, em artigo e em projeto aplicado.
+            a universidade e para fora dela, em competição, em artigo e em projeto aplicado.
           </p>
         </Surge>
 
@@ -130,7 +99,7 @@ export function Sobre() {
           em vez de seis blocos de altura inteira exigindo rolagem.
         */}
         <div className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
-          {etapas.map((etapa, index) => (
+          {ETAPAS_FORMACAO.map((etapa, index) => (
             <Surge
               key={etapa.nome}
               delay={index * 0.05}
@@ -143,7 +112,8 @@ export function Sobre() {
                 {etapa.nome}
               </h3>
               <p className="mt-3 font-sans text-sm font-light leading-relaxed text-muted-foreground">
-                {etapa.descricao}
+                {etapa.texto}
+                {etapa.nota ? ` ${etapa.nota}` : ""}
               </p>
             </Surge>
           ))}
@@ -165,8 +135,8 @@ export function Sobre() {
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
             O GEAR é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, sob
-            coordenação do <span className="text-foreground">Prof. Iago Pacheco Gomes</span>. Não é
-            coletivo informal: existe processo, orientação docente e prestação de contas à universidade.
+            coordenação do <span className="text-foreground">Prof. Iago Pacheco Gomes</span>. Existe
+            processo, orientação docente e prestação de contas à universidade.
           </Surge>
 
           {/* Ficha do registro — mesma linguagem das fichas técnicas de /projetos */}

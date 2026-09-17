@@ -9,64 +9,45 @@ type Entrada = {
   titulo: string
   texto: string
   foto?: string
-  resumo?: { label: string; valor: string }[]
   destaque?: boolean
 }
 
 const entradas: Entrada[] = [
   {
-    tema: "Estrutura",
-    titulo: "Por que três trilhas, e não uma entidade genérica de robótica",
+    tema: "Quem somos",
+    titulo: "Uma entidade de robótica, três frentes",
     texto:
-      "Competição, Pesquisa e Projetos têm ritmos completamente diferentes — uma corre contra prazo de campeonato, outra não tem prazo externo nenhum, a terceira vive em sprints internos. Juntar tudo numa coisa só faria uma dessas partes sufocar as outras.",
-    foto: "/fotos/universidade-aberta/foto-05.jpg",
-    resumo: [
-      { label: "Competição", valor: "PRAZO EXTERNO FIXO" },
-      { label: "Pesquisa", valor: "SEM PRAZO EXTERNO" },
-      { label: "Projetos", valor: "SPRINTS INTERNOS" },
-    ],
-  },
-  {
-    tema: "Institucional",
-    titulo: "Por que registramos a GEAR como atividade de extensão, não só um grupo informal",
-    texto:
-      "Um grupo de WhatsApp não sobrevive à saída de quem o criou. Um registro formal na ProEx-UFSCar, com professor orientador, sobrevive — e ainda garante que a participação conte como horas de extensão curricular pra quem faz parte.",
+      "A GEAR é a entidade estudantil de robótica da UFSCar Sorocaba, registrada como atividade de extensão na ProEx-UFSCar, com orientação do Prof. Iago Pacheco Gomes. Reunimos estudantes de qualquer curso que querem aprender robótica com a mão na massa — sem pré-requisito técnico pra entrar.",
     foto: "/fotos/universidade-aberta/foto-01.jpg",
-    resumo: [
-      { label: "Registro", valor: "PROEX-UFSCAR" },
-      { label: "Orientação", valor: "PROF. IAGO PACHECO GOMES" },
-    ],
   },
   {
-    tema: "Processo",
-    titulo: "Por que escrevemos os manuais antes de programar qualquer linha de código do site",
+    tema: "Competição",
+    titulo: "Rumo à pista",
     texto:
-      "Regimento Interno, Manuais Técnicos, Normas de Segurança — tudo isso existiu em papel antes da Academia GEAR ter uma página pra chamar de sua. Preferimos que a entidade funcionasse de verdade primeiro, e o site alcançasse depois.",
+      "Um squad dedicado a disputar competições nacionais e internacionais, trabalhando em SLAM, exploração autônoma e visão computacional. Quais competições entram em cada ciclo depende de confirmação.",
+    foto: "/fotos/universidade-aberta/foto-05.jpg",
+  },
+  {
+    tema: "Pesquisa",
+    titulo: "Pesquisa que termina em publicação",
+    texto:
+      "Pesquisa conduzida com orientação acadêmica formal e escrita para publicar em eventos nacionais. O tema de cada ciclo sai da conversa com o professor orientador.",
     foto: "/fotos/universidade-aberta/foto-02.jpg",
-    resumo: [{ label: "Ordem", valor: "MANUAIS ANTES DO CÓDIGO" }],
   },
   {
-    tema: "Governança",
-    titulo: "Por que pensamos em quem vem depois de nós desde o primeiro dia",
+    tema: "Projetos",
+    titulo: "O AI Rover já anda de verdade",
     texto:
-      "Todo mandato tem prazo de 1 ano, e toda troca de gestão exige repasse de acessos, contatos-chave e pendências documentado em ata. Formatura é certa — uma entidade que depende de uma pessoa só morre quando essa pessoa se forma.",
-    foto: "/fotos/universidade-aberta/foto-06.jpg",
-    resumo: [
-      { label: "Mandato", valor: "1 ANO" },
-      { label: "Transição", valor: "DOCUMENTADA EM ATA" },
-    ],
-  },
-  {
-    tema: "Transparência",
-    titulo: "Por que a gente fala sobre o que não sabe",
-    texto:
-      "Preferimos admitir uma limitação em público do que deixar alguém descobrir sozinho depois. Isso vale pra um robô, pra um cronograma, ou pra qualquer parte da entidade.",
+      "Desenvolvimento contínuo em squads menores. O primeiro caso real é o AI Rover, um robô com visão computacional (YOLO) que busca objetos de forma autônoma.",
     foto: "/fotos/ai-rover.jpg",
-    resumo: [
-      { label: "Princípio", valor: "HONESTIDADE PÚBLICA" },
-      { label: "Se aplica a", valor: "ROBÔS, PRAZOS, A ENTIDADE" },
-    ],
     destaque: true,
+  },
+  {
+    tema: "Formação",
+    titulo: "Ninguém entra direto numa trilha",
+    texto:
+      "Todo mundo passa pela Academia GEAR antes — Bootcamp, formação técnica em ROS 2 e Python, um Projeto de Validação, e só depois a escolha de Competição, Pesquisa ou Projetos.",
+    foto: "/fotos/universidade-aberta/foto-06.jpg",
   },
 ]
 
@@ -94,8 +75,8 @@ export function Works() {
         transition={{ duration: 0.8 }}
         className="mb-24"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — DECISÕES QUE NOS DEFINEM</p>
-        <h2 className="font-sans text-3xl md:text-5xl font-light italic">Como Construímos a GEAR</h2>
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — A ENTIDADE</p>
+        <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que é a GEAR</h2>
       </motion.div>
 
       <div className="relative">
@@ -114,7 +95,9 @@ export function Works() {
             data-cursor-hover
           >
             {entrada.destaque && (
-              <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gear-amber)] mb-4">TRANSPARÊNCIA</p>
+              <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gear-amber)] mb-4 uppercase">
+                {entrada.tema}
+              </p>
             )}
 
             <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-3 md:gap-10">
@@ -165,6 +148,9 @@ export function Works() {
             />
           )}
         </div>
+        <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gear-amber)] uppercase px-3 py-2 bg-[var(--gear-ink)]">
+          {emFoco?.tema}
+        </p>
       </motion.div>
     </section>
   )

@@ -55,7 +55,7 @@ export const VALOR = [
   {
     titulo: "Visibilidade",
     texto:
-      "Marca junto do trabalho, não num banner solto: nas fichas técnicas de cada projeto, no material publicado e nesta página. Quando os robôs entrarem em competição, também neles — é contrapartida do nível Ouro, e ainda não aconteceu.",
+      "Marca junto do trabalho: nas fichas técnicas de cada projeto, no material publicado e nesta página. Quando os robôs entrarem em competição, também neles; é contrapartida do nível Ouro, e ainda não aconteceu.",
   },
   {
     titulo: "Acesso a talento técnico",
@@ -65,7 +65,7 @@ export const VALOR = [
   {
     titulo: "Associação institucional",
     texto:
-      "O GEAR é atividade de extensão registrada na ProEx-UFSCar, com orientação docente e prestação de contas à universidade. O apoio vai para uma estrutura formal, não para um coletivo informal.",
+      "O GEAR é atividade de extensão registrada na ProEx-UFSCar, com orientação docente e prestação de contas à universidade. O apoio entra nessa estrutura.",
   },
 ]
 

@@ -12,10 +12,6 @@ import { botaoPrimario } from "@/lib/ui"
 
 
 /*
- * Necessidades da frente de Competição. `quantidade` e `valor` seguem em branco
- * até o levantamento ser fechado — a página mostra "A DEFINIR" no lugar.
- */
-/*
  * Quem já apoia.
  *
  * Com UM parceiro a faixa de rolagem não se sustenta: o marquee precisa
@@ -31,43 +27,6 @@ const parceiros: ParceiroLogo[] = [
   { nome: "NTA — Núcleo de Tecnologia Assistiva", logo: logoNta, url: "https://www.nta.ufscar.br/" },
 ]
 
-const necessidades = [
-  {
-    item: "Encoders de roda",
-    quantidade: "",
-    justificativa:
-      "É a limitação técnica mais séria em aberto hoje: sem encoders, sabemos a força mandada ao motor mas não quanto o robô andou de fato — por isso mapa e rota ainda não são confiáveis.",
-    prioridade: "ALTA",
-  },
-  {
-    item: "Computação embarcada dedicada",
-    quantidade: "",
-    justificativa:
-      "O raciocínio do AI Rover roda hoje em notebook externo. Embarcar o processamento tira a dependência do rádio e do operador.",
-    prioridade: "ALTA",
-  },
-  {
-    item: "Chassi, tração e peças de reposição",
-    quantidade: "",
-    justificativa:
-      "Competição consome hardware: roda, motor e estrutura quebram em bancada e em pista. Reposição é o que mantém o robô rodando entre uma etapa e outra.",
-    prioridade: "MÉDIA",
-  },
-  {
-    item: "Sensores e eletrônica de consumo",
-    quantidade: "",
-    justificativa:
-      "Sensores de linha, placas e cabeamento para manter mais de um robô montado ao mesmo tempo — sem canibalizar um projeto para testar outro.",
-    prioridade: "MÉDIA",
-  },
-  {
-    item: "Verba de inscrição e deslocamento",
-    quantidade: "",
-    justificativa:
-      "Inscrição, transporte e hospedagem da equipe nas competições. É o custo que decide se o robô pronto chega ou não à pista.",
-    prioridade: "ALTA",
-  },
-]
 
 
 export function Parceiros() {
@@ -109,59 +68,10 @@ export function Parceiros() {
         </div>
       </section>
 
-      {/* 02 — Necessidades */}
-      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <Surge className="mb-16">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — FRENTE DE COMPETIÇÃO</p>
-          <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que falta, sem enfeitar</h2>
-          <p className="mt-6 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-            A lista abaixo é o que hoje limita a frente de Competição. Está em ordem de impacto, com a
-            justificativa técnica de cada item — o mesmo critério das fichas em Projetos.
-          </p>
-        </Surge>
-
-        <div className="relative">
-          {necessidades.map((necessidade, index) => (
-            <Surge key={necessidade.item} delay={index * 0.1} className={`border-t border-white/10 py-8 md:py-10 ${
-                necessidade.prioridade === "ALTA"
-                  ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8"
-                  : ""
-              }`}>
-              <div className="flex flex-col md:flex-row md:items-baseline gap-3 md:gap-10">
-                <span className="font-mono text-xs tracking-widest text-muted-foreground shrink-0 md:w-28">
-                  PRIORIDADE{" "}
-                  <span
-                    className={
-                      necessidade.prioridade === "ALTA" ? "text-[var(--gear-amber)]" : "text-foreground"
-                    }
-                  >
-                    {necessidade.prioridade}
-                  </span>
-                </span>
-                <div className="flex-1">
-                  <div className="flex flex-col md:flex-row md:items-baseline md:justify-between gap-2">
-                    <h3 className="font-sans text-2xl md:text-4xl font-light tracking-tight">
-                      {necessidade.item}
-                    </h3>
-                    <span className="font-mono text-xs tracking-widest text-muted-foreground shrink-0">
-                      {necessidade.quantidade || "QUANTIDADE A DEFINIR"}
-                    </span>
-                  </div>
-                  <p className="mt-3 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-                    {necessidade.justificativa}
-                  </p>
-                </div>
-              </div>
-            </Surge>
-          ))}
-          <div className="border-t border-white/10" />
-        </div>
-      </section>
-
       {/* 03 — Parceiros — quem já apoia vem antes de como apoiar */}
       <section className="relative overflow-hidden py-24 md:py-32">
         <Surge className="px-8 md:px-12 mb-16 mx-auto max-w-6xl">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — PARCEIROS</p>
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — PARCEIROS</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem já está junto</h2>
         </Surge>
 
@@ -205,7 +115,7 @@ export function Parceiros() {
       {/* 04 — Níveis de patrocínio */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — CONTRAPARTIDAS</p>
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — CONTRAPARTIDAS</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Níveis de patrocínio</h2>
         </Surge>
 
@@ -244,7 +154,7 @@ export function Parceiros() {
         </div>
 
         <Surge as="p" delay={0.2} className="mt-10 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
-          Valores e contrapartidas adicionais são definidos em conversa direta — entre em contato pelo
+          Valores e contrapartidas adicionais são definidos em conversa direta; entre em contato pelo
           e-mail abaixo. Para levar a proposta a um comitê interno, há uma versão imprimível com
           tudo o que está nesta página:{" "}
           <Link
@@ -270,16 +180,16 @@ export function Parceiros() {
         </p>
       </section>
 
-      {/* 05 — Contato */}
+      {/* 04 — Contato */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">05 — CONTATO</p>
+          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — CONTATO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Falar com a gente</h2>
         </Surge>
 
         <Surge delay={0.1} className="max-w-3xl">
           <p className="font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            Apoio pode ser equipamento, verba, serviço ou mentoria técnica — não precisa ser dinheiro.
+            Apoio pode ser equipamento, verba, serviço ou mentoria técnica. Não precisa ser dinheiro.
             Escreva dizendo o que faz sentido para a sua empresa e respondemos com o que isso destrava
             em qual projeto, de forma específica.
           </p>
