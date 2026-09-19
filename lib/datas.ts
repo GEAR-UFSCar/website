@@ -6,11 +6,41 @@
  * Roda no servidor, então usa o fuso do servidor, não o de quem lê. Para o
  * uso atual (datas da entidade, precisão de dia) isso não muda nada; se um
  * dia a hora exata importar por fuso, o lugar de resolver é aqui.
+ *
+ * `saudacao()` é o primeiro caso em que importa — e resolve aqui, fixando o
+ * fuso da entidade em vez de confiar no relógio do servidor.
+ */
+
+/**
+ * Fuso da entidade. A GEAR é da UFSCar Sorocaba: quem abre o painel está em
+ * horário de Brasília, e é esse o "horário local" que a saudação precisa.
+ *
+ * Fixar o fuso é o que torna a saudação correta num Server Component. Em
+ * produção (Vercel) o servidor roda em UTC — às 18h de Sorocaba seriam 21h no
+ * relógio do processo, e a tela diria "Boa noite" no meio da tarde.
+ */
+export const FUSO_GEAR = "America/Sao_Paulo"
+
+/*
+ * As duas abaixo fixam FUSO_GEAR, e isso conserta um erro que estava em
+ * produção: sem `timeZone`, `toLocaleString` usa o relógio do processo, que na
+ * Vercel é UTC — um evento das 18h em Sorocaba era impresso como 21h.
+ *
+ * A outra razão é de renderização: desde que o diário do sprint passou a
+ * formatar data dentro de um Client Component, a mesma chamada roda no
+ * servidor (SSR) e no navegador. Com o fuso solto, as duas passadas produzem
+ * textos diferentes e o React acusa divergência de hidratação. Fixo, não há
+ * duas respostas possíveis.
  */
 
 /** 11 de setembro de 2026 */
 export const dataLonga = (iso: string) =>
-  new Date(iso).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })
+  new Date(iso).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    timeZone: FUSO_GEAR,
+  })
 
 /** 11 de setembro de 2026, 14:30 */
 export const dataHora = (iso: string) =>
@@ -20,6 +50,7 @@ export const dataHora = (iso: string) =>
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: FUSO_GEAR,
   })
 
 /**
@@ -30,6 +61,18 @@ export function inicioDeHoje() {
   const hoje = new Date()
   hoje.setHours(0, 0, 0, 0)
   return hoje.toISOString()
+}
+
+/**
+ * Instante atual em ISO, para comparar com coluna `timestamptz`.
+ *
+ * Irmã de `inicioDeHoje()`, e a escolha entre as duas é de sentido, não de
+ * gosto: "próximos eventos" quer o dia inteiro (uma reunião das 9h ainda é
+ * pauta de hoje às 15h), mas "próximo compromisso" quer o relógio — um
+ * compromisso que já começou não é o próximo.
+ */
+export function agoraISO() {
+  return new Date().toISOString()
 }
 
 /*
@@ -51,12 +94,51 @@ export function dataDoDia(iso: string) {
 }
 
 /**
- * Hoje como "YYYY-MM-DD" local, para comparar com coluna `date` — no banco,
- * no filtro do PostgREST e na tela, sempre a mesma string.
+ * Hoje como "YYYY-MM-DD" em Brasília, para comparar com coluna `date` — no
+ * banco, no filtro do PostgREST e na tela, sempre a mesma string.
+ *
+ * O FUSO É O DA ENTIDADE, não o do processo. Lendo o relógio do servidor, a
+ * Vercel (UTC) vira o dia às 21h de Sorocaba: das 21h à meia-noite, "hoje"
+ * seria amanhã. O efeito não é cosmético — é uma meta com prazo de hoje
+ * sumindo do painel três horas antes da hora, e um prazo vencendo cedo na
+ * contagem regressiva da Academia.
+ *
+ * `en-CA` porque é o locale cujo formato de data curta JÁ é "YYYY-MM-DD" —
+ * montar a string com `format` em vez de `formatToParts` é o caminho curto
+ * para o mesmo resultado.
  */
 export function hojeISO() {
-  const hoje = new Date()
-  const mes = String(hoje.getMonth() + 1).padStart(2, "0")
-  const dia = String(hoje.getDate()).padStart(2, "0")
-  return `${hoje.getFullYear()}-${mes}-${dia}`
+  return new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: FUSO_GEAR,
+  }).format(new Date())
+}
+
+/**
+ * "Bom dia" / "Boa tarde" / "Boa noite" pela hora de Brasília.
+ *
+ * Os cortes são os do uso corrente do português: 6h–11h manhã, 12h–17h tarde,
+ * 18h em diante noite. A MADRUGADA (0h–5h) volta para "Boa noite", que é o que
+ * se diz às 3h — quem está no painel a essa hora não está começando o dia. Sem
+ * essa faixa, `hora < 12` cumprimentaria com "Bom dia" às duas da manhã.
+ *
+ * A hora sai de `Intl`, não de `getHours()`, porque só ela aplica o fuso sem
+ * depender do relógio do processo. `hourCycle: "h23"` evita o "24" que o
+ * formato padrão devolve à meia-noite e que cairia fora de toda faixa.
+ */
+export function saudacao(agora = new Date()): "Bom dia" | "Boa tarde" | "Boa noite" {
+  const hora = Number(
+    new Intl.DateTimeFormat("pt-BR", {
+      hour: "numeric",
+      hourCycle: "h23",
+      timeZone: FUSO_GEAR,
+    }).format(agora),
+  )
+
+  if (hora < 6) return "Boa noite"
+  if (hora < 12) return "Bom dia"
+  if (hora < 18) return "Boa tarde"
+  return "Boa noite"
 }

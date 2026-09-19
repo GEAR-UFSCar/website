@@ -35,6 +35,9 @@ a anterior não rodou.
 | 017 | `metas.sql` | `metas` pessoais, leitura mista dono/pública | 016 |
 | 018 | `perfil_do_proprio_dono.sql` | perfil que falta criado pelo dono; fecha o INSERT | 014 |
 | 019 | `metricas.sql` | `metricas_periodo`, valor no patrimônio, view pública | 016 |
+| 020 | `sprints_responsavel_e_proximo_passo.sql` | `sprints.responsavel_id` (FK em `perfis`) e `sprints.proximo_passo` | 011 |
+| 021 | `sprints_progresso_bloqueado_e_diario.sql` | `sprints.progresso`, status `Bloqueado`, `sprint_atualizacoes`, `pode_editar_sprint()` | 020 |
+| 022 | `academia_prazo_e_duracao.sql` | `modulos.prazo_conclusao` e `modulos.duracao_estimada` (minutos) | 002 |
 
 Duas armadilhas conhecidas:
 
@@ -86,6 +89,17 @@ select column_name from information_schema.columns
 
 -- 015: os 16 CHECKs de tamanho existem?
 select count(*) from pg_constraint where conname like '%\_tam';
+```
+
+```sql
+-- 020: o responsável do sprint aponta para perfis (e não para auth.users)?
+select confrelid::regclass from pg_constraint where conname = 'sprints_responsavel_id_fkey';
+
+-- 021: o CHECK de status já aceita 'Bloqueado'?
+select pg_get_constraintdef(oid) from pg_constraint where conname = 'sprints_status_check';
+
+-- 021: o diário existe com RLS e 2 policies (SELECT e INSERT)?
+select cmd, policyname from pg_policies where tablename = 'sprint_atualizacoes' order by cmd;
 ```
 
 ## Reaplicar

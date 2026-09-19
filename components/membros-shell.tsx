@@ -88,7 +88,17 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
   const inicial = nome.trim().charAt(0).toUpperCase() || "?"
 
   return (
-    <div className="sticky top-0 z-50 border-b border-white/10 bg-[var(--gear-ink)]/95 backdrop-blur-md">
+    /*
+     * Navy nas duas barras, ink na página (--background). Navy #0B2138 é mais
+     * claro que ink #081726, então a casca se destaca do conteúdo sem precisar
+     * de sombra — a borda inferior só fecha o desenho.
+     *
+     * `nao-imprimir` na casca inteira porque a regra de @media print esconde
+     * header, nav e footer, e esta barra é uma <div>: sem a classe, a aba ProEx
+     * de /membros/metricas saía em papel com a identidade e o menu do usuário
+     * em cima do anexo. O <nav> das abas já sumia; a camada de cima, não.
+     */
+    <div className="nao-imprimir sticky top-0 z-50 border-b border-white/10 bg-[var(--gear-navy)]/95 backdrop-blur-md">
       {/* CAMADA 1 — identidade, migalha, usuário */}
       <div className="flex items-center gap-4 border-b border-white/10 px-5 py-3 md:gap-8 md:px-10">
         <Link
@@ -165,7 +175,12 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
           {aberto && (
             <div
               role="menu"
-              className="absolute right-0 top-full z-50 mt-2 w-56 border border-white/15 bg-[var(--gear-navy)] p-2 shadow-2xl"
+              /*
+                Ink, não navy: a barra passou a ser navy, e um menu da mesma
+                cor do que está atrás dele perde a borda de vista. O mais
+                escuro é o que faz o painel ler como camada por cima.
+              */
+              className="absolute right-0 top-full z-50 mt-2 w-56 border border-white/15 bg-[var(--gear-ink)] p-2 shadow-2xl"
             >
               <div className="border-b border-white/10 px-3 pb-3 pt-2 md:hidden">
                 <p className="truncate font-sans text-sm font-light">{nome}</p>
@@ -227,14 +242,15 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
                   data-cursor-hover
                   /*
                    * Mesma gramática de estado de frente-abas.tsx: aria-current
-                   * na ativa e âmbar como marca. Aqui o destaque é sublinhado
-                   * em vez de fundo cheio — numa fileira de nove, nove blocos
-                   * âmbar de largura variável viram ruído.
+                   * na ativa e âmbar como marca. O destaque é sublinhado mais
+                   * uma lavagem de âmbar, não bloco cheio — numa fileira de
+                   * dez, dez blocos âmbar de largura variável viram ruído, mas
+                   * o sublinhado sozinho sumia contra o navy da barra.
                    */
                   className={`flex items-center gap-2 border-b-2 px-3 py-3 font-mono text-[11px] tracking-[0.15em] uppercase transition-colors duration-300 md:px-4 ${
                     ativa
-                      ? "border-[var(--gear-amber)] text-[var(--gear-amber)]"
-                      : "border-transparent text-muted-foreground hover:text-foreground"
+                      ? "border-[var(--gear-amber)] bg-[var(--gear-amber)]/10 text-[var(--gear-amber)]"
+                      : "border-transparent text-muted-foreground hover:bg-white/5 hover:text-foreground"
                   }`}
                 >
                   <Icone aria-hidden="true" className="h-4 w-4 shrink-0" />

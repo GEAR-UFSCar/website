@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
+import { BadgeAmbiente } from "@/components/badge-ambiente"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
 import { MembrosShell } from "@/components/membros-shell"
@@ -68,6 +69,13 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
         sair={sair}
       />
       <main>
+        {/*
+          Só na moldura completa. Quem está em completar-perfil ou aguardando
+          aprovação cai na moldura pública acima e NÃO vê o selo: para essa
+          pessoa o ambiente interno ainda não está ativo, e anunciar que está
+          seria a casca contradizendo a RLS.
+        */}
+        <BadgeAmbiente />
         {children}
         <Footer />
       </main>

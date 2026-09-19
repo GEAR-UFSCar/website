@@ -5,11 +5,9 @@ import { redirect } from "next/navigation"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
-import { dataDoDia, dataHora, hojeISO, inicioDeHoje } from "@/lib/datas"
-import { rotaDaFrente, temCargo } from "@/lib/administracao"
+import { agoraISO, dataHora, saudacao } from "@/lib/datas"
+import { iniciais, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
-import { mensagemSegura } from "@/lib/erros"
-import { prazoRelativo } from "@/lib/metas"
 import { ErroDados } from "@/components/erro-dados"
 import { Surge } from "@/components/surge"
 
@@ -18,10 +16,30 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-/** Quantos itens cabem em cada bloco do painel antes do "ver todos". */
-const PREVIA = 3
+/**
+ * Quantos sprints cabem no cartão de execução. Três é o teto: o cartão é
+ * recorte do que está em andamento agora, não a lista — a lista inteira mora
+ * na página da frente, a um clique.
+ */
+const DESTAQUES = 3
 
-type AvisoPrevia = { id: string; titulo: string; fixado: boolean; created_at: string }
+/** Quantos avatares aparecem antes do "+N". Doze preenche três fileiras de quatro. */
+const AVATARES = 12
+
+/**
+ * Casca dos cartões. Navy sobre o ink da página: #0B2138 é mais claro que
+ * #081726, então o bloco se destaca sem sombra — o mesmo recurso da casca em
+ * components/membros-shell.tsx.
+ */
+const cartao = "flex h-full flex-col bg-[var(--gear-navy)] p-7 md:p-8"
+
+/** Rótulo mono no topo de cada cartão. */
+const rotulo = "font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--gear-amber)]"
+
+/** Link de saída, sempre no rodapé do cartão. */
+const saida =
+  "mt-auto pt-6 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-amber)] hover:underline"
+
 type EventoPrevia = {
   id: string
   titulo: string
@@ -29,12 +47,20 @@ type EventoPrevia = {
   data_inicio: string
   frente_vinculada: string | null
 }
-type MetaPrevia = {
+
+/**
+ * `responsavel` é o embed da FK criada em 020 — por isso a FK aponta para
+ * `perfis` e não para `auth.users`, que o PostgREST não expõe.
+ */
+type SprintDestaque = {
   id: string
+  frente: string
   titulo: string
-  prazo: string
-  frente_vinculada: string | null
+  proximo_passo: string | null
+  responsavel: { nome_completo: string | null } | null
 }
+
+type MembroPrevia = { id: string; nome_completo: string | null }
 
 export default async function MembrosPage() {
   const user = await exigirUsuario()
@@ -64,49 +90,71 @@ export default async function MembrosPage() {
   const comCargo = temCargo(cargo)
 
   /*
-   * Os três blocos são independentes e nenhum deles é essencial ao painel:
-   * se 008 (avisos/eventos) ou 017 (metas) ainda não rodou, cada bloco mostra
-   * o próprio aviso e o resto da página continua de pé.
+   * Os quatro cartões são independentes e nenhum deles é essencial ao painel:
+   * se 008 (eventos/sprints) ou 020 (responsável e próximo passo) ainda não
+   * rodou, cada cartão mostra o próprio aviso e o resto da página continua de
+   * pé.
+   *
+   * CORTE NO RELÓGIO, NÃO NO DIA. `agoraISO()` e não `inicioDeHoje()`: o
+   * cartão se chama PRÓXIMO COMPROMISSO, e compromisso que já começou não é o
+   * próximo. O preço é conhecido e vale registrar — a reunião das 14h some do
+   * painel às 14h01, no dia dela. Quem quiser a reunião em curso ainda na tela
+   * troca as duas ocorrências abaixo por `inicioDeHoje()`.
    */
+  const agora = agoraISO()
   const supabase = await createClient()
   const [
-    { data: avisosData, error: erroAvisos },
-    { data: eventosData, error: erroEventos },
-    { data: metasData, error: erroMetas },
+    { data: eventoData, error: erroEvento },
+    { count: reunioes, error: erroReunioes },
+    { data: sprintsData, count: emAndamento, error: erroSprints },
+    { data: membrosData, count: totalMembros, error: erroMembros },
   ] = await Promise.all([
-    supabase
-      .from("avisos")
-      .select("id, titulo, fixado, created_at")
-      .order("fixado", { ascending: false })
-      .order("created_at", { ascending: false })
-      .limit(PREVIA),
     supabase
       .from("eventos")
       .select("id, titulo, tipo, data_inicio, frente_vinculada")
-      .gte("data_inicio", inicioDeHoje())
+      .gte("data_inicio", agora)
       .order("data_inicio", { ascending: true })
-      .limit(PREVIA),
+      .limit(1)
+      .maybeSingle(),
+    // head: true — a tela quer o número, não as linhas.
+    supabase
+      .from("eventos")
+      .select("id", { count: "exact", head: true })
+      .eq("tipo", "Reunião")
+      .gte("data_inicio", agora),
     /*
-     * Só as que ainda dá para cumprir: em aberto e com prazo de hoje em
-     * diante. Meta vencida existe e aparece em /membros/metas com o
-     * destaque devido — o bloco do painel é sobre o que vem, não sobre o
-     * que passou, e a lista das três mais próximas não é lugar para
-     * cobrança. `hojeISO()` porque `prazo` é `date`: comparar com o ISO
-     * completo de inicioDeHoje() faria o PostgREST recusar o filtro.
+     * Uma consulta serve aos dois cartões: `count: "exact"` devolve o total de
+     * sprints em andamento (o número do pulso) junto das três primeiras linhas
+     * (o cartão de execução). Separar em duas consultas custaria uma ida à
+     * rede para contar o que esta já contou.
      */
     supabase
-      .from("metas")
-      .select("id, titulo, prazo, frente_vinculada")
-      .eq("usuario_id", user.id)
-      .eq("concluida", false)
-      .gte("prazo", hojeISO())
-      .order("prazo", { ascending: true })
-      .limit(PREVIA),
+      .from("sprints")
+      .select(
+        "id, frente, titulo, proximo_passo, responsavel:perfis!sprints_responsavel_id_fkey (nome_completo)",
+        { count: "exact" },
+      )
+      .eq("status", "Em andamento")
+      .order("updated_at", { ascending: false })
+      .limit(DESTAQUES),
+    /*
+     * Mesmo recurso: `count` é o total de membros ativos, as linhas são só os
+     * doze avatares. "Ativo" é `aprovado` — quem ainda espera validação da
+     * diretoria tem conta, não vínculo, e não deve inflar a contagem do time.
+     */
+    supabase
+      .from("perfis")
+      .select("id, nome_completo", { count: "exact" })
+      .eq("aprovado", true)
+      .order("nome_completo", { nullsFirst: false })
+      .limit(AVATARES),
   ])
 
-  const avisos = (avisosData ?? []) as AvisoPrevia[]
-  const eventos = (eventosData ?? []) as EventoPrevia[]
-  const metas = (metasData ?? []) as MetaPrevia[]
+  const evento = (eventoData ?? null) as EventoPrevia | null
+  // O embed vem tipado como array pelo cliente; a FK é para-um e devolve objeto.
+  const sprints = (sprintsData ?? []) as unknown as SprintDestaque[]
+  const membros = (membrosData ?? []) as MembroPrevia[]
+  const restantes = Math.max((totalMembros ?? 0) - membros.length, 0)
 
   const membroDesde = perfil?.created_at
     ? new Date(perfil.created_at).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
@@ -185,8 +233,18 @@ export default async function MembrosPage() {
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
       {/* Topo: saudação */}
       <Surge>
+      {/*
+        Primeiro nome e não o nome completo: a saudação é fala direta, e
+        ninguém é cumprimentado pelo nome de registro. `saudacao()` fixa o fuso
+        de Brasília (lib/datas.ts) — sem isso, este Server Component leria o
+        relógio UTC da Vercel e diria "Boa noite" às 18h de Sorocaba.
+      */}
       <h2 className="font-sans text-3xl md:text-4xl font-light tracking-tight text-balance">
-        Bem-vindo(a), <span className="italic break-words">{perfil?.nome_completo ?? user.email}</span>
+        {saudacao()},{" "}
+        <span className="italic break-words">
+          {primeiroNome(perfil?.nome_completo ?? user.email)}
+        </span>
+        .
       </h2>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -217,159 +275,194 @@ export default async function MembrosPage() {
       )}
 
       {/*
-        Metas vêm antes de avisos e eventos, e ocupam a largura inteira.
-        É o único bloco do painel sobre compromisso que a própria pessoa
-        assumiu — se ficasse depois da grade, só apareceria para quem
-        rolasse, e uma meta que só aparece a quem procura não lembra
-        ninguém de nada.
+        Os quatro cartões. A grade é de três colunas e a assimetria é
+        intencional: compromisso e execução ocupam duas, pulso e pessoas uma.
+        O que exige leitura ganha largura; o que é número ou avatar, não.
       */}
-      <Surge as="section" className="mt-10 border-t border-white/10 pt-8">
-        <div className="flex items-baseline justify-between gap-4">
-          <h2 className="font-sans text-2xl md:text-3xl font-light italic">
-            Minhas próximas metas
-          </h2>
-          <Link
-            href="/membros/metas"
-            data-cursor-hover
-            className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
-          >
-            VER TODAS →
-          </Link>
-        </div>
+      <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/10">
+        {/* 01 — PRÓXIMO COMPROMISSO */}
+        <Surge as="section" className="h-full lg:col-span-2">
+          <div className={cartao}>
+            <p className={rotulo}>Próximo compromisso</p>
 
-        <div className="mt-6">
-          {erroMetas ? (
-            <p className="font-sans text-sm font-light text-muted-foreground">
-              Metas indisponíveis: {mensagemSegura(erroMetas)}
-            </p>
-          ) : metas.length === 0 ? (
-            <p className="font-sans text-sm font-light text-muted-foreground">
-              Nenhuma meta em aberto para os próximos dias.{" "}
-              <Link
-                href="/membros/metas"
-                data-cursor-hover
-                className="text-[var(--gear-amber)] hover:underline"
-              >
-                Registrar a primeira
-              </Link>
-              .
-            </p>
-          ) : (
-            <ul className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10">
-              {metas.map((meta) => (
-                <li key={meta.id} className="bg-[var(--gear-ink)] p-5">
-                  <Link href="/membros/metas" data-cursor-hover className="group block">
-                    <p className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
-                      {prazoRelativo(meta.prazo)}
-                    </p>
-                    <p className="mt-2 font-sans text-base font-light leading-snug transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
-                      {meta.titulo}
-                    </p>
-                    <p className="mt-2 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                      {dataDoDia(meta.prazo)}
-                      {meta.frente_vinculada ? ` · ${meta.frente_vinculada}` : ""}
-                    </p>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </Surge>
+            {erroEvento ? (
+              <ErroDados titulo="CALENDÁRIO INDISPONÍVEL" erro={erroEvento} className="mt-5">
+                Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code>{" "}
+                no SQL Editor do painel.
+              </ErroDados>
+            ) : evento ? (
+              <div className="mt-5">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="border border-white/20 px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                    {evento.tipo}
+                  </span>
+                  <span className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                    {evento.frente_vinculada ?? "Geral"}
+                  </span>
+                </div>
 
-      {/* Dois blocos de prévia, lado a lado no desktop */}
-      <div className="mt-16 grid grid-cols-1 lg:grid-cols-2 gap-10">
-        {/* Avisos recentes */}
-        <Surge as="section" className="border-t border-white/10 pt-8">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 className="font-sans text-2xl md:text-3xl font-light italic">Avisos recentes</h2>
-            <Link
-              href="/membros/mural"
-              data-cursor-hover
-              className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
-            >
-              VER TODOS →
-            </Link>
-          </div>
+                <h3 className="mt-4 font-sans text-2xl md:text-3xl font-light italic leading-snug text-balance">
+                  {evento.titulo}
+                </h3>
 
-          <div className="mt-6">
-            {erroAvisos ? (
-              <p className="font-sans text-sm font-light text-muted-foreground">
-                Mural indisponível: {mensagemSegura(erroAvisos)}
-              </p>
-            ) : avisos.length === 0 ? (
-              <p className="font-sans text-sm font-light text-muted-foreground">
-                Nenhum aviso publicado ainda.
-              </p>
+                <p className="mt-3 font-mono text-[11px] tracking-[0.15em] uppercase text-[var(--gear-amber)]">
+                  {dataHora(evento.data_inicio)}
+                </p>
+              </div>
             ) : (
-              <ul>
-                {avisos.map((aviso) => (
-                  <li key={aviso.id} className="border-t border-white/10 py-4">
-                    <Link href="/membros/mural" data-cursor-hover className="group block">
-                      <div className="flex items-baseline gap-3">
-                        {aviso.fixado && (
-                          <span className="shrink-0 font-mono text-[10px] md:text-[9px] tracking-[0.2em] text-[var(--gear-amber)]">
-                            FIXADO
-                          </span>
-                        )}
-                        <p className="font-sans text-base font-light leading-snug transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
-                          {aviso.titulo}
-                        </p>
-                      </div>
-                      <p className="mt-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                        {dataHora(aviso.created_at)}
-                      </p>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+              <p className="mt-5 font-sans text-base font-light leading-relaxed text-muted-foreground">
+                Nenhuma reunião futura cadastrada. Abra o calendário.
+              </p>
             )}
+
+            <Link href="/membros/calendario" data-cursor-hover className={saida}>
+              Ver calendário →
+            </Link>
           </div>
         </Surge>
 
-        {/* Próximos eventos */}
-        <Surge as="section" delay={0.1} className="border-t border-white/10 pt-8">
-          <div className="flex items-baseline justify-between gap-4">
-            <h2 className="font-sans text-2xl md:text-3xl font-light italic">Próximos eventos</h2>
-            <Link
-              href="/membros/calendario"
-              data-cursor-hover
-              className="shrink-0 font-mono text-[10px] tracking-[0.2em] text-[var(--gear-amber)] hover:underline"
-            >
-              VER CALENDÁRIO →
-            </Link>
-          </div>
+        {/*
+          02 — PULSO. Único bloco em âmbar cheio da área de membros, e é assim
+          de propósito: dois números que resumem a entidade não competem com
+          nada em volta. Texto em ink porque âmbar sobre navy não tem contraste
+          para leitura.
+        */}
+        <Surge as="section" delay={0.1} className="h-full">
+          <div className="flex h-full flex-col bg-[var(--gear-amber)] p-7 text-[var(--gear-ink)] md:p-8">
+            <p className="font-mono text-[10px] tracking-[0.3em] uppercase">
+              Pulso da entidade — GEAR
+            </p>
 
-          <div className="mt-6">
-            {erroEventos ? (
-              <p className="font-sans text-sm font-light text-muted-foreground">
-                Calendário indisponível: {mensagemSegura(erroEventos)}
-              </p>
-            ) : eventos.length === 0 ? (
-              <p className="font-sans text-sm font-light text-muted-foreground">
-                Nenhum evento marcado daqui para frente.
+            <dl className="mt-8 grid grid-cols-2 gap-6">
+              <div>
+                <dd className="font-sans text-5xl md:text-6xl font-light leading-none tabular-nums">
+                  {/* erro vira travessão: número errado é pior que número ausente */}
+                  {erroSprints ? "—" : (emAndamento ?? 0)}
+                </dd>
+                <dt className="mt-3 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-ink)]/70">
+                  Projetos ativos
+                </dt>
+              </div>
+              <div>
+                <dd className="font-sans text-5xl md:text-6xl font-light leading-none tabular-nums">
+                  {erroReunioes ? "—" : (reunioes ?? 0)}
+                </dd>
+                <dt className="mt-3 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-ink)]/70">
+                  Próximas reuniões
+                </dt>
+              </div>
+            </dl>
+
+            <p className="mt-auto pt-8 font-mono text-[10px] leading-relaxed tracking-[0.1em] uppercase text-[var(--gear-ink)]/70">
+              Sprints em andamento e reuniões marcadas daqui para frente.
+            </p>
+          </div>
+        </Surge>
+
+        {/* 03 — EXECUÇÃO */}
+        <Surge as="section" delay={0.2} className="h-full lg:col-span-2">
+          <div className={cartao}>
+            <p className={rotulo}>Execução — Projetos em andamento</p>
+
+            {erroSprints ? (
+              <ErroDados titulo="SPRINTS INDISPONÍVEIS" erro={erroSprints} className="mt-5">
+                Se a tabela não existe, rode <code>supabase/008_eventos_avisos_sprints.sql</code>.
+                Se o erro fala em <code>responsavel_id</code>, <code>proximo_passo</code> ou em
+                relação não encontrada, falta rodar{" "}
+                <code>supabase/020_sprints_responsavel_e_proximo_passo.sql</code> — é ele que cria
+                as duas colunas e a FK para <code>perfis</code>.
+              </ErroDados>
+            ) : sprints.length === 0 ? (
+              <p className="mt-5 font-sans text-base font-light leading-relaxed text-muted-foreground">
+                Nenhum sprint em andamento. Os que estão planejados ficam na página da frente.
               </p>
             ) : (
-              <ul>
-                {eventos.map((evento) => (
-                  <li key={evento.id} className="border-t border-white/10 py-4">
-                    <Link href="/membros/calendario" data-cursor-hover className="group block">
-                      <div className="flex items-baseline gap-3">
-                        <span className="shrink-0 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                          {evento.frente_vinculada ?? "Geral"}
+              <ul className="mt-5">
+                {sprints.map((sprint) => (
+                  <li key={sprint.id} className="border-t border-white/10 py-5 first:border-t-0 first:pt-0">
+                    <Link href={rotaDaFrente(sprint.frente)} data-cursor-hover className="group block">
+                      <div className="flex flex-wrap items-baseline gap-3">
+                        <span className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                          {sprint.frente}
                         </span>
-                        <p className="font-sans text-base font-light leading-snug transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
-                          {evento.titulo}
-                        </p>
+                        <span className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
+                          {/* sem responsável é estado real (020), e a tela diz isso */}
+                          {sprint.responsavel?.nome_completo?.trim() || "sem responsável"}
+                        </span>
                       </div>
-                      <p className="mt-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                        {dataHora(evento.data_inicio)} · {evento.tipo}
+
+                      <p className="mt-2 font-sans text-lg md:text-xl font-light leading-snug transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
+                        {sprint.titulo}
+                      </p>
+
+                      <p className="mt-3 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
+                        Próximo passo
+                      </p>
+                      <p className="mt-1 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                        {sprint.proximo_passo?.trim() || "Ainda não declarado."}
                       </p>
                     </Link>
                   </li>
                 ))}
               </ul>
             )}
+
+            <Link href={rotaDaFrente(frente)} data-cursor-hover className={saida}>
+              Todos os projetos →
+            </Link>
+          </div>
+        </Surge>
+
+        {/* 04 — PESSOAS */}
+        <Surge as="section" delay={0.3} className="h-full">
+          <div className={cartao}>
+            <p className={rotulo}>Pessoas — Nosso time</p>
+
+            {erroMembros ? (
+              <ErroDados titulo="TIME INDISPONÍVEL" erro={erroMembros} className="mt-5">
+                Se só você aparece, falta rodar <code>supabase/009_diretorio.sql</code> — é ele que
+                libera a leitura dos perfis para todos os membros.
+              </ErroDados>
+            ) : membros.length === 0 ? (
+              <p className="mt-5 font-sans text-base font-light leading-relaxed text-muted-foreground">
+                Nenhum membro aprovado ainda.
+              </p>
+            ) : (
+              <>
+                <ul className="mt-6 flex flex-wrap gap-2">
+                  {membros.map((membro) => (
+                    <li
+                      key={membro.id}
+                      /*
+                        `title` e não só as iniciais: duas letras não
+                        identificam ninguém, e o diretório fica a um clique
+                        para quem precisar do nome inteiro.
+                      */
+                      title={membro.nome_completo?.trim() || "Sem nome preenchido"}
+                      className="flex h-11 w-11 items-center justify-center rounded-full border border-white/20 font-mono text-[11px] tracking-[0.05em] text-muted-foreground"
+                    >
+                      {iniciais(membro.nome_completo)}
+                    </li>
+                  ))}
+                  {restantes > 0 && (
+                    <li className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--gear-amber)] font-mono text-[11px] text-[var(--gear-amber)]">
+                      +{restantes}
+                    </li>
+                  )}
+                </ul>
+
+                <p className="mt-6 font-sans text-3xl font-light leading-none tabular-nums">
+                  {totalMembros ?? membros.length}
+                </p>
+                <p className="mt-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+                  Membros ativos
+                </p>
+              </>
+            )}
+
+            <Link href="/membros/diretorio" data-cursor-hover className={saida}>
+              Ver time →
+            </Link>
           </div>
         </Surge>
       </div>

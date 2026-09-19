@@ -37,13 +37,24 @@ export function estaVencida(meta: Pick<Meta, "prazo" | "concluida">) {
   return !meta.concluida && meta.prazo < hojeISO()
 }
 
-/** "em 3 dias", "hoje", "há 2 dias" — a distância em dias inteiros. */
+/** Meia-noite local do dia que a string "YYYY-MM-DD" nomeia. */
+const meiaNoiteDe = (iso: string) => {
+  const [a, m, d] = iso.slice(0, 10).split("-").map(Number)
+  return new Date(a, m - 1, d).getTime()
+}
+
+/**
+ * "em 3 dias", "hoje", "há 2 dias" — a distância em dias inteiros.
+ *
+ * Os dois lados passam pelo MESMO caminho: string "YYYY-MM-DD" → meia-noite
+ * local. Antes, o alvo vinha da string e o hoje de `new Date()`, o que fazia a
+ * conta depender do relógio do processo — na Vercel (UTC), das 21h à
+ * meia-noite de Sorocaba a resposta saía um dia adiantada. `hojeISO()` fixa o
+ * fuso da entidade, e o `Math.round` cobre o horário de verão, caso volte.
+ */
 export function prazoRelativo(prazo: string) {
   const dia = 86_400_000
-  const [a, m, d] = prazo.slice(0, 10).split("-").map(Number)
-  const alvo = new Date(a, m - 1, d).setHours(0, 0, 0, 0)
-  const hoje = new Date().setHours(0, 0, 0, 0)
-  const dias = Math.round((alvo - hoje) / dia)
+  const dias = Math.round((meiaNoiteDe(prazo) - meiaNoiteDe(hojeISO())) / dia)
 
   if (dias === 0) return "hoje"
   if (dias === 1) return "amanhã"
