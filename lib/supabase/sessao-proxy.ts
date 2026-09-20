@@ -1,6 +1,8 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
+import { COOKIE_LEMBRAR, querLembrar, validadeDaSessao } from "@/lib/supabase/lembrar"
+
 /** Prefixos que exigem sessão. /membros/completar-perfil está incluído. */
 const AREA_RESTRITA = "/membros"
 
@@ -29,10 +31,18 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          /*
+           * Aqui é onde o "Lembrar de mim" mais importa: este proxy renova a
+           * sessão a cada request, e é ele que regravaria os cookies com os
+           * 400 dias padrão do @supabase/ssr, promovendo a cookie persistente
+           * a sessão que devia morrer ao fechar o navegador.
+           * Ver lib/supabase/lembrar.ts.
+           */
+          const lembrar = querLembrar(request.cookies.get(COOKIE_LEMBRAR)?.value)
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
+            supabaseResponse.cookies.set(name, value, validadeDaSessao(options, lembrar)),
           )
         },
       },

@@ -7,7 +7,7 @@ import Link from "next/link"
 
 import { Aviso } from "@/components/aviso"
 import { AcessoQuadro, linkAcesso } from "@/components/acesso-quadro"
-import { createClient } from "@/lib/supabase/client"
+import { createClient, definirPreferenciaLembrar } from "@/lib/supabase/client"
 import { VERSAO_TERMOS } from "@/lib/site"
 import { mensagemSegura } from "@/lib/erros"
 import { botaoDesabilitavel, botaoPrimario, campoGrande } from "@/lib/ui"
@@ -34,6 +34,9 @@ export function Entrar() {
   const [nome, setNome] = useState("")
   const [curso, setCurso] = useState("")
   const [aceitouTermos, setAceitouTermos] = useState(false)
+  // Desmarcado por padrão: em computador compartilhado (e os do laboratório
+  // são), o padrão seguro é a sessão morrer com o navegador.
+  const [lembrar, setLembrar] = useState(false)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
   const [aviso, setAviso] = useState<string | null>(null)
@@ -54,6 +57,14 @@ export function Entrar() {
     const supabase = createClient()
 
     if (modo === "entrar") {
+      /*
+       * Antes do signIn, não depois: é este marcador que o setAll do cliente
+       * consulta para decidir a validade dos cookies de auth já na primeira
+       * gravação. Ver lib/supabase/lembrar.ts para por que a validade não vem
+       * de `cookieOptions.maxAge`.
+       */
+      definirPreferenciaLembrar(lembrar)
+
       const { error } = await supabase.auth.signInWithPassword({ email, password: senha })
       if (error) {
         setErro(mensagemSegura(error))
@@ -239,6 +250,27 @@ export function Entrar() {
               className={campoGrande}
             />
           </div>
+
+          {modo === "entrar" && (
+            <label htmlFor="lembrar" className="flex items-center gap-3 cursor-pointer" data-cursor-hover>
+              <input
+                id="lembrar"
+                name="lembrar"
+                type="checkbox"
+                checked={lembrar}
+                onChange={(e) => setLembrar(e.target.checked)}
+                disabled={carregando}
+                aria-describedby="lembrar-ajuda"
+                className="h-4 w-4 shrink-0 accent-[var(--gear-amber)]"
+              />
+              <span className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
+                Lembrar de mim
+                <span id="lembrar-ajuda" className="block font-mono text-[10px] tracking-wider uppercase">
+                  Mantém o acesso por 30 dias neste navegador
+                </span>
+              </span>
+            </label>
+          )}
 
           {modo === "criar" && (
             <div>
