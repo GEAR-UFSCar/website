@@ -147,14 +147,28 @@ function Galeria({ projeto }: { projeto: Projeto }) {
       {projeto.galeria.map((foto, i) => (
         <div
           key={foto}
-          className="relative aspect-[4/3] overflow-hidden border border-white/10 bg-[var(--gear-navy)]"
+          className="group relative aspect-[4/3] overflow-hidden border border-white/10 bg-[var(--gear-navy)]"
         >
+          {/*
+            Mesmo tratamento da Abertura, pela mesma razão: aqui entram
+            retrato (1200×1600), 16:9 e 4:3 no mesmo quadro. object-cover
+            cortaria — numa foto de tela, corte come justamente o dado que
+            a foto existe para mostrar. O fundo desfocado preenche a sobra.
+          */}
+          <Image
+            src={foto}
+            alt=""
+            aria-hidden="true"
+            fill
+            sizes="(min-width: 768px) 24rem, 50vw"
+            className="scale-110 object-cover opacity-35 blur-2xl"
+          />
           <Image
             src={foto}
             alt={`${projeto.nome} — registro ${i + 1}`}
             fill
             sizes="(min-width: 768px) 24rem, 50vw"
-            className="object-cover transition-transform duration-500 ease-out hover:scale-105"
+            className="object-contain transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </div>
       ))}

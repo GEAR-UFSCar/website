@@ -117,6 +117,13 @@ export const PROJETOS: Projeto[] = [
       "Embarcar o processamento, tirando a dependência do notebook e do rádio",
     ],
     foto: "/fotos/ai-rover.jpg",
+    /*
+     * A tela é o registro mais direto do que o rover faz: interface do AI
+     * Rover v21 rodando ao vivo na SeCoT 2026, com o feed da câmera à
+     * esquerda e a telemetria da decisão da IA à direita. Mesma foto que
+     * abre o bloco da SeCoT na galeria da home.
+     */
+    galeria: ["/fotos/universidade-aberta/foto-08.jpg"],
   },
   {
     slug: "navegador-mecanum",
