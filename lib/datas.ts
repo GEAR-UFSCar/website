@@ -53,14 +53,43 @@ export const dataHora = (iso: string) =>
     timeZone: FUSO_GEAR,
   })
 
+/** 14:30, no horário de Brasília. */
+export const horaGear = (iso: string) =>
+  new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", timeZone: FUSO_GEAR })
+
+/**
+ * Timestamp → "YYYY-MM-DD" do dia em que ele cai em Brasília.
+ *
+ * Um evento às 22h de Sorocaba é 01h do dia seguinte em UTC; ler o dia com
+ * getDate() no servidor da Vercel o colocaria na célula errada do calendário.
+ */
+export const diaGear = (iso: string | Date) =>
+  new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: FUSO_GEAR,
+  }).format(new Date(iso))
+
+/**
+ * Deslocamento de Brasília em relação a UTC. Fixo porque o Brasil não tem
+ * horário de verão desde 2019 — se ele voltar, este é o único lugar a mudar.
+ */
+const OFFSET_GEAR = "-03:00"
+
+/** "YYYY-MM-DD" → ISO do instante em que esse dia começa em Brasília. */
+export const inicioDoDiaGear = (chave: string) =>
+  new Date(`${chave.slice(0, 10)}T00:00:00${OFFSET_GEAR}`).toISOString()
+
 /**
  * Corte para "próximos eventos": meia-noite de hoje, não o instante atual —
  * um evento que começou às 9h ainda é do dia de hoje às 15h.
+ *
+ * Meia-noite de BRASÍLIA. Com setHours(0) no servidor (UTC) o corte caía às
+ * 21h do dia anterior e, depois das 21h, pulava para o dia seguinte.
  */
 export function inicioDeHoje() {
-  const hoje = new Date()
-  hoje.setHours(0, 0, 0, 0)
-  return hoje.toISOString()
+  return inicioDoDiaGear(hojeISO())
 }
 
 /**

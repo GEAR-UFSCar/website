@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import { Aviso } from "@/components/aviso"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
-import { agoraISO, dataHora, saudacao } from "@/lib/datas"
+import { FUSO_GEAR, agoraISO, dataHora, saudacao } from "@/lib/datas"
 import { iniciais, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { ErroDados } from "@/components/erro-dados"
@@ -157,7 +157,7 @@ export default async function MembrosPage() {
   const restantes = Math.max((totalMembros ?? 0) - membros.length, 0)
 
   const membroDesde = perfil?.created_at
-    ? new Date(perfil.created_at).toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+    ? new Date(perfil.created_at).toLocaleDateString("pt-BR", { month: "long", year: "numeric", timeZone: FUSO_GEAR })
     : null
 
   const ficha = [

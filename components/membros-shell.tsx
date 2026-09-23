@@ -82,8 +82,14 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
     }
   }, [aberto])
 
-  // Fecha ao navegar: sem isto o menu sobrevive à troca de aba.
-  useEffect(() => setAberto(false), [pathname])
+  // Fecha ao navegar: sem isto o menu sobrevive à troca de aba. Ajuste
+  // durante o render, não em efeito — o efeito pintava o menu aberto na rota
+  // nova por um frame antes de fechá-lo.
+  const [rotaDoMenu, setRotaDoMenu] = useState(pathname)
+  if (rotaDoMenu !== pathname) {
+    setRotaDoMenu(pathname)
+    setAberto(false)
+  }
 
   const inicial = nome.trim().charAt(0).toUpperCase() || "?"
 

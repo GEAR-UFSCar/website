@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useMemo, useEffect, useState } from "react"
+import { useRef, useMemo, useState, useSyncExternalStore } from "react"
 import type { MutableRefObject, PointerEvent as ReactPointerEvent } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Color, ExtrudeGeometry, MathUtils, Path, Shape } from "three"
@@ -295,6 +295,12 @@ function GearSystem({ drag, telaPequena }: { drag: MutableRefObject<DragState>; 
     ? Math.min(1, (viewport.width * FRACAO_LARGURA) / (RAIO_ENVELOPE * 2))
     : 1
 
+  /*
+   * `drag` é escrito pelos handlers de ponteiro do pai e consumido aqui, a
+   * cada frame, fora do ciclo de render do React — é o padrão do R3F para
+   * entrada contínua. Passar isso por estado re-renderizaria a cena a 60fps.
+   */
+  // eslint-disable-next-line react-hooks/immutability
   useFrame((state, delta) => {
     const d = drag.current
 
@@ -302,6 +308,7 @@ function GearSystem({ drag, telaPequena }: { drag: MutableRefObject<DragState>; 
     // decai exponencialmente até sobrar só a rotação de base.
     if (d.active) {
       spin.current += d.pending
+      // eslint-disable-next-line react-hooks/immutability -- ver comentário acima de useFrame
       d.pending = 0
     } else if (d.velocity !== 0) {
       spin.current += d.velocity * delta
@@ -350,8 +357,20 @@ function GearSystem({ drag, telaPequena }: { drag: MutableRefObject<DragState>; 
   )
 }
 
+const TELA_PEQUENA = "(max-width: 767px)"
+
+function assinarTela(aviso: () => void) {
+  const consulta = window.matchMedia(TELA_PEQUENA)
+  consulta.addEventListener("change", aviso)
+  return () => consulta.removeEventListener("change", aviso)
+}
+
+const nada = () => () => {}
+
 export function SentientGear() {
-  const [mounted, setMounted] = useState(false)
+  // true no cliente, false no servidor e na hidratação — o mesmo contrato do
+  // antigo useEffect(setMounted(true)), sem o render extra em cascata.
+  const mounted = useSyncExternalStore(nada, () => true, () => false)
   /*
    * Antes havia aqui um portão `(min-width: 768px)` que impedia o Canvas de
    * montar no celular — a engrenagem não "sumia" no mobile, ela nunca era
@@ -362,19 +381,13 @@ export function SentientGear() {
    * GPU de celular. Em vez de não desenhar, desenhamos mais barato: malha
    * reduzida (MALHA.leve) e teto de dpr menor. Ver `telaPequena` abaixo.
    */
-  const [telaPequena, setTelaPequena] = useState(false)
+  const telaPequena = useSyncExternalStore(
+    assinarTela,
+    () => window.matchMedia(TELA_PEQUENA).matches,
+    () => false,
+  )
   const [grabbing, setGrabbing] = useState(false)
   const drag = useRef<DragState>({ active: false, lastX: 0, lastTime: 0, pending: 0, velocity: 0 })
-
-  useEffect(() => {
-    setMounted(true)
-
-    const consulta = window.matchMedia("(max-width: 767px)")
-    const aplicar = () => setTelaPequena(consulta.matches)
-    aplicar()
-    consulta.addEventListener("change", aplicar)
-    return () => consulta.removeEventListener("change", aplicar)
-  }, [])
 
   // O toque fica reservado para a rolagem da página; arrasto só com mouse/caneta.
   const isDraggable = (event: ReactPointerEvent<HTMLDivElement>) => event.pointerType !== "touch"

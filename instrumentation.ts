@@ -52,7 +52,8 @@ export const onRequestError: Instrumentation.onRequestError = async (err, reques
     pilha: erro.stack,
     rota: context.routePath,
     tipo: context.routeType,
-    caminho: request.path,
+    // Sem a query: em /auth/confirmar ela carrega o `code` e o `token_hash`.
+    caminho: request.path.split("?")[0],
     metodo: request.method,
     cabecalhos: cabecalhosSeguros(request.headers),
     quando: new Date().toISOString(),

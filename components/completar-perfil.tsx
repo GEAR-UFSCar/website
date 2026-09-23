@@ -17,9 +17,11 @@ type Props = {
   nomeInicial: string
   cursoInicial: string
   frenteInicial: string
+  /** Quem tem cargo não troca a própria frente — o banco recusa (023). */
+  frenteTravada?: boolean
 }
 
-export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInicial }: Props) {
+export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInicial, frenteTravada = false }: Props) {
   const router = useRouter()
   const [nome, setNome] = useState(nomeInicial)
   const [curso, setCurso] = useState(cursoInicial)
@@ -147,7 +149,8 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
               name="frente"
               value={frente}
               onChange={(e) => setFrente(e.target.value)}
-              disabled={carregando}
+              disabled={carregando || frenteTravada}
+              aria-describedby={frenteTravada ? "frente-travada" : undefined}
               className={campoGrande}
             >
               <option value="">Ainda não decidido</option>
@@ -157,6 +160,11 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
                 </option>
               ))}
             </select>
+            {frenteTravada && (
+              <p id="frente-travada" className="mt-2 font-mono text-[10px] tracking-wider text-muted-foreground">
+                COM CARGO, A FRENTE É DEFINIDA PELA DIRETORIA
+              </p>
+            )}
           </div>
 
           {erro && <Aviso titulo="ERRO" role="alert">{erro}</Aviso>}

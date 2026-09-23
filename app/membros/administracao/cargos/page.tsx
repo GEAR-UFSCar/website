@@ -10,6 +10,7 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { eDiretoria } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
+import { FUSO_GEAR } from "@/lib/datas"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -145,7 +146,7 @@ export default async function CargosPage() {
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">
                   {p.cargo_atualizado_em
                     ? new Date(p.cargo_atualizado_em).toLocaleDateString("pt-BR", {
-                        day: "2-digit", month: "2-digit", year: "numeric",
+                        day: "2-digit", month: "2-digit", year: "numeric", timeZone: FUSO_GEAR,
                       })
                     : "—"}
                 </td>

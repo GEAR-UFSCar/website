@@ -38,6 +38,7 @@ a anterior não rodou.
 | 020 | `sprints_responsavel_e_proximo_passo.sql` | `sprints.responsavel_id` (FK em `perfis`) e `sprints.proximo_passo` | 011 |
 | 021 | `sprints_progresso_bloqueado_e_diario.sql` | `sprints.progresso`, status `Bloqueado`, `sprint_atualizacoes`, `pode_editar_sprint()` | 020 |
 | 022 | `academia_prazo_e_duracao.sql` | `modulos.prazo_conclusao` e `modulos.duracao_estimada` (minutos) | 002 |
+| 023 | `frente_travada_e_leituras_fechadas.sql` | cargo não troca a própria frente; métricas só para membro aprovado; documentos exigem aprovação; período fechado imutável | 014, 019 |
 
 Duas armadilhas conhecidas:
 

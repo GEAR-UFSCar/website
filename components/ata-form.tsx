@@ -8,8 +8,10 @@ import { createClient } from "@/lib/supabase/client"
 import { TIPOS_ATA } from "@/lib/administracao"
 import { campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
+import { hojeISO } from "@/lib/datas"
 
-const hoje = () => new Date().toISOString().slice(0, 10)
+// hojeISO e não toISOString: depois das 21h o dia em UTC já é amanhã
+const hoje = hojeISO
 
 export function AtaForm({ usuarioId }: { usuarioId: string }) {
   const router = useRouter()

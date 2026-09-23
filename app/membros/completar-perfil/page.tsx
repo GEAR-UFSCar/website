@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 
 import { CompletarPerfil } from "@/components/completar-perfil"
 import { createClient } from "@/lib/supabase/server"
+import { eDiretoria, temCargo } from "@/lib/administracao"
 
 export const metadata: Metadata = {
   title: "Completar perfil | GEAR",
@@ -20,9 +21,9 @@ export default async function CompletarPerfilPage() {
   // Pré-preenche com o que o cadastro já mandou, para não digitar de novo.
   const { data: perfil } = await supabase
     .from("perfis")
-    .select("nome_completo, curso, frente")
+    .select("nome_completo, curso, frente, cargo")
     .eq("id", user.id)
-    .maybeSingle<{ nome_completo: string | null; curso: string | null; frente: string | null }>()
+    .maybeSingle<{ nome_completo: string | null; curso: string | null; frente: string | null; cargo: string | null }>()
 
   return (
     <CompletarPerfil
@@ -30,6 +31,9 @@ export default async function CompletarPerfilPage() {
       nomeInicial={perfil?.nome_completo ?? ""}
       cursoInicial={perfil?.curso ?? ""}
       frenteInicial={perfil?.frente ?? ""}
+      // Espelha guardar_cargo() (023): com cargo, a frente só muda pela
+      // diretoria. Presidência escreve em todas as frentes e fica livre.
+      frenteTravada={temCargo(perfil?.cargo) && !eDiretoria(perfil?.cargo)}
     />
   )
 }

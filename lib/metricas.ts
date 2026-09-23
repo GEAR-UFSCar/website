@@ -13,6 +13,8 @@
  * justamente com `perfis.frente`.
  */
 
+import { hojeISO } from "@/lib/datas"
+
 export const STATUS_PERIODO = ["Em andamento", "Fechado"] as const
 export type StatusPeriodo = (typeof STATUS_PERIODO)[number]
 
@@ -200,9 +202,10 @@ export function proximoPeriodo(periodo: string): string {
   return semestre === 1 ? `${ano}.2` : `${ano + 1}.1`
 }
 
-/** Semestre corrente pelo relógio do servidor: até junho é .1, depois .2. */
-export function periodoAtual(hoje = new Date()): string {
-  return `${hoje.getFullYear()}.${hoje.getMonth() < 6 ? 1 : 2}`
+/** Semestre corrente em Brasília: até junho é .1, depois .2. */
+export function periodoAtual(hoje = hojeISO()): string {
+  const [ano, mes] = hoje.split("-").map(Number)
+  return `${ano}.${mes <= 6 ? 1 : 2}`
 }
 
 /* --- permissão ------------------------------------------------------------

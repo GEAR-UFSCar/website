@@ -2,6 +2,23 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { createClient } from "@/lib/supabase/server"
 
+const TIPOS_OTP = ["recovery", "email", "invite", "magiclink", "email_change"] as const
+type TipoOtp = (typeof TIPOS_OTP)[number]
+
+const eTipoOtp = (tipo: string | null): tipo is TipoOtp => TIPOS_OTP.includes(tipo as TipoOtp)
+
+/** `bruto` resolvido contra o site; qualquer coisa que saia da origem vira /membros. */
+function destinoInterno(bruto: string | null, origin: string) {
+  const padrao = new URL("/membros", origin)
+  if (!bruto?.startsWith("/")) return padrao
+  try {
+    const url = new URL(bruto, origin)
+    return url.origin === origin ? url : padrao
+  } catch {
+    return padrao
+  }
+}
+
 /*
  * Ponto de pouso dos links que o Supabase manda por e-mail — hoje, o de
  * recuperação de senha.
@@ -29,23 +46,23 @@ export async function GET(request: NextRequest) {
   /*
    * Destino depois da troca. Só caminho interno: `proximo` vem da URL, e sem
    * esta checagem o link do e-mail poderia levar a pessoa autenticada para
-   * fora do site (redirecionamento aberto). `//` é barrado junto com `http://`
-   * porque `//evil.com` é URL absoluta para o navegador.
+   * fora do site (redirecionamento aberto).
+   *
+   * A checagem é pelo RESULTADO, não pelo texto: `//evil.com`, `/\evil.com` e
+   * `/\/evil.com` começam com "/" e mesmo assim o parser de URL resolve os
+   * três para outro domínio (a barra invertida vale como barra). Comparar
+   * prefixos sempre deixa uma grafia de fora; comparar a origem final, não.
    */
-  const bruto = searchParams.get("proximo") ?? "/membros"
-  const proximo = bruto.startsWith("/") && !bruto.startsWith("//") ? bruto : "/membros"
+  const proximo = destinoInterno(searchParams.get("proximo"), origin)
 
   const supabase = await createClient()
 
   if (code) {
     const { error } = await supabase.auth.exchangeCodeForSession(code)
-    if (!error) return NextResponse.redirect(new URL(proximo, origin))
-  } else if (tokenHash && tipo) {
-    const { error } = await supabase.auth.verifyOtp({
-      type: tipo as "recovery" | "email" | "invite" | "magiclink" | "email_change",
-      token_hash: tokenHash,
-    })
-    if (!error) return NextResponse.redirect(new URL(proximo, origin))
+    if (!error) return NextResponse.redirect(proximo)
+  } else if (tokenHash && eTipoOtp(tipo)) {
+    const { error } = await supabase.auth.verifyOtp({ type: tipo, token_hash: tokenHash })
+    if (!error) return NextResponse.redirect(proximo)
   }
 
   /*

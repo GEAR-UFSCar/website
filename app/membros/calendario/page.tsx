@@ -9,12 +9,11 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
-import { hojeISO } from "@/lib/datas"
+import { hojeISO, horaGear, inicioDoDiaGear } from "@/lib/datas"
 import { COLUNAS_META, estaVencida, type Meta } from "@/lib/metas"
 import {
   chaveDeMesValida,
   chaveDoTimestamp,
-  dataDaChave,
   intervaloDaGrade,
   mesDaChave,
   type ItemAgenda,
@@ -35,9 +34,6 @@ type Evento = {
   frente_vinculada: string | null
 }
 
-const hora = (iso: string) =>
-  new Date(iso).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
-
 export default async function CalendarioPage({
   searchParams,
 }: {
@@ -56,9 +52,10 @@ export default async function CalendarioPage({
    * deixaria a última linha sempre vazia, o que se lê como "nada marcado".
    */
   const { primeira, ultima } = intervaloDaGrade(mes)
-  const inicio = dataDaChave(primeira)
-  const fimExclusivo = dataDaChave(ultima)
-  fimExclusivo.setDate(fimExclusivo.getDate() + 1)
+  // Limites em Brasília: meia-noite local do servidor (UTC) cortaria os
+  // eventos das 21h em diante na última noite da grade.
+  const inicio = inicioDoDiaGear(primeira)
+  const fimExclusivo = new Date(Date.parse(inicioDoDiaGear(ultima)) + 24 * 60 * 60 * 1000).toISOString()
 
   const supabase = await createClient()
 
@@ -76,8 +73,8 @@ export default async function CalendarioPage({
       supabase
         .from("eventos")
         .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
-        .gte("data_inicio", inicio.toISOString())
-        .lt("data_inicio", fimExclusivo.toISOString())
+        .gte("data_inicio", inicio)
+        .lt("data_inicio", fimExclusivo)
         .order("data_inicio", { ascending: true }),
       supabase
         .from("metas")
@@ -106,7 +103,7 @@ export default async function CalendarioPage({
       origem: "evento" as const,
       titulo: e.titulo,
       dia: chaveDoTimestamp(e.data_inicio),
-      hora: hora(e.data_inicio),
+      hora: horaGear(e.data_inicio),
       descricao: e.descricao,
       rotulo: e.tipo,
       frente: e.frente_vinculada,
