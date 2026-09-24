@@ -225,8 +225,8 @@ code {
 
 /* Respeita quem pediu menos movimento no sistema.
    Cobre o que é CSS: o marquee infinito, o pulse, o ping e todas as
-   transições. As animações em JS (springs do framer-motion e o loop da
-   engrenagem em WebGL) não são alcançadas por CSS e seguem rodando. */
+   transições. O que é JS se cuida sozinho: framer-motion e Lenis em
+   components/smooth-scroll.tsx, a engrenagem WebGL em sentient-gear.tsx. */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

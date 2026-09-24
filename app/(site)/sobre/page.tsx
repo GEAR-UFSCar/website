@@ -2,10 +2,6 @@ import type { Metadata } from "next"
 
 import { OG_IMAGE } from "@/lib/site"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { Sobre } from "@/components/sobre"
 import { VitrineMetricas } from "@/components/vitrine-metricas"
 
@@ -34,14 +30,9 @@ export const revalidate = 3600
 
 export default function SobrePage() {
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <Sobre />
-        <VitrineMetricas />
-        <Footer />
-      </main>
-    </SmoothScroll>
+    <>
+      <Sobre />
+      <VitrineMetricas />
+    </>
   )
 }

@@ -4,10 +4,6 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { OG_IMAGE } from "@/lib/site"
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { Aviso } from "@/components/aviso"
 import { PROJETOS, type Projeto } from "@/lib/projetos"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
@@ -421,84 +417,79 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
 
 export default function ProjetosPage() {
   return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        {/* Abertura da página */}
-        <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-20 md:pt-48 md:pb-24">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            O QUE CONSTRUÍMOS
-          </p>
-          <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-            PROJETOS
-            <br />
-            <span className="italic">em andamento</span>
-          </h1>
+    <>
+      {/* Abertura da página */}
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-20 md:pt-48 md:pb-24">
+        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
+          O QUE CONSTRUÍMOS
+        </p>
+        <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
+          PROJETOS
+          <br />
+          <span className="italic">em andamento</span>
+        </h1>
 
-          <p className="mt-10 max-w-[62ch] font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            Cada ficha traz o problema, o que decidimos e o que descartamos para chegar lá, a
-            arquitetura e os resultados. A decisão vem sempre com a alternativa que ficou de fora,
-            que é o que separa um portfólio técnico de uma lista de especificações.
-          </p>
+        <p className="mt-10 max-w-[62ch] font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
+          Cada ficha traz o problema, o que decidimos e o que descartamos para chegar lá, a
+          arquitetura e os resultados. A decisão vem sempre com a alternativa que ficou de fora,
+          que é o que separa um portfólio técnico de uma lista de especificações.
+        </p>
 
-          {/* Índice dos capítulos: com poucos robôs, um sumário vale mais que um filtro. */}
-          {PROJETOS.length > 0 && (
-            <nav aria-label="Robôs nesta página" className="mt-12 border-t border-white/10 pt-6">
-              <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground">
-                {PROJETOS.length === 1
-                  ? "UM PROJETO PUBLICADO"
-                  : `${PROJETOS.length} PROJETOS PUBLICADOS`}
-              </p>
-              <ul className="mt-5 flex flex-wrap gap-x-10 gap-y-4">
-                {PROJETOS.map((projeto, indice) => (
-                  <li key={projeto.slug}>
-                    <Link
-                      href={`#${projeto.slug}`}
-                      data-cursor-hover
-                      className="group flex items-baseline gap-3"
-                    >
-                      <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)]">
-                        {String(indice + 1).padStart(2, "0")}
-                      </span>
-                      <span className="font-sans text-2xl md:text-3xl font-light tracking-tight transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
-                        {projeto.nome}
-                      </span>
-                      <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-                        {projeto.frente}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          )}
+        {/* Índice dos capítulos: com poucos robôs, um sumário vale mais que um filtro. */}
+        {PROJETOS.length > 0 && (
+          <nav aria-label="Robôs nesta página" className="mt-12 border-t border-white/10 pt-6">
+            <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground">
+              {PROJETOS.length === 1
+                ? "UM PROJETO PUBLICADO"
+                : `${PROJETOS.length} PROJETOS PUBLICADOS`}
+            </p>
+            <ul className="mt-5 flex flex-wrap gap-x-10 gap-y-4">
+              {PROJETOS.map((projeto, indice) => (
+                <li key={projeto.slug}>
+                  <Link
+                    href={`#${projeto.slug}`}
+                    data-cursor-hover
+                    className="group flex items-baseline gap-3"
+                  >
+                    <span className="font-mono text-xs tracking-widest text-[var(--gear-amber)]">
+                      {String(indice + 1).padStart(2, "0")}
+                    </span>
+                    <span className="font-sans text-2xl md:text-3xl font-light tracking-tight transition-colors duration-300 group-hover:text-[var(--gear-amber)]">
+                      {projeto.nome}
+                    </span>
+                    <span className="font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+                      {projeto.frente}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
 
-          {PROJETOS.length === 0 && (
-            <Aviso titulo="NENHUM PROJETO PUBLICADO" className="mt-10 max-w-2xl">
-              Adicione entradas em <code>lib/projetos.ts</code> — cada bloco vira um capítulo aqui,
-              sem nenhuma outra mudança.
-            </Aviso>
-          )}
-        </section>
+        {PROJETOS.length === 0 && (
+          <Aviso titulo="NENHUM PROJETO PUBLICADO" className="mt-10 max-w-2xl">
+            Adicione entradas em <code>lib/projetos.ts</code> — cada bloco vira um capítulo aqui,
+            sem nenhuma outra mudança.
+          </Aviso>
+        )}
+      </section>
 
-        {/* Um capítulo por robô */}
-        {PROJETOS.map((projeto, indice) => (
-          <Capitulo key={projeto.slug} projeto={projeto} indice={indice} />
-        ))}
+      {/* Um capítulo por robô */}
+      {PROJETOS.map((projeto, indice) => (
+        <Capitulo key={projeto.slug} projeto={projeto} indice={indice} />
+      ))}
 
-        <section className="relative mx-auto max-w-6xl px-8 md:px-12 pb-24 md:pb-32">
-          <div className="flex flex-col sm:flex-row gap-5 border-t border-white/10 pt-16">
-            <Link href="/time" data-cursor-hover className={`text-center ${botaoPrimario}`}>
-              Quem constrói isso
-            </Link>
-            <Link href="/parceiros" data-cursor-hover className={`text-center ${botaoSecundario}`}>
-              Apoiar os projetos
-            </Link>
-          </div>
-        </section>
-        <Footer />
-      </main>
-    </SmoothScroll>
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pb-24 md:pb-32">
+        <div className="flex flex-col sm:flex-row gap-5 border-t border-white/10 pt-16">
+          <Link href="/time" data-cursor-hover className={`text-center ${botaoPrimario}`}>
+            Quem constrói isso
+          </Link>
+          <Link href="/parceiros" data-cursor-hover className={`text-center ${botaoSecundario}`}>
+            Apoiar os projetos
+          </Link>
+        </div>
+      </section>
+    </>
   )
 }

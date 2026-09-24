@@ -1,9 +1,5 @@
 import type { Metadata } from "next"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { RecuperarSenha } from "@/components/recuperar-senha"
 
 export const metadata: Metadata = {
@@ -20,14 +16,5 @@ export default async function RecuperarPage({
 }) {
   const { estado } = await searchParams
 
-  return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <RecuperarSenha expirado={estado === "expirado"} />
-        <Footer />
-      </main>
-    </SmoothScroll>
-  )
+  return <RecuperarSenha expirado={estado === "expirado"} />
 }

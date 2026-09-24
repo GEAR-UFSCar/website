@@ -1,8 +1,9 @@
 "use client"
 
-import { useRef, useMemo, useState, useSyncExternalStore } from "react"
+import { useEffect, useRef, useMemo, useState, useSyncExternalStore } from "react"
 import type { MutableRefObject, PointerEvent as ReactPointerEvent } from "react"
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
+import { useReducedMotion } from "framer-motion"
 import { Color, ExtrudeGeometry, MathUtils, Path, Shape } from "three"
 import { TessellateModifier } from "three/addons/modifiers/TessellateModifier.js"
 import type { BufferGeometry, Group, Mesh, ShaderMaterial } from "three"
@@ -389,6 +390,23 @@ export function SentientGear() {
   const [grabbing, setGrabbing] = useState(false)
   const drag = useRef<DragState>({ active: false, lastX: 0, lastTime: 0, pending: 0, velocity: 0 })
 
+  /*
+   * Fora da tela, o loop para. Sem isto a GPU desenhava a engrenagem a 60fps
+   * durante a leitura do resto da home, onde ninguém a vê — bateria de
+   * celular gasta à toa.
+   */
+  // Menos movimento: "demand" desenha um quadro e para — engrenagem estática.
+  const menosMovimento = useReducedMotion()
+  const caixaRef = useRef<HTMLDivElement>(null)
+  const [visivel, setVisivel] = useState(true)
+  useEffect(() => {
+    const caixa = caixaRef.current
+    if (!caixa) return
+    const observador = new IntersectionObserver(([entrada]) => setVisivel(entrada.isIntersecting))
+    observador.observe(caixa)
+    return () => observador.disconnect()
+  }, [mounted])
+
   // O toque fica reservado para a rolagem da página; arrasto só com mouse/caneta.
   const isDraggable = (event: ReactPointerEvent<HTMLDivElement>) => event.pointerType !== "touch"
 
@@ -429,8 +447,8 @@ export function SentientGear() {
    * Saída antes da hidratação — e só ela, agora que o mobile também recebe o
    * Canvas. Só CSS: dois anéis concêntricos em âmbar sobre o fundo do hero,
    * girando devagar. O `animate-[spin_24s_linear_infinite]` é neutralizado
-   * pela regra de prefers-reduced-motion em globals.css, ao contrário do
-   * loop em WebGL, que CSS nenhum alcança.
+   * pela regra de prefers-reduced-motion em globals.css; o loop em WebGL
+   * respeita a mesma preferência pelo `frameloop` do Canvas.
    */
   if (!mounted) {
     return (
@@ -446,6 +464,7 @@ export function SentientGear() {
 
   return (
     <div
+      ref={caixaRef}
       className={`w-full h-full ${grabbing ? "cursor-grabbing" : "cursor-grab"}`}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -454,6 +473,7 @@ export function SentientGear() {
     >
       <Canvas
         camera={{ position: [0, 0, 5], fov: 45 }}
+        frameloop={!visivel ? "never" : menosMovimento ? "demand" : "always"}
         className="w-full my-0 h-full py-0"
         /*
          * O teto do dpr multiplica a área do buffer de desenho: num aparelho

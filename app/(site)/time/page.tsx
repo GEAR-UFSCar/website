@@ -2,10 +2,6 @@ import type { Metadata } from "next"
 
 import { OG_IMAGE } from "@/lib/site"
 
-import { Navbar } from "@/components/navbar"
-import { Footer } from "@/components/footer"
-import { CustomCursor } from "@/components/custom-cursor"
-import { SmoothScroll } from "@/components/smooth-scroll"
 import { Time } from "@/components/time"
 
 export const metadata: Metadata = {
@@ -24,14 +20,5 @@ export const metadata: Metadata = {
 }
 
 export default function TimePage() {
-  return (
-    <SmoothScroll>
-      <CustomCursor />
-      <Navbar />
-      <main>
-        <Time />
-        <Footer />
-      </main>
-    </SmoothScroll>
-  )
+  return <Time />
 }

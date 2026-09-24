@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  name: "GEAR — Grupo de Estudos e Aplicações em Robótica",
+  name: "GEAR — Grupo de Extensão em Automação e Robótica",
   alternateName: "GEAR UFSCar",
   description: DESCRICAO,
   url: SITE_URL,

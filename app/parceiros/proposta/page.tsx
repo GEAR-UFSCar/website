@@ -57,7 +57,7 @@ export default function PropostaPage() {
           GEAR <span className="italic">UFSCar Sorocaba</span>
         </h1>
         <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-neutral-700">
-          Grupo de Estudos e Aplicações em Robótica — atividade de extensão registrada na
+          Grupo de Extensão em Automação e Robótica — atividade de extensão registrada na
           Pró-Reitoria de Extensão da UFSCar, com orientação docente e prestação de contas à
           universidade.
         </p>

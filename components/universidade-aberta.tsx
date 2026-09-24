@@ -74,8 +74,13 @@ const FOTOS = [
     altura: 1600,
     alt: "Robô Navegador Mecanum sobre a pista de testes durante demonstração",
   },
-  // sem descrição informada — ver nota ao time
-  { arquivo: "foto-07.jpg", evento: UNIVERSIDADE_ABERTA, largura: 900, altura: 1600, alt: "" },
+  {
+    arquivo: "foto-07.jpg",
+    evento: UNIVERSIDADE_ABERTA,
+    largura: 900,
+    altura: 1600,
+    alt: "Membro da GEAR de camiseta da Universidade Aberta falando a um grupo de estudantes do ensino fundamental numa sala de aula, com o Instagram da GEAR escrito no quadro",
+  },
   {
     arquivo: "foto-08.jpg",
     evento: SECOT,
@@ -188,7 +193,7 @@ export function UniversidadeAberta() {
                 <>
                   <Image
                     src={PASTA + foto.arquivo}
-                    alt={foto.alt || `${foto.evento} — foto ${foto.arquivo.replace(/\D/g, "")}`}
+                    alt={foto.alt}
                     width={foto.largura}
                     height={foto.altura}
                     /*
