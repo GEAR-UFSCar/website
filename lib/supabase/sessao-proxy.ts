@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { COOKIE_LEMBRAR, querLembrar, validadeDaSessao } from "@/lib/supabase/lembrar"
+import { ROTAS_COM_NONCE, politicaCsp } from "@/lib/csp.mjs"
 
 /** Prefixos que exigem sessão. /membros/completar-perfil está incluído. */
 const AREA_RESTRITA = "/membros"
@@ -17,7 +18,34 @@ export const supabaseConfigurado = Boolean(
  * do `proxy.ts` na raiz (o antigo `middleware.ts`).
  */
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  /*
+   * CSP com nonce na área de membros (ver lib/csp.mjs). O Next lê o nonce do
+   * cabeçalho Content-Security-Policy da REQUISIÇÃO e o aplica sozinho nos
+   * <script> que gera; a RESPOSTA leva o mesmo cabeçalho para o navegador.
+   * Um nonce novo por requisição — reaproveitar seria o mesmo que não ter.
+   */
+  // Segmento inteiro: "/membros" e "/membros/…", não "/membrosX". É a mesma
+  // fronteira do `source` em next.config.mjs, que tira essas rotas da CSP pública.
+  const caminho = request.nextUrl.pathname
+  const comNonce = caminho === ROTAS_COM_NONCE || caminho.startsWith(`${ROTAS_COM_NONCE}/`)
+  const csp = comNonce ? politicaCsp({ nonce: btoa(crypto.randomUUID()) }) : null
+
+  /*
+   * `continuar()` e não um NextResponse.next() solto: o setAll lá embaixo
+   * recria a resposta depois de mexer nos cookies da requisição, e a
+   * recriação precisa carregar a CSP de novo. Os cabeçalhos são copiados NA
+   * HORA da chamada para incluir os cookies que o setAll acabou de gravar.
+   */
+  const continuar = () => {
+    if (!csp) return NextResponse.next({ request })
+    const cabecalhos = new Headers(request.headers)
+    cabecalhos.set("Content-Security-Policy", csp)
+    const resposta = NextResponse.next({ request: { headers: cabecalhos } })
+    resposta.headers.set("Content-Security-Policy", csp)
+    return resposta
+  }
+
+  let supabaseResponse = continuar()
 
   // Sem credenciais o site segue funcionando normalmente, apenas sem sessão.
   if (!supabaseConfigurado) return supabaseResponse
@@ -40,7 +68,7 @@ export async function updateSession(request: NextRequest) {
            */
           const lembrar = querLembrar(request.cookies.get(COOKIE_LEMBRAR)?.value)
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = continuar()
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, validadeDaSessao(options, lembrar)),
           )

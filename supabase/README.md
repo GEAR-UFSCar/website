@@ -39,6 +39,7 @@ a anterior não rodou.
 | 021 | `sprints_progresso_bloqueado_e_diario.sql` | `sprints.progresso`, status `Bloqueado`, `sprint_atualizacoes`, `pode_editar_sprint()` | 020 |
 | 022 | `academia_prazo_e_duracao.sql` | `modulos.prazo_conclusao` e `modulos.duracao_estimada` (minutos) | 002 |
 | 023 | `frente_travada_e_leituras_fechadas.sql` | cargo não troca a própria frente; métricas só para membro aprovado; documentos exigem aprovação; período fechado imutável | 014, 019 |
+| 024 | `diretoria_minima_e_limites_do_bucket.sql` | ninguém tira o último cargo de diretoria aprovado; bucket `documentos` com 20 MB e lista de tipos (sem SVG) no próprio Storage | 006, 023 |
 
 Duas armadilhas conhecidas:
 

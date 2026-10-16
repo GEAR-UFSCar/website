@@ -140,7 +140,7 @@ export default async function CargosPage() {
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.curso ?? "—"}</td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.frente ?? "—"}</td>
                 <td className="py-4 pr-4 w-44">
-                  <AprovacaoToggle perfilId={p.id} aprovado={p.aprovado} ehVoce={p.id === user.id} />
+                  <AprovacaoToggle perfilId={p.id} aprovado={p.aprovado} ehVoce={p.id === user.id} nome={p.nome_completo} />
                 </td>
                 <td className="py-4 pr-4 w-52"><CargoSelect perfilId={p.id} valor={p.cargo} /></td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">
