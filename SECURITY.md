@@ -1,21 +1,36 @@
-# Security Policy
+# Segurança
 
-## Supported Versions
+Este é o site da GEAR (Grupo de Extensão em Automação e Robótica, UFSCar
+Sorocaba), com uma área de membros que guarda dados pessoais de estudantes.
+Levamos falha de segurança a sério e agradecemos quem avisa.
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+## Como reportar
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+Mande um e-mail para **gearufscar@gmail.com** com o assunto
+`[SEGURANÇA] <resumo curto>`. Se puder, inclua:
 
-## Reporting a Vulnerability
+- o que você encontrou e onde (página, rota ou tabela);
+- os passos para reproduzir;
+- o que alguém conseguiria fazer explorando a falha.
 
-Use this section to tell people how to report a vulnerability.
+**Não abra issue pública** para falha de segurança: ela fica visível para
+todo mundo antes de estar corrigida. Pelo mesmo motivo, não teste a falha
+com dados de outras pessoas nem tente acessar mais do que o necessário para
+demonstrá-la.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+## O que esperar
+
+- Resposta em até **7 dias** confirmando o recebimento. Somos uma entidade
+  estudantil, sem plantão — mas o e-mail é lido.
+- Depois de confirmada, avisamos quando a correção for publicada.
+- Se você quiser, damos crédito pela descoberta na descrição da correção.
+
+## Versão coberta
+
+Só a versão em produção (o ramo `main`). Não há versões antigas mantidas.
+
+## Para quem mantém o site
+
+As regras de acesso ficam no banco (RLS), em `supabase/`. Uma correção de
+segurança no banco só vale depois de a migração ser **rodada** no SQL Editor;
+`npm run test:rls` confere a fronteira anônima. Ver `supabase/README.md`.

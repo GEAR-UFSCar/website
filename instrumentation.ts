@@ -76,6 +76,9 @@ export const onRequestError: Instrumentation.onRequestError = async (err, reques
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(ocorrencia),
+      // Sem prazo, um webhook lento segurava a função até o timeout da Vercel
+      // — e a cada erro, mais uma função presa esperando.
+      signal: AbortSignal.timeout(3000),
     })
   } catch {
     console.error("ERRO_WEBHOOK_URL inacessível; a ocorrência ficou só no log.")

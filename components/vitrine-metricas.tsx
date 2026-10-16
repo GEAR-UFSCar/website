@@ -24,6 +24,7 @@ import {
 export async function VitrineMetricas() {
   // Cliente sem cookies: é o que deixa /sobre continuar estática com ISR.
   const supabase = createClientePublico()
+  if (!supabase) return null
 
   const { data, error } = await supabase
     .from("metricas_publicas")

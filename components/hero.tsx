@@ -2,9 +2,21 @@
 
 import { useRef } from "react"
 import Link from "next/link"
+import dynamic from "next/dynamic"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { SentientGear } from "./sentient-gear"
 import { HeroCursor } from "@/components/hero-cursor"
+
+/*
+ * A engrenagem 3D carrega DEPOIS do resto da página. Importada direto, ela
+ * puxava Three.js e o react-three-fiber para o JavaScript inicial da home —
+ * a maior dependência do site, baixada antes de o título aparecer. Com
+ * next/dynamic ela vira um pedaço separado, pedido só no navegador (WebGL não
+ * renderiza no servidor de qualquer forma). Enquanto chega, o fundo #050505
+ * da seção já está lá, então não há salto de layout: a engrenagem só surge.
+ */
+const SentientGear = dynamic(() => import("./sentient-gear").then((m) => m.SentientGear), {
+  ssr: false,
+})
 
 const MotionLink = motion.create(Link)
 

@@ -55,6 +55,9 @@ const POR_CODIGO: Record<string, string> = {
   "23502": "Falta preencher um campo obrigatório.",
   // Texto maior que o limite da coluna.
   "22001": "Um dos campos passou do tamanho máximo.",
+  // Trava da diretoria (migração 024): a mudança deixaria a entidade sem
+  // Presidente nem Vice. A frase diz o que fazer, não só o que deu errado.
+  GE001: "Esta é a última pessoa da diretoria. Promova outra pessoa a Presidente ou Vice antes de tirar este cargo ou esta aprovação.",
   // PostgREST.
   PGRST116: "Registro não encontrado.",
   PGRST301: "Sua sessão expirou. Entre novamente.",
@@ -85,7 +88,7 @@ export function mensagemSegura(erro: ErroDeDados | null | undefined): string {
   if (bruta.includes("invalid login credentials")) return "E-mail ou senha incorretos."
   if (bruta.includes("email not confirmed")) return "Confirme seu e-mail antes de entrar."
   if (bruta.includes("user already registered")) return "Já existe conta com esse e-mail."
-  if (bruta.includes("password should be")) return "A senha precisa ter pelo menos 6 caracteres."
+  if (bruta.includes("password should be")) return "A senha precisa ter pelo menos 8 caracteres."
   if (bruta.includes("rate limit") || bruta.includes("too many"))
     return "Tentativas demais em pouco tempo. Espere um minuto e tente de novo."
   if (bruta.includes("fetch") || bruta.includes("network"))

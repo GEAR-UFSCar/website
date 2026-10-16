@@ -20,6 +20,15 @@ type Modo = "entrar" | "criar"
  */
 const DOMINIOS_PERMITIDOS = ["estudante.ufscar.br", "ufscar.br"]
 
+/*
+ * Mesmo mínimo da tela de nova senha (nova-senha.tsx). Antes o cadastro não
+ * pedia nada e valia o padrão do Supabase, 6 — a conta nascia com uma senha
+ * mais fraca do que a que a própria recuperação aceitaria depois. O valor que
+ * o servidor impõe fica em Supabase → Authentication → Policies, e deve ser 8
+ * lá também: isto aqui é só o aviso antes de enviar.
+ */
+const SENHA_MINIMA = 8
+
 function eInstitucional(email: string) {
   const dominio = email.trim().toLowerCase().split("@")[1]
   return Boolean(dominio) && DOMINIOS_PERMITIDOS.includes(dominio)
@@ -91,6 +100,12 @@ export function Entrar() {
      * mensagem abaixo nunca apareceria. O checkbox leva aria-required para a
      * semântica de leitor de tela sem a validação nativa junto.
      */
+    if (senha.length < SENHA_MINIMA) {
+      setErro(`A senha precisa ter pelo menos ${SENHA_MINIMA} caracteres.`)
+      setCarregando(false)
+      return
+    }
+
     if (!aceitouTermos) {
       setErro(
         "É preciso ler e aceitar o Regimento Interno, incluindo o Código de Conduta, para criar sua conta.",
@@ -244,11 +259,18 @@ export function Entrar() {
               type="password"
               required
               autoComplete={modo === "entrar" ? "current-password" : "new-password"}
+              minLength={modo === "criar" ? SENHA_MINIMA : undefined}
+              aria-describedby={modo === "criar" ? "senha-ajuda" : undefined}
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
               disabled={carregando}
               className={campoGrande}
             />
+            {modo === "criar" && (
+              <p id="senha-ajuda" className="mt-2 font-mono text-[10px] tracking-wider text-muted-foreground">
+                MÍNIMO DE {SENHA_MINIMA} CARACTERES
+              </p>
+            )}
           </div>
 
           {modo === "entrar" && (

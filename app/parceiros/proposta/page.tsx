@@ -1,7 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { connection } from "next/server"
 
 import { CONTATO_PARCERIA, EMAIL_CONTATO, SITE_URL } from "@/lib/site"
+import { FUSO_GEAR } from "@/lib/datas"
 import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
 
 export const metadata: Metadata = {
@@ -26,11 +28,19 @@ export const metadata: Metadata = {
  * eles só ocupariam espaço. Fundo branco e texto preto por decisão consciente —
  * a paleta escura da marca gastaria toner e prejudicaria a leitura impressa.
  */
-export default function PropostaPage() {
+export default async function PropostaPage() {
+  /*
+   * "Emitida em" é a data de HOJE, não a do build. Sem connection() a página
+   * era estática e congelava a data do último deploy — uma proposta impressa
+   * em outubro saía datada de setembro. E o fuso é o da entidade: a Vercel
+   * roda em UTC e viraria o dia às 21h.
+   */
+  await connection()
   const hoje = new Date().toLocaleDateString("pt-BR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
+    timeZone: FUSO_GEAR,
   })
 
   return (
