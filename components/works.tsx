@@ -86,7 +86,7 @@ export function Works() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8, delay: index * 0.1 }}
-            className={`relative border-t border-white/10 py-8 md:py-12 ${
+            className={`relative border-t border-linha py-8 md:py-12 ${
               entrada.destaque ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8" : ""
             }`}
             onMouseEnter={() => setHoveredIndex(index)}

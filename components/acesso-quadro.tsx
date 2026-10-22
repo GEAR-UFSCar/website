@@ -57,7 +57,7 @@ export function AcessoQuadro({ etiqueta, titulo, destaque, children, corpo, roda
         <div className="mt-10">{corpo}</div>
 
         {rodape && (
-          <div className="mt-10 border-t border-white/10 pt-6 flex flex-wrap gap-x-6 gap-y-3">
+          <div className="mt-10 border-t border-linha pt-6 flex flex-wrap gap-x-6 gap-y-3">
             {rodape}
           </div>
         )}

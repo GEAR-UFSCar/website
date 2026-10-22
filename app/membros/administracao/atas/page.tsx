@@ -56,7 +56,7 @@ export default async function AtasPage() {
         )}
 
         {atas.map((ata, i) => (
-          <Surge as="article" index={i} key={ata.id} className="border-t border-white/10 py-8">
+          <Surge as="article" index={i} key={ata.id} className="border-t border-linha py-8">
             <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
               <h2 className="font-sans text-xl md:text-2xl font-light tracking-tight">
                 <span className="font-mono text-[10px] tracking-[0.25em] text-[var(--gear-amber)] mr-3">

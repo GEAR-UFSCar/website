@@ -87,7 +87,7 @@ export function Hero() {
             data-cursor-hover
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative inline-block px-8 py-4 border border-white/20 rounded-full font-mono text-sm tracking-widest uppercase bg-transparent backdrop-blur-sm hover:bg-white hover:text-black transition-colors duration-500 pointer-events-auto"
+            className="relative inline-block px-8 py-4 border border-linha-forte rounded-full font-mono text-sm tracking-widest uppercase bg-transparent backdrop-blur-sm hover:bg-white hover:text-black transition-colors duration-500 pointer-events-auto"
           >
             Conheça as Frentes
           </MotionLink>

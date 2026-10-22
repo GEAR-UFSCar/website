@@ -126,7 +126,7 @@ export default function PrivacidadePage() {
         * "meus direitos" percorre a página inteira. É também o que dá ao
         * leitor de tela uma rota curta pelo documento.
         */}
-      <nav aria-label="Seções desta página" className="mt-12 border-t border-white/10 pt-8">
+      <nav aria-label="Seções desta página" className="mt-12 border-t border-linha pt-8">
         <p className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
           Nesta página
         </p>
@@ -148,7 +148,7 @@ export default function PrivacidadePage() {
 
       {secoes.map((secao, indice) => (
         <section key={secao.titulo} id={slug(secao.titulo)} className="mt-16 scroll-mt-24">
-          <div className="border-t border-white/10 pt-8">
+          <div className="border-t border-linha pt-8">
             <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
               0{indice + 1}
             </p>
@@ -167,7 +167,7 @@ export default function PrivacidadePage() {
           {secao.lista && (
             <dl className="mt-6 space-y-5">
               {secao.lista.map(([termo, descricao]) => (
-                <div key={termo} className="border-t border-white/10 pt-4">
+                <div key={termo} className="border-t border-linha pt-4">
                   <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
                     {termo}
                   </dt>
@@ -182,7 +182,7 @@ export default function PrivacidadePage() {
       ))}
 
       <section className="mt-16">
-        <div className="border-t border-white/10 pt-8">
+        <div className="border-t border-linha pt-8">
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
             0{secoes.length + 1}
           </p>

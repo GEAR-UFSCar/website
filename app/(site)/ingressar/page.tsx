@@ -54,7 +54,7 @@ export default function IngressarPage() {
       </Aviso>
 
       <section className="mt-20">
-        <div className="border-t border-white/10 pt-8">
+        <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Seis etapas</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
             Todo mundo passa pelas mesmas etapas, na mesma ordem. A escolha da frente é a última,
@@ -64,7 +64,7 @@ export default function IngressarPage() {
 
         <ol className="mt-8">
           {ETAPAS_FORMACAO.map((etapa, indice) => (
-            <li key={etapa.nome} className="flex gap-5 border-t border-white/10 py-6 md:gap-10">
+            <li key={etapa.nome} className="flex gap-5 border-t border-linha py-6 md:gap-10">
               <span className="shrink-0 font-mono text-xs tracking-widest text-[var(--gear-amber)] pt-1 md:w-10">
                 0{indice + 1}
               </span>

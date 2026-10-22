@@ -36,7 +36,7 @@ export default async function GestaoPage() {
       />
 
       <Secao titulo="Cadastros">
-        <ul className="grid gap-px border border-white/10 bg-white/10 md:grid-cols-3">
+        <ul className="grid gap-px border border-linha bg-linha md:grid-cols-3">
           {CADASTROS.map((c) => (
             <li key={c.href} className="bg-[var(--gear-ink)]">
               <Link href={c.href} className="block h-full p-5 hover:bg-[var(--gear-navy)]">

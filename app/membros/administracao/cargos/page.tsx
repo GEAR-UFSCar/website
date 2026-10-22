@@ -102,7 +102,7 @@ export default async function CargosPage() {
 
       {!error && <AprovacaoPendentes pendentes={fila} />}
 
-      <div className="mt-16 border-t border-white/10 pt-8">
+      <div className="mt-16 border-t border-linha pt-8">
         <h2 className="font-sans text-2xl md:text-3xl font-normal">Todos os perfis</h2>
         <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
           Cargo, frente e histórico de alteração. Aprovados e pendentes, na mesma lista.
@@ -112,7 +112,7 @@ export default async function CargosPage() {
       <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[46rem] border-collapse">
           <thead>
-            <tr className="border-b border-white/15 text-left">
+            <tr className="border-b border-linha-forte text-left">
               {["Membro", "Curso", "Frente", "Aprovação", "Cargo", "Alterado em"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
@@ -127,7 +127,7 @@ export default async function CargosPage() {
               </td></tr>
             )}
             {perfis.map((p, indice) => (
-              <Surge as="tr" index={indice} key={p.id} className="border-b border-white/10 align-top">
+              <Surge as="tr" index={indice} key={p.id} className="border-b border-linha align-top">
                 <td className="py-4 pr-4">
                   <p className="font-sans text-base font-light">{p.nome_completo ?? "sem nome"}</p>
                   {p.id === user.id && (

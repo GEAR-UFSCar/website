@@ -64,7 +64,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
             className={`min-h-11 border px-4 font-mono text-[11px] tracking-[0.15em] uppercase transition-colors ${
               meus === o.valor
                 ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+                : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
             }`}
           >
             {o.rotulo}
@@ -105,7 +105,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
                 className={`min-h-11 border px-4 py-2 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 ${
                   ativo
                     ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                    : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+                    : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
                 }`}
               >
                 {filtro.rotulo}
@@ -139,7 +139,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
             const doStatus = visiveis.filter((s) => s.status === st)
             return (
               <section key={st} aria-label={st}>
-                <h2 className="mb-3 flex items-baseline justify-between border-b border-white/10 pb-2 font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+                <h2 className="mb-3 flex items-baseline justify-between border-b border-linha pb-2 font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
                   {st}
                   <span className="tabular-nums">{doStatus.length}</span>
                 </h2>

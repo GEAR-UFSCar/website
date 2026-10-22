@@ -88,7 +88,7 @@ export default async function MuralPage() {
               as="article"
               index={indice}
               key={aviso.id}
-              className={`border-t border-white/10 py-8 ${
+              className={`border-t border-linha py-8 ${
                 aviso.fixado ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8" : ""
               }`}
             >

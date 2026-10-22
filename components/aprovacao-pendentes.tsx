@@ -87,7 +87,7 @@ export function AprovacaoPendentes({ pendentes }: { pendentes: Pendente[] }) {
 
   if (pendentes.length === 0) {
     return (
-      <div className="mt-12 border-t border-white/10 pt-8">
+      <div className="mt-12 border-t border-linha pt-8">
         <h2 className="font-sans text-2xl md:text-3xl font-light italic">Fila de aprovação</h2>
         <p className="mt-4 font-sans text-sm font-light text-muted-foreground">
           Ninguém esperando. Todo cadastro novo aparece aqui até ser aprovado.
@@ -111,7 +111,7 @@ export function AprovacaoPendentes({ pendentes }: { pendentes: Pendente[] }) {
           onClick={() => setMarcados(todosMarcados ? [] : pendentes.map((p) => p.id))}
           disabled={salvando}
           data-cursor-hover
-          className="inline-flex min-h-11 items-center border border-white/20 px-4 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
+          className="inline-flex min-h-11 items-center border border-linha-forte px-4 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
         >
           {todosMarcados ? "Desmarcar todos" : "Marcar todos"}
         </button>
@@ -139,7 +139,7 @@ export function AprovacaoPendentes({ pendentes }: { pendentes: Pendente[] }) {
           const marcado = marcados.includes(p.id)
 
           return (
-            <li key={p.id} className="border-t border-white/10">
+            <li key={p.id} className="border-t border-linha">
               <label
                 className="flex cursor-pointer items-start gap-4 py-4"
                 data-cursor-hover
@@ -166,7 +166,7 @@ export function AprovacaoPendentes({ pendentes }: { pendentes: Pendente[] }) {
                     // não do fluxo.
                     dias >= 7
                       ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                      : "border-white/20 text-muted-foreground"
+                      : "border-linha-forte text-muted-foreground"
                   }`}
                 >
                   {esperaEmTexto(dias)}

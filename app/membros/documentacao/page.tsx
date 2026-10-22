@@ -110,7 +110,7 @@ export default async function DocumentacaoPage() {
 
         return (
           <section key={categoria} className="mt-16">
-            <div className="border-t border-white/10 pt-8">
+            <div className="border-t border-linha pt-8">
               <h2 className="font-sans text-2xl md:text-4xl font-normal">{categoria}</h2>
             </div>
 
@@ -120,7 +120,7 @@ export default async function DocumentacaoPage() {
               deixavam dois terços da largura vazios e transformavam uma
               categoria de seis itens em meia tela de rolagem.
             */}
-            <ul className="mt-8 grid grid-cols-1 gap-px bg-white/10 lg:grid-cols-2">
+            <ul className="mt-8 grid grid-cols-1 gap-px bg-linha lg:grid-cols-2">
               {daCategoria.map((documento, i) => (
                 <Surge
                   as="li"
@@ -175,7 +175,7 @@ export default async function DocumentacaoPage() {
 
       {podeEscrever && (
         <section className="mt-20">
-          <div className="border-t border-white/10 pt-8">
+          <div className="border-t border-linha pt-8">
             <h2 className="font-sans text-2xl md:text-4xl font-normal">Cadastrar documento</h2>
             <p className="mt-3 max-w-2xl font-sans text-sm font-light leading-relaxed text-muted-foreground">
               O arquivo vai para um bucket privado: ninguém abre sem sessão, e o link que aparece na

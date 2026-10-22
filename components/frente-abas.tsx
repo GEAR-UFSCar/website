@@ -9,7 +9,7 @@ import { FRENTES_ROTAS, type FrenteNome } from "@/lib/administracao"
  */
 export function FrenteAbas({ atual }: { atual: FrenteNome }) {
   return (
-    <nav aria-label="Frentes" className="mb-8 flex flex-wrap border border-white/15">
+    <nav aria-label="Frentes" className="mb-8 flex flex-wrap border border-linha-forte">
       {FRENTES_ROTAS.map((frente) => {
         const ativa = frente.nome === atual
 

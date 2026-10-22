@@ -49,7 +49,7 @@ export function Parceiros() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {VALOR.map((bloco, index) => (
-            <Surge key={bloco.titulo} delay={index * 0.1} className="border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]">
+            <Surge key={bloco.titulo} delay={index * 0.1} className="border border-linha p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]">
               <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
                 0{index + 1}
               </p>
@@ -85,7 +85,7 @@ export function Parceiros() {
                    * site. O suporte é da nossa paleta (--gear-fog), a marca
                    * continua deles, recolorir logo de terceiro não nos cabe.
                    */
-                  className="group inline-block rounded border border-white/10 bg-[var(--gear-fog)] px-10 py-8 md:px-16 md:py-12 transition duration-300 hover:border-[var(--gear-amber)] hover:scale-[1.02]"
+                  className="group inline-block rounded border border-linha bg-[var(--gear-fog)] px-10 py-8 md:px-16 md:py-12 transition duration-300 hover:border-[var(--gear-amber)] hover:scale-[1.02]"
                 >
                   <Image
                     src={parceiro.logo}
@@ -116,7 +116,7 @@ export function Parceiros() {
             <Surge key={nivel.nome} delay={index * 0.1} className={`flex flex-col border p-7 transition-colors duration-300 ${
                 nivel.destaque
                   ? "border-[var(--gear-amber)] bg-[var(--gear-navy)]"
-                  : "border-white/10 hover:border-[var(--gear-amber)]"
+                  : "border-linha hover:border-[var(--gear-amber)]"
               }`}>
               <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
                 {nivel.apoioIndividual ? "Apoio individual" : `Nível 0${index}`}
@@ -126,12 +126,12 @@ export function Parceiros() {
               </h3>
 
               {nivel.herda && (
-                <p className="mt-4 border-t border-white/10 pt-4 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+                <p className="mt-4 border-t border-linha pt-4 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
                   {nivel.herda}
                 </p>
               )}
 
-              <ul className={`space-y-3 ${nivel.herda ? "mt-4" : "mt-6 border-t border-white/10 pt-6"}`}>
+              <ul className={`space-y-3 ${nivel.herda ? "mt-4" : "mt-6 border-t border-linha pt-6"}`}>
                 {nivel.beneficios.map((beneficio) => (
                   <li key={beneficio} className="flex gap-3">
                     <span aria-hidden="true" className="mt-2 h-px w-3 shrink-0 bg-[var(--gear-amber)]" />

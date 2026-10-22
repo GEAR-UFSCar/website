@@ -90,7 +90,7 @@ export function Paleta({ comCargo }: { comCargo: boolean }) {
         aria-modal="true"
         aria-label="Ir para uma tela"
         onKeyDown={aoTeclar}
-        className="w-full max-w-lg border border-white/15 bg-[var(--gear-ink)] shadow-2xl"
+        className="w-full max-w-lg border border-linha-forte bg-[var(--gear-ink)] shadow-2xl"
       >
         <input
           ref={entrada}
@@ -105,7 +105,7 @@ export function Paleta({ comCargo }: { comCargo: boolean }) {
           aria-expanded="true"
           aria-controls="paleta-lista"
           aria-activedescendant={filtrados[indice] ? `paleta-${indice}` : undefined}
-          className="min-h-12 w-full border-b border-white/10 bg-transparent px-4 font-sans text-base outline-none placeholder:text-muted-foreground/60"
+          className="min-h-12 w-full border-b border-linha bg-transparent px-4 font-sans text-base outline-none placeholder:text-muted-foreground/60"
         />
         <ul id="paleta-lista" role="listbox" className="max-h-72 overflow-y-auto py-1">
           {filtrados.length === 0 && (

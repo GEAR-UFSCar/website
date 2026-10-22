@@ -64,7 +64,7 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
 
   return (
     <>
-    <div className="nao-imprimir sticky top-0 z-50 border-b border-white/10 bg-[var(--gear-navy)]/95 backdrop-blur-md">
+    <div className="nao-imprimir sticky top-0 z-50 border-b border-linha bg-[var(--gear-navy)]/95 backdrop-blur-md">
       <div className="flex h-14 items-center gap-4 px-4 md:gap-6 md:px-8">
         <Link href="/membros" className="flex shrink-0 items-center gap-2" aria-label="GEAR, início da área de membros">
           <Image src="/gear-icon-g.svg" alt="" width={28} height={28} className="h-7 w-7" />
@@ -97,11 +97,11 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
         <button
           type="button"
           onClick={() => window.dispatchEvent(new Event("membros:paleta"))}
-          className="hidden min-h-11 items-center gap-2 border border-white/15 px-3 font-mono text-[11px] text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground md:inline-flex"
+          className="hidden min-h-11 items-center gap-2 border border-linha-forte px-3 font-mono text-[11px] text-muted-foreground transition-colors hover:border-white/40 hover:text-foreground md:inline-flex"
           aria-label="Abrir busca de telas (Ctrl+K)"
         >
           Ir para…
-          <kbd className="border border-white/15 px-1.5 py-0.5 text-[10px]">Ctrl K</kbd>
+          <kbd className="border border-linha-forte px-1.5 py-0.5 text-[10px]">Ctrl K</kbd>
         </button>
 
         <div ref={menu} className="relative shrink-0">
@@ -127,9 +127,9 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
           {aberto && (
             <div
               role="menu"
-              className="absolute right-0 top-full z-50 mt-2 w-56 border border-white/15 bg-[var(--gear-ink)] p-2 shadow-2xl"
+              className="absolute right-0 top-full z-50 mt-2 w-56 border border-linha-forte bg-[var(--gear-ink)] p-2 shadow-2xl"
             >
-              <div className="border-b border-white/10 px-3 pb-3 pt-2">
+              <div className="border-b border-linha px-3 pb-3 pt-2">
                 <p className="truncate font-sans text-sm">{nome}</p>
                 <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground">{etiquetaCargo}</p>
               </div>
@@ -148,7 +148,7 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
                 Site principal
               </Link>
               {/* Server Action: o logout limpa o cookie de sessão no servidor. */}
-              <form action={sair} className="border-t border-white/10 pt-1">
+              <form action={sair} className="border-t border-linha pt-1">
                 <button
                   type="submit"
                   role="menuitem"
@@ -164,7 +164,7 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
       </div>
 
       {grupo && grupo.abas.length > 1 && (
-        <nav aria-label={`Seções de ${grupo.rotulo}`} className="overflow-x-auto border-t border-white/10">
+        <nav aria-label={`Seções de ${grupo.rotulo}`} className="overflow-x-auto border-t border-linha">
           <ul className="flex min-w-max items-stretch px-4 md:px-8">
             {grupo.abas.map((a) => {
               const ativa = aba?.href === a.href

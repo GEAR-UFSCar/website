@@ -144,7 +144,7 @@ export function Entrar() {
       corpo={
         <>
         {/* Alternância */}
-        <div className="flex border border-white/15">
+        <div className="flex border border-linha-forte">
           {(["entrar", "criar"] as Modo[]).map((opcao) => (
             <button
               key={opcao}

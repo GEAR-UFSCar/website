@@ -90,7 +90,7 @@ export default async function DiretorioPage() {
 
         return (
           <section key={grupo.chave} className="mt-16">
-            <div className="border-t border-white/10 pt-8">
+            <div className="border-t border-linha pt-8">
               <h2 className="font-sans text-2xl md:text-4xl font-normal">{grupo.rotulo}</h2>
             </div>
 
@@ -100,7 +100,7 @@ export default async function DiretorioPage() {
                   as="li"
                   index={i}
                   key={membro.id}
-                  className="border border-white/10 p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]"
+                  className="border border-linha p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]"
                 >
                   <p className="font-sans text-lg font-light leading-snug break-words">
                     {membro.nome_completo?.trim() || "Sem nome preenchido"}

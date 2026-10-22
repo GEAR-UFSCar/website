@@ -11,7 +11,7 @@ export function AgendaLista({ itens, hoje }: { itens: ItemAgenda[]; hoje: string
   return (
     <ul>
       {futuros.map((i) => (
-        <li key={i.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-white/10 py-3">
+        <li key={i.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-linha py-3">
           <span className="w-44 font-mono text-xs tabular-nums text-muted-foreground">
             {dataLonga(`${i.dia}T12:00:00-03:00`)}
             {i.hora ? `, ${i.hora}` : ""}

@@ -16,7 +16,7 @@ export function Secao({
 }) {
   return (
     <section id={id} className={className}>
-      <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-t border-white/10 pt-5">
+      <div className="mb-5 flex flex-wrap items-baseline justify-between gap-3 border-t border-linha pt-5">
         <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">{titulo}</h2>
         {acoes}
       </div>

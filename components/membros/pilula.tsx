@@ -1,7 +1,7 @@
 import type { ReactNode } from "react"
 
 const TONS = {
-  neutro: "border-white/20 text-muted-foreground",
+  neutro: "border-linha-forte text-muted-foreground",
   ativo: "border-[var(--gear-amber)] text-[var(--gear-amber)]",
   alerta: "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]",
 } as const

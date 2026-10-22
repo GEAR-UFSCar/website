@@ -50,7 +50,7 @@ export default async function PatrimonioPage() {
       <div className="mt-12 overflow-x-auto">
         <table className="w-full min-w-[52rem] border-collapse">
           <thead>
-            <tr className="border-b border-white/15 text-left">
+            <tr className="border-b border-linha-forte text-left">
               {["Item", "Categoria", "Qtd", "Status", "Responsável", "Frente", "Local"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
@@ -67,7 +67,7 @@ export default async function PatrimonioPage() {
               </tr>
             )}
             {itens.map((i, indice) => (
-              <Surge as="tr" index={indice} key={i.id} className="border-b border-white/10 align-top">
+              <Surge as="tr" index={indice} key={i.id} className="border-b border-linha align-top">
                 <td className="py-4 pr-4">
                   <p className="font-sans text-base font-light">{i.item}</p>
                   {i.observacoes && (

@@ -71,7 +71,7 @@ export function Frentes() {
           da tela. `items-stretch` + `h-full` mantêm os três cards da mesma
           altura mesmo com textos de comprimento diferente.
         */}
-        <div className="grid grid-cols-1 items-stretch gap-px bg-white/10 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-stretch gap-px bg-linha lg:grid-cols-3">
           {frentes.map((frente, index) => (
             <Surge
               key={frente.nome}
@@ -96,7 +96,7 @@ export function Frentes() {
         </div>
 
         {/* Áreas de apoio, pares das frentes técnicas, não subordinadas */}
-        <Surge className="mt-20 border-t border-white/10 pt-10">
+        <Surge className="mt-20 border-t border-linha pt-10">
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Fora da bancada</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
             Robô em pista também depende de ter o trabalho divulgado, dentro e fora da
@@ -108,7 +108,7 @@ export function Frentes() {
             {apoio.map((area) => (
               <div
                 key={area.nome}
-                className="border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
+                className="border border-linha p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
               >
                 <h3 className="font-sans text-2xl font-light tracking-tight">{area.nome}</h3>
                 <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">

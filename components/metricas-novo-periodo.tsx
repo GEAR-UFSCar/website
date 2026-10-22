@@ -79,7 +79,7 @@ export function MetricasNovoPeriodo({ metrica }: { metrica: MetricaPeriodo }) {
         type="button"
         onClick={() => setConfirmando(true)}
         data-cursor-hover
-        className="min-h-11 border border-white/20 px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
+        className="min-h-11 border border-linha-forte px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
       >
         Novo período
       </button>
@@ -116,7 +116,7 @@ export function MetricasNovoPeriodo({ metrica }: { metrica: MetricaPeriodo }) {
           onClick={() => setConfirmando(false)}
           disabled={salvando}
           data-cursor-hover
-          className="min-h-11 border border-white/20 px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
+          className="min-h-11 border border-linha-forte px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
         >
           Cancelar
         </button>

@@ -92,7 +92,7 @@ function Camada({
 }) {
   return (
     <section className="mt-14 first:mt-0">
-      <div className="border-t border-white/10 pt-8">
+      <div className="border-t border-linha pt-8">
         <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
           {ordem} — {nome.toUpperCase()}
         </p>
@@ -140,7 +140,7 @@ function ListaDeTexto({
           {itens.map((item, i) => (
             <li
               key={`${item}-${i}`}
-              className="flex items-center gap-2 border border-white/15 px-3 py-1.5 font-mono text-[11px] text-foreground"
+              className="flex items-center gap-2 border border-linha-forte px-3 py-1.5 font-mono text-[11px] text-foreground"
             >
               {item}
               {editavel && (
@@ -180,7 +180,7 @@ function ListaDeTexto({
             type="button"
             onClick={acrescentar}
             data-cursor-hover
-            className="min-h-11 border border-white/20 px-5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
+            className="min-h-11 border border-linha-forte px-5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
           >
             Acrescentar
           </button>
@@ -408,7 +408,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
                 campoM("colocacoes_competicao")([...colocacoes, { edicao: "", colocacao: "" }])
               }
               data-cursor-hover
-              className="mt-4 min-h-11 border border-white/20 px-5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
+              className="mt-4 min-h-11 border border-linha-forte px-5 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
             >
               Acrescentar colocação
             </button>

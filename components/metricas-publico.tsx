@@ -38,7 +38,7 @@ export function MetricasPublico({ resultados, impacto, ocultarZeros = false }: P
   return (
     <div>
       {numeros.length > 0 && (
-        <dl className="grid grid-cols-2 gap-px bg-white/10 md:grid-cols-3 lg:grid-cols-5">
+        <dl className="grid grid-cols-2 gap-px bg-linha md:grid-cols-3 lg:grid-cols-5">
           {numeros.map((n) => (
             <div key={n.rotulo} className="bg-[var(--gear-ink)] p-6">
               <dd className="font-sans text-4xl md:text-5xl font-light tracking-tight text-[var(--gear-amber)]">

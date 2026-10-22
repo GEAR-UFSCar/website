@@ -28,7 +28,7 @@ export default async function MinhaFrentePage() {
       <PageHeader titulo="Minha frente">
         Você ainda não tem uma frente definida. Escolha qual acompanhar.
       </PageHeader>
-      <ul className="grid gap-px border border-white/10 bg-white/10 sm:grid-cols-3">
+      <ul className="grid gap-px border border-linha bg-linha sm:grid-cols-3">
         {FRENTES_ROTAS.map((f) => (
           <li key={f.slug} className="bg-[var(--gear-ink)]">
             <Link

@@ -87,7 +87,7 @@ export default async function MetasPage() {
 
       {/* 01 — NOVA META */}
       <Surge as="section" className="mt-16 max-w-4xl">
-        <div className="border-t border-white/10 pt-8">
+        <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-2xl md:text-4xl font-normal">Nova meta</h2>
         </div>
 
@@ -118,7 +118,7 @@ export default async function MetasPage() {
 
       {/* 03 — PÚBLICAS DA EQUIPE */}
       <section className="mt-16 max-w-4xl">
-        <div className="border-t border-white/10 pt-8">
+        <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-2xl md:text-4xl font-normal">Metas públicas</h2>
         </div>
 

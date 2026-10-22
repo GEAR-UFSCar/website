@@ -143,7 +143,7 @@ function Galeria({ projeto }: { projeto: Projeto }) {
       {projeto.galeria.map((foto, i) => (
         <div
           key={foto}
-          className="group relative aspect-[4/3] overflow-hidden border border-white/10 bg-[var(--gear-navy)]"
+          className="group relative aspect-[4/3] overflow-hidden border border-linha bg-[var(--gear-navy)]"
         >
           {/*
             Mesmo tratamento da Abertura, pela mesma razão: aqui entram
@@ -228,7 +228,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
 
       <div className="mx-auto max-w-6xl px-8 md:px-12">
         {/* Entrada em prosa: a frase única, grande, antes de qualquer tabela. */}
-        <div className="border-b border-white/10 py-14 md:py-20">
+        <div className="border-b border-linha py-14 md:py-20">
           <p className="max-w-[46ch] font-sans text-2xl md:text-4xl font-light leading-snug text-balance">
             {projeto.resumo}
           </p>
@@ -247,7 +247,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
         </div>
 
         {/* 01/02, por que existe e o que conta como pronto */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-12 lg:grid-cols-2 lg:gap-16">
+        <div className="grid grid-cols-1 gap-10 border-b border-linha py-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <Rotulo>01 · O problema</Rotulo>
             <p className="mt-4 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
@@ -273,7 +273,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
         </div>
 
         {/* 03, arquitetura com a stack ao lado, que é o bloco mais escaneável */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-12 lg:grid-cols-12 lg:gap-16">
+        <div className="grid grid-cols-1 gap-10 border-b border-linha py-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <Rotulo>03 · Arquitetura</Rotulo>
             {projeto.arquitetura ? (
@@ -294,9 +294,9 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
         </div>
 
         {/* 04, o núcleo do portfólio: decisão com a alternativa descartada */}
-        <div className="border-b border-white/10 py-12">
+        <div className="border-b border-linha py-12">
           <Rotulo>04 · Decisões técnicas</Rotulo>
-          <ul className="mt-8 grid grid-cols-1 gap-px bg-white/10 md:grid-cols-2">
+          <ul className="mt-8 grid grid-cols-1 gap-px bg-linha md:grid-cols-2">
             {projeto.decisoes.map((decisao) => (
               <li
                 key={decisao.decisao}
@@ -320,7 +320,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
         </div>
 
         {/* 05/06, resultado medido e o que vem depois */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-12 md:grid-cols-3 md:gap-12">
+        <div className="grid grid-cols-1 gap-10 border-b border-linha py-12 md:grid-cols-3 md:gap-12">
           <div>
             <Rotulo>05 · Competições</Rotulo>
             {projeto.competicoes?.length ? (
@@ -435,7 +435,7 @@ export default function ProjetosPage() {
 
         {/* Índice dos capítulos: com poucos robôs, um sumário vale mais que um filtro. */}
         {PROJETOS.length > 0 && (
-          <nav aria-label="Robôs nesta página" className="mt-12 border-t border-white/10 pt-6">
+          <nav aria-label="Robôs nesta página" className="mt-12 border-t border-linha pt-6">
             <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground">
               {PROJETOS.length === 1
                 ? "UM PROJETO PUBLICADO"
@@ -479,7 +479,7 @@ export default function ProjetosPage() {
       ))}
 
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pb-24 md:pb-32">
-        <div className="flex flex-col sm:flex-row gap-5 border-t border-white/10 pt-16">
+        <div className="flex flex-col sm:flex-row gap-5 border-t border-linha pt-16">
           <Link href="/time" data-cursor-hover className={`text-center ${botaoPrimario}`}>
             Quem constrói isso
           </Link>

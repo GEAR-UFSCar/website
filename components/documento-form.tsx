@@ -96,7 +96,7 @@ export function DocumentoForm() {
   }
 
   return (
-    <form onSubmit={enviar} className="border border-white/10 p-6 space-y-5">
+    <form onSubmit={enviar} className="border border-linha p-6 space-y-5">
       <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">
         NOVO DOCUMENTO
       </p>
@@ -179,7 +179,7 @@ export function DocumentoForm() {
                   className={`min-h-11 border px-5 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 disabled:opacity-50 ${
                     ativo
                       ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                      : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+                      : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
                   }`}
                 >
                   {texto}
@@ -198,7 +198,7 @@ export function DocumentoForm() {
                   setArquivo(e.target.files?.[0] ?? null)
                   setErro(null)
                 }}
-                className="block w-full font-mono text-[11px] text-muted-foreground file:mr-4 file:min-h-11 file:cursor-pointer file:border file:border-white/20 file:bg-transparent file:px-4 file:py-2.5 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.2em] file:text-muted-foreground hover:file:border-[var(--gear-amber)] hover:file:text-[var(--gear-amber)]"
+                className="block w-full font-mono text-[11px] text-muted-foreground file:mr-4 file:min-h-11 file:cursor-pointer file:border file:border-linha-forte file:bg-transparent file:px-4 file:py-2.5 file:font-mono file:text-[10px] file:uppercase file:tracking-[0.2em] file:text-muted-foreground hover:file:border-[var(--gear-amber)] hover:file:text-[var(--gear-amber)]"
               />
               <p className="mt-2 font-mono text-[10px] tracking-wider text-muted-foreground">
                 ATÉ 20 MB · {TIPOS_ACEITOS.join(" ").toUpperCase()}

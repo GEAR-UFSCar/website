@@ -72,7 +72,7 @@ export function SprintDiario({ sprintId, atualizacoes, podeEscrever }: Props) {
   }
 
   return (
-    <section className="mt-6 border-t border-white/10 pt-5">
+    <section className="mt-6 border-t border-linha pt-5">
       <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
         Diário de atividade
         {atualizacoes.length > 0 && ` · ${atualizacoes.length}`}
@@ -89,7 +89,7 @@ export function SprintDiario({ sprintId, atualizacoes, podeEscrever }: Props) {
               {/* Avatar pequeno: a coluna de iniciais dá a linha do tempo uma âncora visual. */}
               <span
                 aria-hidden="true"
-                className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/20 font-mono text-[10px] text-muted-foreground"
+                className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-linha-forte font-mono text-[10px] text-muted-foreground"
               >
                 {iniciais(item.autor?.nome_completo)}
               </span>

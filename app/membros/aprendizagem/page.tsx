@@ -108,7 +108,7 @@ export default async function AprendizagemPage() {
       )}
 
       {/* Três cartões: quando fecha, onde parou, quanto andou. */}
-      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-px bg-white/10">
+      <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-px bg-linha">
         {/* 01 — PRAZO DO NÍVEL ATUAL */}
         <Surge as="section" className="h-full">
           <div className={cartao}>
@@ -186,7 +186,7 @@ export default async function AprendizagemPage() {
                     aria-valuemin={0}
                     aria-valuemax={estagioDoAtual.total}
                     aria-label={`Avanço no nível ${estagioDoAtual.nivel}`}
-                    className="mt-2 h-2 w-full bg-white/10"
+                    className="mt-2 h-2 w-full bg-linha"
                   >
                     <div
                       className="h-full bg-[var(--gear-amber)] transition-[width] duration-500"
@@ -238,7 +238,7 @@ export default async function AprendizagemPage() {
               aria-valuemin={0}
               aria-valuemax={total}
               aria-label="Módulos concluídos na formação"
-              className="mt-5 h-2 w-full bg-white/10"
+              className="mt-5 h-2 w-full bg-linha"
             >
               <div
                 className="h-full bg-[var(--gear-amber)] transition-[width] duration-500"
@@ -272,7 +272,7 @@ export default async function AprendizagemPage() {
 
       {/* GRID — Sua trilha */}
       <section className="mt-20">
-        <div className="border-t border-white/10 pt-8">
+        <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-2xl md:text-3xl font-normal">Sua trilha</h2>
           <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
             Os nove módulos na ordem da formação. Cada nível abre quando o anterior fecha — cada
@@ -335,7 +335,7 @@ export default async function AprendizagemPage() {
                       as="li"
                       index={indiceModulo}
                       key={modulo.id}
-                      className={`flex h-full flex-col border border-white/10 bg-[var(--gear-navy)] p-6 transition-colors duration-300 ${
+                      className={`flex h-full flex-col border border-linha bg-[var(--gear-navy)] p-6 transition-colors duration-300 ${
                         estado === "Bloqueado" ? "opacity-45" : "hover:border-[var(--gear-amber)]"
                       }`}
                     >
@@ -376,7 +376,7 @@ export default async function AprendizagemPage() {
                           aria-valuemin={0}
                           aria-valuemax={100}
                           aria-label={`Progresso do módulo ${modulo.titulo}`}
-                          className="h-1.5 w-full bg-white/10"
+                          className="h-1.5 w-full bg-linha"
                         >
                           <div
                             className="h-full bg-[var(--gear-amber)] transition-[width] duration-500"

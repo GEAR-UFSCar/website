@@ -105,7 +105,7 @@ export default async function MetricasPage({
       {emFoco && (
         <>
           {/* Seletor de registro + estado */}
-          <div className="mt-12 flex flex-col gap-6 border-t border-white/10 pt-8 lg:flex-row lg:items-end lg:justify-between nao-imprimir">
+          <div className="mt-12 flex flex-col gap-6 border-t border-linha pt-8 lg:flex-row lg:items-end lg:justify-between nao-imprimir">
             <div>
               <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
                 Período em foco
@@ -130,7 +130,7 @@ export default async function MetricasPage({
                       className={`inline-flex min-h-11 items-center border px-4 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 ${
                         m.id === emFoco.id
                           ? "border-[var(--gear-amber)] text-[var(--gear-amber)]"
-                          : "border-white/15 text-muted-foreground hover:border-foreground hover:text-foreground"
+                          : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
                       }`}
                     >
                       {rotuloDoRegistro(m)}
@@ -143,7 +143,7 @@ export default async function MetricasPage({
 
           {/* Abas */}
           <nav aria-label="Modos de leitura das métricas" className="mt-10 nao-imprimir">
-            <ul className="flex flex-wrap border border-white/15">
+            <ul className="flex flex-wrap border border-linha-forte">
               {ABAS.map((a) => (
                 <li key={a.id} className="flex-1">
                   <Link
@@ -177,7 +177,7 @@ export default async function MetricasPage({
                 />
 
                 {podeEditar && (
-                  <div className="mt-16 border-t border-white/10 pt-8">
+                  <div className="mt-16 border-t border-linha pt-8">
                     <h3 className="font-sans text-2xl font-normal">Virar o período</h3>
                     <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
                       Fecha {emFoco.periodo} e abre o seguinte para{" "}

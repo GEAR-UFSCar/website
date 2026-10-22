@@ -78,8 +78,8 @@ export function DocumentoAnexo({ documentoId, titulo, temArquivo }: Props) {
         data-cursor-hover
         className={`inline-flex min-h-11 cursor-pointer items-center border px-4 py-2.5 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase transition-colors duration-300 ${
           enviando
-            ? "border-white/10 text-muted-foreground"
-            : "border-white/20 text-muted-foreground hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
+            ? "border-linha text-muted-foreground"
+            : "border-linha-forte text-muted-foreground hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
         }`}
       >
         {enviando ? "Enviando…" : temArquivo ? "Substituir arquivo" : "Anexar arquivo"}

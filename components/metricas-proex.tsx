@@ -84,7 +84,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
           type="button"
           onClick={() => window.print()}
           data-cursor-hover
-          className="min-h-11 border border-white/20 px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+          className="min-h-11 border border-linha-forte px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
         >
           Imprimir / PDF
         </button>
@@ -97,7 +97,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
         <pre> e não uma tabela: o destino é um campo de texto do ProExWeb, e o
         que se cola tem de sair com as mesmas quebras de linha que se vê aqui.
       */}
-      <pre className="mt-8 max-w-3xl overflow-x-auto border border-white/10 bg-[var(--gear-navy)] p-6 font-mono text-[12px] leading-relaxed text-foreground whitespace-pre-wrap">
+      <pre className="mt-8 max-w-3xl overflow-x-auto border border-linha bg-[var(--gear-navy)] p-6 font-mono text-[12px] leading-relaxed text-foreground whitespace-pre-wrap">
         {texto}
       </pre>
 

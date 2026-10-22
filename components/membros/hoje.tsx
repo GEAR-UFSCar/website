@@ -10,7 +10,7 @@ import { aparenciaDoStatus, type Sprint } from "@/lib/sprints"
 import { prazoRelativo } from "@/lib/metas"
 import { formatarDuracao } from "@/lib/academia"
 
-const linha = "flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-white/10 py-3"
+const linha = "flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-linha py-3"
 const verMais = "font-mono text-[11px] text-[var(--gear-amber)] hover:underline"
 
 export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; erro: ErroDeDados | null; rotaFrente: string }) {
@@ -44,7 +44,7 @@ export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; e
                   aria-valuemin={0}
                   aria-valuemax={100}
                   aria-label={`Progresso de ${s.titulo}`}
-                  className="h-1.5 w-28 bg-white/10"
+                  className="h-1.5 w-28 bg-linha"
                 >
                   <div style={{ width: `${s.progresso}%` }} className={`h-full ${aparencia.barra}`} />
                 </div>
@@ -154,7 +154,7 @@ export function BlocoAcademia({ atual }: { atual: ModuloAtual }) {
         aria-valuemin={0}
         aria-valuemax={100}
         aria-label="Progresso na formação"
-        className="mt-3 h-1.5 w-full max-w-md bg-white/10"
+        className="mt-3 h-1.5 w-full max-w-md bg-linha"
       >
         <div style={{ width: `${atual.percentual}%` }} className="h-full bg-[var(--gear-amber)]" />
       </div>

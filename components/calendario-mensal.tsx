@@ -35,7 +35,7 @@ const POR_CELULA = 2
  */
 function estiloDoPill(item: ItemAgenda) {
   if (item.origem === "meta") {
-    if (item.concluida) return "border-white/15 bg-transparent text-muted-foreground line-through"
+    if (item.concluida) return "border-linha-forte bg-transparent text-muted-foreground line-through"
     if (item.atrasada) return "border-[var(--gear-mist)] bg-transparent text-[var(--gear-mist)]"
     return "border-[var(--gear-mist)] bg-[var(--gear-mist)] text-[var(--gear-ink)]"
   }
@@ -61,7 +61,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
   const metasNoMes = itens.filter((i) => i.origem === "meta").length
 
   const navegacao =
-    "inline-flex min-h-11 items-center justify-center border border-white/20 px-4 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
+    "inline-flex min-h-11 items-center justify-center border border-linha-forte px-4 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
 
   return (
     <div>
@@ -109,7 +109,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
       <div className="mt-10 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-10">
         {/* GRADE */}
         <div>
-          <div className="grid grid-cols-7 border-b border-white/15">
+          <div className="grid grid-cols-7 border-b border-linha-forte">
             {DIAS_DA_SEMANA.map((dia) => (
               <div
                 key={dia}
@@ -125,7 +125,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
             de border em cada célula — border de célula duplica na fronteira e
             engrossa a linha do meio.
           */}
-          <div className="mt-px grid grid-cols-7 gap-px bg-white/10">
+          <div className="mt-px grid grid-cols-7 gap-px bg-linha">
             {grade.map((chave) => {
               const doMes = mesDaChave(chave) === mes
               const ehHoje = chave === hoje
@@ -195,7 +195,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
         </div>
 
         {/* PAINEL DO DIA */}
-        <aside className="border-t border-white/10 pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
+        <aside className="border-t border-linha pt-6 lg:border-l lg:border-t-0 lg:pl-8 lg:pt-0">
           {/*
             O indicador diz o que os dados são de fato: uma agenda compartilhada
             (eventos da entidade + metas públicas dos outros) contada neste mês.
@@ -223,7 +223,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
             ) : (
               <ul className="space-y-5">
                 {doDia.map((item) => (
-                  <li key={item.id} className="border-t border-white/10 pt-4">
+                  <li key={item.id} className="border-t border-linha pt-4">
                     <div className="flex items-baseline gap-2">
                       <span
                         aria-hidden="true"

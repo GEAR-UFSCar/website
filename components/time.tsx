@@ -74,7 +74,7 @@ const orientador = [
 
 function Card({ membro, index }: { membro: Membro; index: number }) {
   return (
-    <Surge delay={index * 0.08} className="group border border-white/10 p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]">
+    <Surge delay={index * 0.08} className="group border border-linha p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]">
       {/* Placeholder da foto, substituir por <Image> quando houver retrato */}
       <div className="w-16 h-16 flex items-center justify-center border border-[var(--gear-amber)] bg-[var(--gear-navy)]">
         <span className="font-mono text-lg tracking-widest text-[var(--gear-amber)]">
@@ -110,7 +110,7 @@ export function Time() {
       {/* Grupos por frente */}
       {grupos.map((grupo) => (
         <section key={grupo.frente} className="relative mx-auto max-w-6xl px-8 md:px-12 py-16 md:py-20">
-          <Surge className="border-t border-white/10 pt-10 mb-12">
+          <Surge className="border-t border-linha pt-10 mb-12">
             <h2 className="font-sans text-3xl md:text-5xl font-light italic">{grupo.frente}</h2>
           </Surge>
 
@@ -124,7 +124,7 @@ export function Time() {
 
       {/* Orientação institucional */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <Surge className="border-t border-white/10 pt-10 mb-12">
+        <Surge className="border-t border-linha pt-10 mb-12">
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem orienta</h2>
         </Surge>
 

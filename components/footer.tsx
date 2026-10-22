@@ -73,7 +73,7 @@ export function Footer() {
         />
 
         {/* Conteúdo */}
-        <div className="relative py-16 md:py-24 px-8 md:px-12 border-t border-white/10">
+        <div className="relative py-16 md:py-24 px-8 md:px-12 border-t border-linha">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <motion.h2
               className="font-sans text-4xl md:text-6xl lg:text-8xl font-light tracking-tight text-center md:text-left"
@@ -107,7 +107,7 @@ export function Footer() {
       </motion.a>
 
       {/* Rodapé */}
-      <div className="px-8 md:px-12 py-8 border-t border-white/10">
+      <div className="px-8 md:px-12 py-8 border-t border-linha">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Sociais */}
           <div className="flex gap-6">

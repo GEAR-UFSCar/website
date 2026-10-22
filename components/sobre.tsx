@@ -60,7 +60,7 @@ export function Sobre() {
         </Surge>
 
         <Surge delay={0.2} className="lg:col-span-5">
-          <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/10">
+          <div className="relative aspect-[4/3] w-full overflow-hidden border border-linha">
             <Image
               src="/fotos/universidade-aberta/foto-01.jpg"
               alt="Estudantes em computadores durante a Universidade Aberta na UFSCar Sorocaba"
@@ -91,7 +91,7 @@ export function Sobre() {
           é quem a carrega, e a comparação entre elas passa a ser lado a lado,
           em vez de seis blocos de altura inteira exigindo rolagem.
         */}
-        <div className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-linha sm:grid-cols-2 lg:grid-cols-3">
           {ETAPAS_FORMACAO.map((etapa, index) => (
             <Surge
               key={etapa.nome}
