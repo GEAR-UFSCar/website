@@ -7,8 +7,8 @@ import Image, { type StaticImageData } from "next/image"
  * Fileiras de rolagem horizontal.
  *
  * Estava dentro de tech-marquee.tsx (Arsenal Técnico, na home) e saiu para cá
- * quando /parceiros passou a usar a mesma faixa. A mecânica do loop — a
- * duplicação, o contêiner que corta e a classe de animação — mora em `Faixa`,
+ * quando /parceiros passou a usar a mesma faixa. A mecânica do loop, a
+ * duplicação, o contêiner que corta e a classe de animação, mora em `Faixa`,
  * e cada variante só decide o que desenhar dentro.
  *
  * A animação é CSS (`animate-marquee-*`, 50s linear, em globals.css) e para
@@ -16,7 +16,7 @@ import Image, { type StaticImageData } from "next/image"
  *
  * POR QUE A DUPLICAÇÃO É PAR
  * O keyframe anda de 0 a -50% da largura. Para o salto do fim para o começo
- * ser invisível, a metade de trás precisa ser idêntica à da frente — o que só
+ * ser invisível, a metade de trás precisa ser idêntica à da frente, o que só
  * acontece com um número PAR de cópias.
  */
 
@@ -39,7 +39,7 @@ function Faixa({ direction, children }: { direction: "left" | "right"; children:
   )
 }
 
-/** Faixa de texto contornado que preenche no hover — o Arsenal Técnico. */
+/** Faixa de texto contornado que preenche no hover, o Arsenal Técnico. */
 export function MarqueeRow({
   items,
   direction = "left",
@@ -88,7 +88,7 @@ export type ParceiroLogo = {
  * A placa clara atrás do logo não é decoração: o PNG do NTA é azul sólido com
  * fundo transparente e some contra o ink do site. Recolorir logo de terceiro
  * para caber na paleta da GEAR seria mexer na identidade visual de outra
- * instituição — o que não nos cabe. A placa usa `--gear-fog`, que é da nossa
+ * instituição, o que não nos cabe. A placa usa `--gear-fog`, que é da nossa
  * paleta: o suporte é nosso, a marca continua deles.
  */
 export function MarqueeLogos({
@@ -118,7 +118,7 @@ export function MarqueeLogos({
         >
           <Image
             src={parceiro.logo}
-            alt={`${parceiro.nome} — abre o site do parceiro`}
+            alt={`${parceiro.nome}, abre o site do parceiro`}
             /* h-* com w-auto define as duas dimensões em CSS, que é como o
                next/image aceita redimensionamento sem avisar de proporção. */
             className="h-12 w-auto md:h-16"

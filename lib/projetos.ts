@@ -2,19 +2,19 @@
  * Portfólio técnico.
  *
  * Fica em código, não no banco: é conteúdo editorial que muda pouco, qualquer
- * membro edita por pull request, e não depende de migração para existir — o
+ * membro edita por pull request, e não depende de migração para existir, o
  * mesmo caminho de `time.tsx` e `parceiros.tsx`.
  *
  * REGRA DE CONTEÚDO: nada aqui é inventado. O texto técnico veio do Diário de
  * Bordo original da própria GEAR (commit 258c588, components/works.tsx).
  * Campos que a entidade ainda não definiu ficam `undefined`, e a página mostra
- * o estado vazio de forma explícita — omitir a seção é o que página comercial
+ * o estado vazio de forma explícita, omitir a seção é o que página comercial
  * faz.
  *
- * ⚠ CAMPOS A CONFERIR — derivei do texto existente, não inventei, mas quem
+ * ⚠ CAMPOS A CONFERIR, derivei do texto existente, não inventei, mas quem
  * construiu precisa validar: `objetivo` (os dois), `integrantes` (mapeados
  * pelo squad da frente em components/frentes.tsx) e a `limitacao` do
- * Navegador Mecanum (deduzida da ficha e dos próximos passos — ver comentário
+ * Navegador Mecanum (deduzida da ficha e dos próximos passos, ver comentário
  * no bloco). `anoInicio` ficou fora porque não há registro: preencham.
  */
 
@@ -45,7 +45,7 @@ export type Projeto = {
   etapa: Etapa
   /** Ausente = não registrado. A página mostra "ano a definir". */
   anoInicio?: number
-  /** Uma frase — o que aparece antes dos detalhes. */
+  /** Uma frase, o que aparece antes dos detalhes. */
   resumo: string
   /** Onde o projeto roda: liga, disciplina ou demanda de extensão. */
   contexto?: string
@@ -90,11 +90,11 @@ export const PROJETOS: Projeto[] = [
       "Rover autônomo com percepção por visão computacional, dividido em três unidades que falham de forma independente.",
     problema:
       "Um robô que depende de um único computador para enxergar, decidir e agir para por inteiro quando qualquer uma das três coisas falha. Em bancada isso é inconveniente; em pista é o fim da prova.",
-    // Derivado do problema e da arquitetura já descritos — confirmar.
+    // Derivado do problema e da arquitetura já descritos, confirmar.
     objetivo:
       "Que a falha de qualquer uma das três unidades não derrube as outras: o robô degrada, mas não para de forma perigosa.",
     arquitetura:
-      "Três unidades com responsabilidades separadas: o ESP32-S3-CAM cuida dos olhos e do rádio, o Arduino UNO dos reflexos, o notebook do raciocínio via YOLO. A fronteira é de responsabilidade, não só de hardware — se o notebook trava, o Arduino para sozinho.",
+      "Três unidades com responsabilidades separadas: o ESP32-S3-CAM cuida dos olhos e do rádio, o Arduino UNO dos reflexos, o notebook do raciocínio via YOLO. A fronteira é de responsabilidade, não só de hardware: se o notebook trava, o Arduino para sozinho.",
     decisoes: [
       {
         decisao: "Separar percepção, reflexo e raciocínio em três unidades independentes.",
@@ -108,10 +108,10 @@ export const PROJETOS: Projeto[] = [
       software: ["C++", "Python"],
       algoritmos: [{ nome: "YOLO", parametros: "detecção de objetos em tempo real" }],
     },
-    // Squad da frente Projetos, em components/frentes.tsx — confirmar.
+    // Squad da frente Projetos, em components/frentes.tsx, confirmar.
     integrantes: ["Luiza", "Julio", "Elis"],
     limitacao:
-      "O AI Rover não tem encoders nas rodas. Sabemos a força que mandamos pro motor, não quanto ele andou de fato — e isso significa que mapa e rota ainda não são confiáveis. Preferimos falar isso agora do que deixar alguém descobrir sozinho depois.",
+      "O AI Rover não tem encoders nas rodas. Sabemos a força que mandamos pro motor, não quanto ele andou de fato, e isso significa que mapa e rota ainda não são confiáveis. Preferimos falar isso agora do que deixar alguém descobrir sozinho depois.",
     proximosPassos: [
       "Instalar encoders nas rodas e fechar a malha de odometria",
       "Embarcar o processamento, tirando a dependência do notebook e do rádio",
@@ -133,8 +133,8 @@ export const PROJETOS: Projeto[] = [
     resumo:
       "Robô seguidor de linha com rodas mecanum e controle PID, trocando decisão binária por estimativa contínua da trajetória.",
     problema:
-      "Controle de linha por regra binária — 'tem linha / não tem linha' — produz oscilação constante: o robô briga com a própria trajetória em vez de seguir.",
-    // Derivado do problema e do resultado descrito na abordagem — confirmar.
+      "Controle de linha por regra binária, 'tem linha / não tem linha', produz oscilação constante: o robô briga com a própria trajetória em vez de seguir.",
+    // Derivado do problema e do resultado descrito na abordagem, confirmar.
     objetivo:
       "Seguir a linha com correção proporcional ao erro, eliminando a oscilação de quem só sabe virar para um lado ou para o outro.",
     arquitetura:
@@ -144,7 +144,7 @@ export const PROJETOS: Projeto[] = [
         decisao: "Atribuir um peso a cada posição de sensor e trabalhar com a média ponderada.",
         descartado: "Tratar cada sensor isoladamente, como presença ou ausência de linha.",
         porque:
-          "A média devolve uma estimativa numérica da posição da linha, não só 'tem linha / não tem linha' — e é isso que permite correção proporcional.",
+          "A média devolve uma estimativa numérica da posição da linha, não só 'tem linha / não tem linha', e é isso que permite correção proporcional.",
       },
       {
         decisao: "Controlador PID sobre a estimativa contínua.",
@@ -167,7 +167,7 @@ export const PROJETOS: Projeto[] = [
         { nome: "Controlador PID", parametros: "Kp 0,30 · Kd 0,075" },
       ],
     },
-    // Squad da frente Competição, em components/frentes.tsx — confirmar.
+    // Squad da frente Competição, em components/frentes.tsx, confirmar.
     integrantes: ["João", "Nasser", "Guilherme"],
     /*
      * ⚠ DEDUZIDA, não escrita por vocês. Base: a ficha declara Kp e Kd mas
@@ -178,7 +178,7 @@ export const PROJETOS: Projeto[] = [
      * branco.
      */
     limitacao:
-      "O controlador roda hoje com os termos proporcional e derivativo ajustados, mas o integral ainda não. Enquanto isso, desvio pequeno e constante não é corrigido — o robô segue a linha com um erro residual que só o termo integral elimina.",
+      "O controlador roda hoje com os termos proporcional e derivativo ajustados, mas o integral ainda não. Enquanto isso, desvio pequeno e constante não é corrigido: o robô segue a linha com um erro residual que só o termo integral elimina.",
     proximosPassos: ["Ajuste fino do termo integral", "Ensaio em pista de competição"],
     foto: "/fotos/mecanum.jpg",
     /*
@@ -186,7 +186,7 @@ export const PROJETOS: Projeto[] = [
      * components/universidade-aberta.tsx identifica as duas como sendo deste
      * robô ("Robô Mecanum sendo demonstrado numa mesa com pista de linha" e
      * "Robô Navegador Mecanum sobre a pista de testes"). Novas fotos entram
-     * aqui — a galeria da página cresce sozinha.
+     * aqui, a galeria da página cresce sozinha.
      */
     galeria: [
       "/fotos/universidade-aberta/foto-05.jpg",

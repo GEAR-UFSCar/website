@@ -7,7 +7,7 @@
  * O traço tem ponta reta (`butt`, o padrão) em vez de arredondada: a mesma
  * decisão do check em modulo-checkbox.tsx, que usa strokeLinecap="square".
  * Ponta redonda suavizaria a única forma curva da página inteira, e a direção
- * estética do GEAR é brutalista — a curva já é concessão bastante.
+ * estética da GEAR é brutalista — a curva já é concessão bastante.
  */
 
 /* Raio e traço em unidades do viewBox de 48. r=21 deixa o traço de 3 inteiro

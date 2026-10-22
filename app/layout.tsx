@@ -20,7 +20,7 @@ const spaceMono = Space_Mono({
 })
 
 const DESCRICAO =
-  "Entidade de robótica da UFSCar Sorocaba — Competição, Pesquisa e Projetos em automação e inteligência artificial."
+  "Entidade de robótica da UFSCar Sorocaba: Competição, Pesquisa e Projetos em automação e inteligência artificial."
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -52,7 +52,7 @@ export const metadata: Metadata = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "EducationalOrganization",
-  name: "GEAR — Grupo de Extensão em Automação e Robótica",
+  name: "GEAR: Grupo de Extensão em Automação e Robótica",
   alternateName: "GEAR UFSCar",
   description: DESCRICAO,
   url: SITE_URL,
@@ -65,7 +65,7 @@ const jsonLd = {
   },
   location: {
     "@type": "Place",
-    name: "UFSCar — campus Sorocaba",
+    name: "UFSCar, campus Sorocaba",
     address: {
       "@type": "PostalAddress",
       addressLocality: "Sorocaba",

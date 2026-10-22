@@ -21,9 +21,9 @@ export const metadata: Metadata = {
 
 /*
  * Aviso de privacidade exigido pela LGPD. O site coleta nome completo, curso e
- * e-mail institucional no cadastro, e desde 012 registra o aceite do Regimento
- * — coletar tudo isso sem dizer o que se faz com os dados é a lacuna que a
- * auditoria apontou.
+ * e-mail institucional no cadastro, e desde 012 registra o aceite do Regimento.
+ * Coletar tudo isso sem dizer o que se faz com os dados é a lacuna que este
+ * aviso fecha.
  *
  * Os campos entre colchetes precisam ser preenchidos pela diretoria antes de
  * publicar: não invento encarregado nem endereço. A página mostra o aviso de
@@ -34,7 +34,7 @@ const secoes = [
   {
     titulo: "Quem trata os seus dados",
     conteudo: [
-      "O GEAR — Grupo de Extensão em Automação e Robótica é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, vinculada ao campus Sorocaba, com orientação docente.",
+      "A GEAR, Grupo de Extensão em Automação e Robótica, é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, vinculada ao campus Sorocaba, com orientação docente.",
       "Para efeito da Lei 13.709/2018 (LGPD), o tratamento descrito aqui é realizado pela entidade no exercício dessa atividade de extensão. Dúvidas e solicitações vão para o e-mail no fim desta página.",
     ],
   },
@@ -52,7 +52,7 @@ const secoes = [
     titulo: "Para que usamos",
     conteudo: [
       "Para operar a área de membros: identificar quem é da entidade, organizar as frentes, registrar presença em atas e acompanhar a formação na Academia GEAR.",
-      "Não usamos seus dados para publicidade, não fazemos perfilamento e não vendemos nem compartilhamos com terceiros. O site não usa cookies de rastreamento ou de publicidade — os únicos cookies são os de sessão, necessários para manter você conectado.",
+      "Não usamos seus dados para publicidade, não fazemos perfilamento e não vendemos nem compartilhamos com terceiros. O site não usa cookies de rastreamento ou de publicidade: os únicos cookies são os de sessão, necessários para manter você conectado.",
     ],
   },
   {
@@ -73,7 +73,7 @@ const secoes = [
   {
     titulo: "Por quanto tempo",
     conteudo: [
-      "Enquanto você for membro, e por até 2 anos após a saída — prazo que permite manter a memória institucional de quem passou por cada gestão e por cada projeto.",
+      "Enquanto você for membro, e por até 2 anos após a saída, prazo que permite manter a memória institucional de quem passou por cada gestão e por cada projeto.",
       "Atas de reunião e registros de aceite são documentos institucionais e não são apagados: são o que comprova decisões tomadas coletivamente.",
     ],
   },
@@ -87,7 +87,7 @@ const secoes = [
   {
     titulo: "Segurança",
     conteudo: [
-      "Os dados ficam no Supabase, com acesso controlado por políticas no próprio banco — não apenas por verificação na aplicação. Ter conta não dá acesso a nada: é preciso aprovação da diretoria.",
+      "Os dados ficam no Supabase, com acesso controlado por políticas no próprio banco, não apenas por verificação na aplicação. Ter conta não dá acesso a nada: é preciso aprovação da diretoria.",
       "O site é servido sobre HTTPS, com política de segurança de conteúdo e proteção contra incorporação em sites de terceiros.",
     ],
   },
@@ -117,7 +117,7 @@ export default function PrivacidadePage() {
       <Aviso titulo="ANTES DE PUBLICAR" tom="neutro" className="mt-10">
         A diretoria precisa confirmar o prazo de retenção e o canal de atendimento ao titular
         desta página, e nomear formalmente quem responde por eles. O texto abaixo descreve o
-        tratamento que o sistema de fato realiza — foi escrito a partir do código e das
+        tratamento que o sistema de fato realiza, foi escrito a partir do código e das
         políticas do banco, não de um modelo genérico.
       </Aviso>
 

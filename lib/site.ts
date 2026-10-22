@@ -32,6 +32,9 @@ export const VERSAO_TERMOS = "1.0"
  * Canal público da entidade. Estava repetido em parceiros.tsx, footer.tsx e
  * privacidade/page.tsx — três lugares para trocar quando o endereço mudar.
  */
+/** Membros fundadores. Conferir com a lista de components/time.tsx ao mudar. */
+export const TOTAL_MEMBROS = 11
+
 export const EMAIL_CONTATO = "gearufscar@gmail.com"
 
 /**
@@ -43,7 +46,7 @@ export const EMAIL_CONTATO = "gearufscar@gmail.com"
  * destino terminal, o candidato circula e sai sem fazer nada.
  */
 export const CONTATO_INGRESSO =
-  `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Quero fazer parte da GEAR")}`
+  `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Quero ser avisado do próximo ciclo da GEAR")}`
 
 export const CONTATO_PARCERIA =
   `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Parceria GEAR")}`

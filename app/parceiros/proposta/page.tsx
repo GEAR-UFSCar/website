@@ -7,7 +7,7 @@ import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
 export const metadata: Metadata = {
   title: "Proposta de patrocínio | GEAR",
   description: "Versão imprimível da proposta de patrocínio da GEAR UFSCar.",
-  // documento de trabalho, não página de captação — fora do índice
+  // documento de trabalho, não página de captação, fora do índice
   robots: { index: false, follow: true },
 }
 
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
  * PROPOSTA IMPRIMÍVEL
  *
  * A RoboJackets mantém um "sponsorship packet" em PDF, e é isso que circula
- * dentro da empresa: ninguém aprova patrocínio olhando uma página web — aprova
+ * dentro da empresa: ninguém aprova patrocínio olhando uma página web, aprova
  * num comitê, com documento anexado ao e-mail.
  *
  * Em vez de um PDF estático que sai de sincronia com o site, esta é a mesma
@@ -57,7 +57,7 @@ export default function PropostaPage() {
           GEAR <span className="italic">UFSCar Sorocaba</span>
         </h1>
         <p className="mt-3 max-w-[62ch] text-sm leading-relaxed text-neutral-700">
-          Grupo de Extensão em Automação e Robótica — atividade de extensão registrada na
+          Grupo de Extensão em Automação e Robótica: atividade de extensão registrada na
           Pró-Reitoria de Extensão da UFSCar, com orientação docente e prestação de contas à
           universidade.
         </p>
@@ -120,7 +120,7 @@ export default function PropostaPage() {
                   <ul className="space-y-1.5">
                     {nivel.beneficios.map((b) => (
                       <li key={b} className="leading-relaxed text-neutral-700">
-                        — {b}
+                        - {b}
                       </li>
                     ))}
                   </ul>
@@ -132,7 +132,7 @@ export default function PropostaPage() {
 
         <p className="mt-5 max-w-[68ch] text-sm leading-relaxed text-neutral-700">
           Não há valor fixo por nível. A contrapartida é acertada em conversa direta, porque apoio
-          pode ser equipamento, verba, serviço ou mentoria técnica — e cada um destrava um projeto
+          pode ser equipamento, verba, serviço ou mentoria técnica, e cada um destrava um projeto
           diferente. Diga o que faz sentido para a sua empresa e respondemos com o que isso viabiliza,
           de forma específica.
         </p>
@@ -145,8 +145,8 @@ export default function PropostaPage() {
         </h2>
         <p className="mt-4 text-sm leading-relaxed text-neutral-700">
           {RESPONSAVEL_PATROCINIO.nome
-            ? `${RESPONSAVEL_PATROCINIO.nome} — ${RESPONSAVEL_PATROCINIO.cargo}`
-            : `${RESPONSAVEL_PATROCINIO.cargo} — responsável a designar pela diretoria`}
+            ? `${RESPONSAVEL_PATROCINIO.nome}, ${RESPONSAVEL_PATROCINIO.cargo}`
+            : `${RESPONSAVEL_PATROCINIO.cargo}, responsável a designar pela diretoria`}
         </p>
         <p className="mt-1 font-mono text-sm">
           <a href={CONTATO_PARCERIA} className="underline">
@@ -154,7 +154,7 @@ export default function PropostaPage() {
           </a>
         </p>
         <p className="mt-4 font-mono text-[10px] tracking-wider uppercase text-neutral-500">
-          UFSCar — campus Sorocaba · São Paulo · Brasil
+          UFSCar, campus Sorocaba, São Paulo, Brasil
         </p>
       </section>
     </main>

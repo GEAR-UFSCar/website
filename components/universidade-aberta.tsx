@@ -8,7 +8,7 @@ import { motion } from "framer-motion"
  * Galeria de eventos. A ordem é definida pelo conteúdo, não alfabética:
  * cada evento abre em plano geral, alterna pessoas e robôs, e as fotos do
  * mesmo instante ficam separadas para não parecerem repetição. Os eventos
- * não se misturam — primeiro a Universidade Aberta, depois a SeCoT.
+ * não se misturam, primeiro a Universidade Aberta, depois a SeCoT.
  *
  * LAYOUT EM FILEIRAS DE ALTURA CONSTANTE. Duas tentativas anteriores
  * falharam por motivos opostos. Grade de células fixas cortava retrato em
@@ -21,7 +21,7 @@ import { motion } from "framer-motion"
  * `flex-grow` proporcionais à razão largura/altura fazem cada fileira
  * fechar exata na borda, com todos os itens na mesma altura.
  * `--altura-alvo` é essa altura; mexer nela é o único ajuste de tamanho.
- * Vale a partir de md — no mobile são duas colunas fixas, ver o contêiner.
+ * Vale a partir de md, no mobile são duas colunas fixas, ver o contêiner.
  * O `max-width` existe só para a última fileira: sem ele, uma foto sozinha
  * na sobra esticaria para a largura inteira da tela.
  *
@@ -36,7 +36,7 @@ const FOTOS = [
     arquivo: "foto-01.jpg",
     evento: UNIVERSIDADE_ABERTA,
     largura: 1600,
-    altura: 1200, // horizontal — abertura
+    altura: 1200, // horizontal, abertura
     alt: "Laboratório de informática com estudantes em computadores durante a Universidade Aberta UFSCar",
   },
   {
@@ -64,7 +64,7 @@ const FOTOS = [
     arquivo: "foto-06.jpg",
     evento: UNIVERSIDADE_ABERTA,
     largura: 1600,
-    altura: 900, // horizontal — destaque do meio
+    altura: 900, // horizontal, destaque do meio
     alt: "Equipe da GEAR reunida durante a Universidade Aberta UFSCar 2026",
   },
   {
@@ -85,7 +85,7 @@ const FOTOS = [
     arquivo: "foto-08.jpg",
     evento: SECOT,
     largura: 1600,
-    altura: 900, // horizontal — abertura da SeCoT
+    altura: 900, // horizontal, abertura da SeCoT
     alt: "Televisão exibindo a interface do GEAR AI Rover v21 em execução: feed da câmera com visão computacional à esquerda e a telemetria da decisão da IA à direita",
   },
   {
@@ -113,7 +113,7 @@ const FOTOS = [
     arquivo: "foto-10.jpg",
     evento: SECOT,
     largura: 1600,
-    altura: 900, // horizontal — destaque do meio
+    altura: 900, // horizontal, destaque do meio
     alt: "Membro operando o notebook numa mesa comprida com QR code colado, robô mecanum sobre a mesa e um grupo de visitantes em volta",
   },
   {
@@ -147,10 +147,9 @@ export function UniversidadeAberta() {
         transition={{ duration: 0.8 }}
         className="mb-16"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">05 — EVENTOS</p>
         <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde a GEAR já esteve</h2>
         <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-          Universidade Aberta UFSCar e SeCoT — 2026
+          Universidade Aberta UFSCar e SeCoT, 2026
         </p>
       </motion.div>
 
@@ -159,7 +158,7 @@ export function UniversidadeAberta() {
         É o único botão de tamanho desta seção.
 
         No mobile o layout é outro: duas colunas fixas (multicol). Fileira de
-        altura constante não sobrevive a tela estreita — cabe uma foto por
+        altura constante não sobrevive a tela estreita, cabe uma foto por
         fileira, e uma retrato sozinha esticada fica com altura de tela
         inteira. As propriedades flex dos itens são simplesmente ignoradas
         enquanto o contêiner não é flex, então os dois layouts convivem sem
@@ -185,9 +184,6 @@ export function UniversidadeAberta() {
                   className="flex items-center justify-center"
                   style={{ aspectRatio: `${foto.largura} / ${foto.altura}` }}
                 >
-                  <span className="font-mono text-[10px] tracking-[0.2em] text-muted-foreground">
-                    {foto.arquivo}
-                  </span>
                 </div>
               ) : (
                 <>
@@ -206,13 +202,13 @@ export function UniversidadeAberta() {
                      */
                     sizes={
                       razao > 1
-                        ? "(min-width: 768px) 50vw, 50vw"
+                        ? "50vw"
                         : "(min-width: 1024px) 22vw, (min-width: 768px) 30vw, 50vw"
                     }
                     className="block h-auto w-full transition-transform duration-500 ease-out group-hover:scale-105"
                     onError={() => setAusentes((anterior) => ({ ...anterior, [foto.arquivo]: true }))}
                   />
-                  {/* Etiqueta do evento — só aparece no hover, sem roubar o hover da imagem */}
+                  {/* Etiqueta do evento, só aparece no hover, sem roubar o hover da imagem */}
                   <div className="pointer-events-none absolute inset-0 flex items-end bg-gradient-to-t from-[var(--gear-ink)]/90 via-[var(--gear-ink)]/20 to-transparent opacity-0 transition-opacity duration-500 ease-out group-hover:opacity-100">
                     <span className="p-3 font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--gear-amber)]">
                       {foto.evento}

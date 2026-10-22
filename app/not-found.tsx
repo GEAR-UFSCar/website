@@ -25,7 +25,7 @@ export default function NotFound() {
           </h1>
 
           <p className="mt-8 max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            Nem toda trajetória dá certo de primeira. Esta página não existe — ou existiu e mudou de
+            Nem toda trajetória dá certo de primeira. Esta página não existe, ou existiu e mudou de
             lugar. O resto do site continua de pé.
           </p>
 

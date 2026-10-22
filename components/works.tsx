@@ -17,21 +17,21 @@ const entradas: Entrada[] = [
     tema: "Quem somos",
     titulo: "Uma entidade de robótica, três frentes",
     texto:
-      "A GEAR é a entidade estudantil de robótica da UFSCar Sorocaba, registrada como atividade de extensão na ProEx-UFSCar, com orientação do Prof. Iago Pacheco Gomes. Reunimos estudantes de qualquer curso que querem aprender robótica com a mão na massa — sem pré-requisito técnico pra entrar.",
+      "A GEAR é a entidade estudantil de robótica da UFSCar Sorocaba, registrada como atividade de extensão na ProEx-UFSCar, com orientação do Prof. Iago Pacheco Gomes. Reunimos estudantes de qualquer curso que querem aprender robótica com a mão na massa, sem pré-requisito técnico para entrar.",
     foto: "/fotos/universidade-aberta/foto-01.jpg",
   },
   {
     tema: "Competição",
-    titulo: "Rumo à pista",
+    titulo: "Preparação para competir",
     texto:
-      "Um squad dedicado a disputar competições nacionais e internacionais, trabalhando em SLAM, exploração autônoma e visão computacional. Quais competições entram em cada ciclo depende de confirmação.",
+      "Um squad que se prepara para competições nacionais e internacionais, trabalhando em SLAM, exploração autônoma e visão computacional. Ainda não competimos, e quais competições entram em cada ciclo depende de confirmação.",
     foto: "/fotos/universidade-aberta/foto-05.jpg",
   },
   {
     tema: "Pesquisa",
-    titulo: "Pesquisa que termina em publicação",
+    titulo: "Pesquisa com orientação acadêmica",
     texto:
-      "Pesquisa conduzida com orientação acadêmica formal e escrita para publicar em eventos nacionais. O tema de cada ciclo sai da conversa com o professor orientador.",
+      "Pesquisa conduzida com orientação acadêmica formal, com a meta de publicar em eventos nacionais. Ainda não há publicação. O tema de cada ciclo sai da conversa com o professor orientador.",
     foto: "/fotos/universidade-aberta/foto-02.jpg",
   },
   {
@@ -44,9 +44,9 @@ const entradas: Entrada[] = [
   },
   {
     tema: "Formação",
-    titulo: "Ninguém entra direto numa trilha",
+    titulo: "Ninguém entra direto numa frente",
     texto:
-      "Todo mundo passa pela Academia GEAR antes — Bootcamp, formação técnica em ROS 2 e Python, um Projeto de Validação, e só depois a escolha de Competição, Pesquisa ou Projetos.",
+      "Todo mundo passa pela Academia GEAR antes: Bootcamp, formação técnica em ROS 2 e Python, um Projeto de Validação, e só depois a escolha de Competição, Pesquisa ou Projetos.",
     foto: "/fotos/universidade-aberta/foto-06.jpg",
   },
 ]
@@ -75,7 +75,6 @@ export function Works() {
         transition={{ duration: 0.8 }}
         className="mb-24"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — A ENTIDADE</p>
         <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que é a GEAR</h2>
       </motion.div>
 
@@ -94,11 +93,6 @@ export function Works() {
             onMouseLeave={() => setHoveredIndex(null)}
             data-cursor-hover
           >
-            {entrada.destaque && (
-              <p className="font-mono text-[10px] tracking-[0.3em] text-[var(--gear-amber)] mb-4 uppercase">
-                {entrada.tema}
-              </p>
-            )}
 
             <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-3 md:gap-10">
               <span className="font-mono text-xs text-muted-foreground tracking-widest order-1 md:order-none shrink-0 uppercase">
@@ -113,6 +107,12 @@ export function Works() {
                 >
                   {entrada.titulo}
                 </motion.h3>
+
+                {entrada.foto && (
+                  <div className="relative mt-5 aspect-[16/9] w-full overflow-hidden md:hidden">
+                    <Image src={entrada.foto} alt="" fill sizes="100vw" className="object-cover" />
+                  </div>
+                )}
 
                 <p className="mt-5 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
                   {entrada.texto}

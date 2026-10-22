@@ -34,21 +34,21 @@ type Frente = {
 const frentes: Frente[] = [
   {
     nome: "Competição",
-    resumo: "A trilha Competição prepara a equipe para disputar competições nacionais e internacionais de robótica.",
+    resumo: "A frente Competição prepara a equipe para disputar competições nacionais e internacionais de robótica. Ainda não competimos.",
     detalhe:
-      "Vamos participar de diversas competições ao longo do ano, com squad dedicado a SLAM, exploração autônoma e visão computacional — as competições específicas de cada ciclo serão anunciadas conforme forem confirmadas.",
+      "Pretendemos participar de competições ao longo do ano, com squad dedicado a SLAM, exploração autônoma e visão computacional. As competições específicas de cada ciclo serão anunciadas conforme forem confirmadas.",
   },
   {
     nome: "Pesquisa",
-    resumo: "A trilha Pesquisa produz ciência de verdade: publicação em eventos nacionais, com orientação acadêmica formal.",
+    resumo: "A frente Pesquisa trabalha com orientação acadêmica formal e tem como meta publicar em eventos nacionais. Ainda não há publicação.",
     detalhe:
-      "A linha de pesquisa específica de cada ciclo é definida junto ao professor orientador conforme o interesse e a formação dos membros da trilha.",
+      "A linha de pesquisa específica de cada ciclo é definida junto ao professor orientador conforme o interesse e a formação dos membros da frente.",
   },
   {
     nome: "Projetos",
     resumo: "Automação aplicada, com o AI Rover como projeto piloto.",
     detalhe:
-      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente — um rover autônomo dividido em três unidades que falham de forma independente: o ESP32-S3-CAM cuida da percepção e do rádio, o Arduino UNO dos reflexos, e o raciocínio roda via YOLO. Se uma parte cai, as outras não vão junto. Diferente da competição, aqui o sistema não pode só funcionar uma vez. As decisões, incluindo a odometria em malha aberta que ainda não é confiável, ficam registradas na ficha do projeto.",
+      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente: um rover autônomo dividido em três unidades que falham de forma independente: o ESP32-S3-CAM cuida da percepção e do rádio, o Arduino UNO dos reflexos, e o raciocínio roda via YOLO. Se uma parte cai, as outras não vão junto. Diferente da competição, aqui o sistema não pode só funcionar uma vez. As decisões, incluindo a odometria em malha aberta que ainda não é confiável, ficam registradas na ficha do projeto.",
   },
 ]
 
@@ -58,7 +58,6 @@ export function Frentes() {
       {/* As três frentes */}
       <section id="frentes" className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32 scroll-mt-24">
         <Surge className="mb-12">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">03 — AS TRÊS FRENTES</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde você entra</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
             Toda pessoa passa pela mesma formação e só então escolhe uma frente, com repertório para
@@ -68,7 +67,7 @@ export function Frentes() {
         {/*
           As três lado a lado, e não empilhadas: a página existe para a pessoa
           COMPARAR as frentes antes de escolher uma, e comparação em coluna
-          única vira memória — quando se chega na terceira, a primeira já saiu
+          única vira memória, quando se chega na terceira, a primeira já saiu
           da tela. `items-stretch` + `h-full` mantêm os três cards da mesma
           altura mesmo com textos de comprimento diferente.
         */}
@@ -83,9 +82,9 @@ export function Frentes() {
                 0{index + 1}
               </span>
 
-              <h2 className="mt-4 font-sans text-3xl md:text-4xl font-light tracking-tight">
+              <h3 className="mt-4 font-sans text-3xl md:text-4xl font-light tracking-tight">
                 {frente.nome}
-              </h2>
+              </h3>
 
               <p className="mt-4 font-sans text-base md:text-lg leading-relaxed">{frente.resumo}</p>
 
@@ -96,11 +95,8 @@ export function Frentes() {
           ))}
         </div>
 
-        {/* Áreas de apoio — pares das frentes técnicas, não subordinadas */}
+        {/* Áreas de apoio, pares das frentes técnicas, não subordinadas */}
         <Surge className="mt-20 border-t border-white/10 pt-10">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            04 — ÁREAS DE APOIO
-          </p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Fora da bancada</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
             Robô em pista também depende de ter o trabalho divulgado, dentro e fora da

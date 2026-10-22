@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { CONTATO_INGRESSO, OG_IMAGE } from "@/lib/site"
+import { CONTATO_INGRESSO, OG_IMAGE, TOTAL_MEMBROS } from "@/lib/site"
 import { Aviso } from "@/components/aviso"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 import { ETAPAS_FORMACAO } from "@/lib/formacao"
@@ -37,13 +37,8 @@ export const metadata: Metadata = {
 export default function IngressarPage() {
   return (
     <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
-      <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-        GRADUAÇÃO · UFSCAR SOROCABA
-      </p>
       <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-        COMO
-        <br />
-        <span className="italic">entrar</span>
+        Como entrar na GEAR
       </h1>
 
       <p className="mt-10 max-w-[62ch] font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
@@ -55,14 +50,11 @@ export default function IngressarPage() {
       {/* Estado real do ciclo. Substituir por datas quando abrir. */}
       <Aviso titulo="INSCRIÇÕES FECHADAS" className="mt-10">
         Não há processo seletivo aberto no momento, e o próximo ciclo ainda não tem data. Escreva
-        para a gente e avisamos quando abrir — é o jeito mais direto de não perder.
+        para a gente e avisamos quando abrir. É o jeito mais direto de não perder.
       </Aviso>
 
       <section className="mt-20">
         <div className="border-t border-white/10 pt-8">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-            01 — O CAMINHO
-          </p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Seis etapas</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
             Todo mundo passa pelas mesmas etapas, na mesma ordem. A escolha da frente é a última,
@@ -89,13 +81,13 @@ export default function IngressarPage() {
         </ol>
       </section>
 
-      {/* Expectativa realista — mesma linguagem de "o que falta, sem enfeitar" */}
+      {/* Expectativa realista, mesma linguagem de "o que falta, sem enfeitar" */}
       <section className="mt-20 border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8">
         <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">
           ANTES DE SE INSCREVER
         </p>
         <p className="mt-3 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
-          A GEAR é nova: onze pessoas, primeiro ciclo, nenhum robô em competição ainda. Quem
+          A GEAR é nova: {TOTAL_MEMBROS} pessoas, primeiro ciclo, nenhum robô em competição ainda. Quem
           entra agora constrói a estrutura junto, o que significa mais autonomia e menos trilho
           pronto. Se você procura uma equipe consolidada com histórico de competição, ainda não
           somos isso. Preferimos dizer antes.
