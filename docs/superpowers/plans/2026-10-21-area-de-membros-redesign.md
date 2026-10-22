@@ -1951,6 +1951,192 @@ git commit -m "docs: spec registra desvios do plano de implementação" -m "Co-A
 
 ---
 
+## ETAPA 5: Acabamento profissional (site inteiro)
+
+Motivação: referências de nível alto (Linear para ferramenta, AMZ Racing para equipe estudantil) compartilham quatro coisas: bordas e separadores discretos, números concretos e verdadeiros, fotografia de produto bem feita e carga leve. As tarefas abaixo cobrem o que dá para fazer sem fotografia nova; a fotografia vira roteiro (Task 14).
+
+### Task 13: Linhas unificadas (tokens de borda)
+
+**Files:**
+- Modify: `app/globals.css`; todos os `.tsx` sob `app/` e `components/` que usam `border-white/10`, `border-white/15`, `border-white/20`, `bg-white/10` (divisor de grade), `divide-white/10`
+
+**Interfaces:**
+- Produces: utilitários Tailwind `border-linha`, `border-linha-forte`, `bg-linha`, `divide-linha`.
+
+- [ ] **Step 1: Declarar os tokens**
+
+Em `app/globals.css`, dentro do bloco `:root` (depois de `--sidebar-ring`), acrescentar:
+
+```css
+  /* Linhas: um tom discreto para estrutura e um mais firme para controles. */
+  --linha: color-mix(in oklab, var(--gear-mist) 14%, transparent);
+  --linha-forte: color-mix(in oklab, var(--gear-mist) 28%, transparent);
+```
+
+No bloco `@theme inline`, depois de `--color-ring`, acrescentar:
+
+```css
+  --color-linha: var(--linha);
+  --color-linha-forte: var(--linha-forte);
+```
+
+- [ ] **Step 2: Trocar as classes soltas**
+
+Run:
+
+```bash
+grep -rlE "border-white/(10|15|20)|bg-white/10|divide-white/10" app components --include=*.tsx | xargs sed -i -E \
+  -e 's#border-white/10#border-linha#g' \
+  -e 's#divide-white/10#divide-linha#g' \
+  -e 's#bg-white/10#bg-linha#g' \
+  -e 's#border-white/(15|20)#border-linha-forte#g'
+```
+
+Atenção: `bg-white/10` também é usado como fundo de barra de progresso (`h-1.5 w-28 bg-white/10`); a troca para `bg-linha` mantém o visual (14% de mist sobre ink). `hover:border-white/…` e `border-white/40` (estados de hover) ficam como estão.
+
+- [ ] **Step 3: Verificar**
+
+Run: `grep -rnE "border-white/(10|15|20)\b" app components | head` — esperado: vazio.
+Run: `npx tsc --noEmit && npx eslint . && npx next build 2>&1 | tail -10` — esperado: verde.
+
+- [ ] **Step 4: Commit**
+
+```bash
+git add -A app components
+git commit -m "style: tokens de linha unificam bordas e divisores do site" -m "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 14: Números verdadeiros na home e roteiro de fotografia
+
+**Files:**
+- Create: `components/numeros.tsx`, `docs/fotografia.md`
+- Modify: `app/(site)/page.tsx`
+
+**Interfaces:**
+- Consumes: `TOTAL_MEMBROS` (`lib/site.ts`), `PROJETOS` (`lib/projetos.ts`), `FRENTES` (`lib/administracao.ts`).
+- Produces: `Numeros()` (Server Component, sem props).
+
+- [ ] **Step 1: `components/numeros.tsx`**
+
+Só entra número que existe no código; nenhum contador animado.
+
+```tsx
+import { FRENTES } from "@/lib/administracao"
+import { PROJETOS } from "@/lib/projetos"
+import { TOTAL_MEMBROS } from "@/lib/site"
+
+const itens = [
+  { valor: PROJETOS.length, rotulo: "robôs documentados" },
+  { valor: FRENTES.length, rotulo: "frentes" },
+  { valor: TOTAL_MEMBROS, rotulo: "membros fundadores" },
+  { valor: 1, rotulo: "registro na ProEx-UFSCar" },
+]
+
+/** Faixa de fatos conferíveis no próprio site. Sem contador animado: o número é o dado. */
+export function Numeros() {
+  return (
+    <section aria-label="A GEAR em números" className="px-8 md:px-12">
+      <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-px border-y border-linha bg-linha md:grid-cols-4">
+        {itens.map((i) => (
+          <div key={i.rotulo} className="bg-[var(--gear-ink)] px-2 py-8 md:px-6 md:py-10">
+            <dd className="font-mono text-4xl tabular-nums tracking-tight md:text-5xl">{i.valor}</dd>
+            <dt className="mt-2 font-sans text-sm font-light text-muted-foreground">{i.rotulo}</dt>
+          </div>
+        ))}
+      </dl>
+    </section>
+  )
+}
+```
+
+- [ ] **Step 2: Inserir logo depois do Hero**
+
+Em `app/(site)/page.tsx`: `import { Numeros } from "@/components/numeros"` e, depois de `<Hero />`, `<Numeros />`.
+
+- [ ] **Step 3: `docs/fotografia.md`**
+
+```markdown
+# Roteiro de fotografia
+
+As fotos atuais são registros de celular em sala clara. Para o site ter cara de produto, os dois robôs precisam de um ensaio simples.
+
+## Robôs (AI Rover e Navegador Mecanum)
+- Fundo liso e fosco, escuro (cartolina preta ou tecido preto), sem objetos atrás.
+- Uma luz principal lateral e uma luz de recorte por trás, para desenhar o contorno das rodas e da placa.
+- Ângulo de três quartos, câmera na altura do robô; mais uma foto de frente e uma de detalhe (câmera, sensores).
+- Formato paisagem 3:2, no mínimo 2400 px de largura, JPG de qualidade alta. O mesmo cenário nos dois robôs.
+- Nomes: `ai-rover-hero.jpg`, `ai-rover-detalhe.jpg`, `mecanum-hero.jpg`, `mecanum-detalhe.jpg`, em `public/fotos/`.
+
+## Pessoas
+- Retrato de meio corpo, mesmo fundo e mesma luz para todos, em paisagem 4:5 ou retrato 4:5.
+- Nome do arquivo: `time-<primeiro-nome>.jpg` em `public/fotos/time/`. Ao chegarem, trocam as iniciais em `components/time.tsx`.
+
+## Onde cada foto entra
+- `*-hero.jpg`: topo de cada projeto em `/projetos` e imagem de compartilhamento.
+- `*-detalhe.jpg`: galeria do projeto.
+- `time-*.jpg`: cartões de `/time`.
+```
+
+- [ ] **Step 4: Verificar e commitar**
+
+Run: `npx tsc --noEmit && npx eslint . && npx next build 2>&1 | tail -10`
+
+```bash
+git add components/numeros.tsx "app/(site)/page.tsx" docs/fotografia.md
+git commit -m "feat(site): faixa de números verdadeiros e roteiro de fotografia" -m "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
+```
+
+---
+
+### Task 15: Hero mais leve e medição
+
+**Files:**
+- Modify: `components/hero.tsx`
+
+**Interfaces:**
+- Consumes: `SentientGear` de `components/sentient-gear.tsx` (export nomeado).
+
+- [ ] **Step 1: Carregar o canvas 3D sob demanda**
+
+Em `components/hero.tsx`, trocar `import { SentientGear } from "./sentient-gear"` por:
+
+```tsx
+import dynamic from "next/dynamic"
+
+// O WebGL (three + r3f) não precisa travar o primeiro desenho: carrega depois do HTML.
+const SentientGear = dynamic(() => import("./sentient-gear").then((m) => m.SentientGear), {
+  ssr: false,
+  loading: () => null,
+})
+```
+
+O hero já tem fundo `--gear-ink` e os anéis âmbar em CSS (ver comentário em `sentient-gear.tsx`), então o espaço não fica vazio enquanto o 3D chega.
+
+- [ ] **Step 2: Medir (precisa do Chrome)**
+
+Se `npx playwright install chrome` foi rodado ou existe Chrome/Chromium no sistema:
+
+```bash
+npm run build && (npm run start &) && sleep 4
+npx lighthouse http://localhost:3000 --only-categories=performance,accessibility,seo --output=json --output-path=./lighthouse-home.json --chrome-flags="--headless" --quiet
+node -e "const r=require('./lighthouse-home.json');const c=r.categories;console.log(Object.fromEntries(Object.entries(c).map(([k,v])=>[k,Math.round(v.score*100)])), 'LCP', r.audits['largest-contentful-paint'].displayValue)"
+```
+
+Metas: acessibilidade ≥ 95, SEO ≥ 95, desempenho (mobile) ≥ 80, LCP < 2,5 s. Se não houver Chrome, registrar "não medido" no resumo final em vez de afirmar números. Apagar `lighthouse-home.json` depois.
+
+- [ ] **Step 3: Verificar e commitar**
+
+Run: `npx tsc --noEmit && npx eslint . && npx next build 2>&1 | tail -10`
+
+```bash
+git add components/hero.tsx
+git commit -m "perf(site): canvas 3D do hero carrega sob demanda" -m "Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>"
+```
+
+---
+
 ## Self-review
 
 - **Cobertura do spec:** estrutura de 5 grupos e sub-abas (T1, T3); `/membros/frente` (T3); Hoje com Agora/Prazos/Avisos/Academia/Pendências e remoção de atalhos, perfil e avatares (T5, T6); Minha frente com quadro por status, "Meus/Todos" e metas agrupadas (T7, T8); Equipe com Agenda e `PageHeader` (T4, T8); Gestão com fila de pendências (T9); kit (T2); `Ctrl+K` (T10); casca sem cursor/scroll/footer (T3); acessibilidade (T3, T10); verificação por scripts e build (T1, T5, T11). O spec cita "Pessoas com filtro por frente e busca": o diretório já agrupa por frente e o plano não acrescenta busca de texto; se você quiser, é uma tarefa extra.
