@@ -8,6 +8,17 @@ import { Surge } from "@/components/surge"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { COLUNAS_META, estaVencida, type Meta } from "@/lib/metas"
+import { agruparMetas } from "@/lib/hoje"
+import { hojeISO } from "@/lib/datas"
+import { Secao } from "@/components/membros/secao"
+import { EstadoVazio } from "@/components/membros/estado-vazio"
+
+const SECOES_METAS = [
+  { chave: "atrasadas", titulo: "Atrasadas" },
+  { chave: "semana", titulo: "Esta semana" },
+  { chave: "depois", titulo: "Depois" },
+  { chave: "concluidas", titulo: "Concluídas" },
+] as const
 
 export const metadata: Metadata = {
   title: "Metas | GEAR",
@@ -57,6 +68,7 @@ export default async function MetasPage() {
 
   const vencidas = minhas.filter(estaVencida).length
   const abertas = minhas.filter((m) => !m.concluida).length
+  const grupos = agruparMetas(minhas, hojeISO())
 
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
@@ -84,28 +96,25 @@ export default async function MetasPage() {
         </div>
       </Surge>
 
-      {/* 02 — MINHAS METAS */}
-      <section className="mt-16 max-w-4xl">
-        <div className="border-t border-white/10 pt-8">
-          <h2 className="font-sans text-2xl md:text-4xl font-normal">Minhas metas</h2>
-        </div>
-
-        <div className="mt-8">
-          {minhas.length === 0 ? (
-            <p className="font-sans text-sm font-light text-muted-foreground">
-              {error
-                ? "Não foi possível carregar suas metas."
-                : "Nenhuma meta registrada ainda. A primeira é no formulário acima."}
-            </p>
-          ) : (
-            minhas.map((meta, i) => (
-              <Surge key={meta.id} index={i}>
-                <MetaCartao meta={meta} usuarioId={user.id} editavel />
-              </Surge>
-            ))
-          )}
-        </div>
-      </section>
+      {/* Minhas metas, agrupadas por prazo */}
+      {SECOES_METAS.map(({ chave, titulo }) =>
+        grupos[chave].length === 0 ? null : (
+          <Secao key={chave} titulo={`${titulo} (${grupos[chave].length})`} className="mt-12 max-w-4xl">
+            <div className="space-y-4">
+              {grupos[chave].map((meta) => (
+                <MetaCartao key={meta.id} meta={meta} usuarioId={user.id} editavel />
+              ))}
+            </div>
+          </Secao>
+        ),
+      )}
+      {minhas.length === 0 && (
+        <Secao titulo="Minhas metas" className="mt-12 max-w-4xl">
+          <EstadoVazio>
+            {error ? "Não foi possível carregar suas metas." : "Você ainda não criou nenhuma meta. Use o formulário acima."}
+          </EstadoVazio>
+        </Secao>
+      )}
 
       {/* 03 — PÚBLICAS DA EQUIPE */}
       <section className="mt-16 max-w-4xl">

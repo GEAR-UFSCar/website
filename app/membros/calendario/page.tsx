@@ -5,6 +5,8 @@ import { PageHeader } from "@/components/membros/page-header"
 import { ErroDados } from "@/components/erro-dados"
 import { EventoForm } from "@/components/evento-form"
 import { CalendarioMensal } from "@/components/calendario-mensal"
+import { AgendaLista } from "@/components/membros/agenda-lista"
+import { Secao } from "@/components/membros/secao"
 import { Surge } from "@/components/surge"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
@@ -151,6 +153,10 @@ export default async function CalendarioPage({
       <Surge className="mt-16">
         <CalendarioMensal mes={mes} itens={itens} hoje={hoje} />
       </Surge>
+
+      <Secao titulo="Agenda">
+        <AgendaLista itens={itens} hoje={hoje} />
+      </Secao>
 
       {podeEscrever && (
         <div className="mt-20 max-w-4xl">
