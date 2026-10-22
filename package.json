@@ -8,7 +8,7 @@
     "lint": "eslint .",
     "start": "next start",
     "test:rls": "node scripts/testar-rls.mjs",
-    "test:nav": "node --experimental-strip-types scripts/testar-navegacao.mjs"
+    "test:nav": "node --no-warnings --experimental-strip-types scripts/testar-navegacao.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.4.0",
