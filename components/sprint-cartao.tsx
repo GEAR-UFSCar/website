@@ -38,7 +38,7 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId }: 
   const responsavel = sprint.responsavel?.nome_completo?.trim()
 
   return (
-    <article className="border border-white/10 bg-[var(--gear-navy)] p-6 md:p-8">
+    <article id={`sprint-${sprint.id}`} className="scroll-mt-32 border border-white/10 bg-[var(--gear-navy)] p-5 md:p-6">
       {/* Cabeçalho: quem toca, à esquerda; em que pé está, à direita. */}
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-3">

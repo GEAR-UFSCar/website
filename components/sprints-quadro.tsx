@@ -4,7 +4,7 @@ import { useMemo, useState } from "react"
 
 import { SprintCartao } from "@/components/sprint-cartao"
 import { campoBase } from "@/lib/ui"
-import type { StatusSprint } from "@/lib/administracao"
+import { STATUS_SPRINT, type StatusSprint } from "@/lib/administracao"
 import { FILTROS_STATUS, corresponde, type Atualizacao, type Sprint } from "@/lib/sprints"
 
 type Props = {
@@ -31,8 +31,13 @@ type Props = {
 export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }: Props) {
   const [busca, setBusca] = useState("")
   const [status, setStatus] = useState<StatusSprint | null>(null)
+  const [meus, setMeus] = useState(true)
 
-  const porBusca = useMemo(() => sprints.filter((s) => corresponde(s, busca)), [sprints, busca])
+  const base = useMemo(
+    () => (meus ? sprints.filter((s) => s.responsavel?.id === usuarioId) : sprints),
+    [sprints, meus, usuarioId],
+  )
+  const porBusca = useMemo(() => base.filter((s) => corresponde(s, busca)), [base, busca])
 
   const contagens = useMemo(() => {
     const mapa = new Map<string, number>()
@@ -46,7 +51,28 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
 
   return (
     <>
-      <div className="mt-10">
+      <div role="group" aria-label="Quais sprints mostrar" className="flex gap-2">
+        {[
+          { rotulo: "Meus", valor: true },
+          { rotulo: "Todos", valor: false },
+        ].map((o) => (
+          <button
+            key={o.rotulo}
+            type="button"
+            onClick={() => setMeus(o.valor)}
+            aria-pressed={meus === o.valor}
+            className={`min-h-11 border px-4 font-mono text-[11px] tracking-[0.15em] uppercase transition-colors ${
+              meus === o.valor
+                ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
+                : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+            }`}
+          >
+            {o.rotulo}
+          </button>
+        ))}
+      </div>
+
+      <div className="mt-6">
         <label htmlFor="busca-sprints" className="sr-only">
           Buscar sprint por título ou responsável
         </label>
@@ -101,21 +127,36 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
 
       {visiveis.length === 0 ? (
         <p className="mt-8 max-w-2xl font-sans text-sm font-light text-muted-foreground">
-          {sprints.length === 0
-            ? "Nenhum sprint registrado nesta frente ainda."
+          {base.length === 0
+            ? meus
+              ? "Você não é responsável por nenhum sprint desta frente. Use Todos para ver os demais."
+              : "Nenhum sprint registrado nesta frente ainda."
             : "Nenhum sprint corresponde à busca e ao filtro escolhidos."}
         </p>
       ) : (
-        <div className="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-6">
-          {visiveis.map((sprint) => (
-            <SprintCartao
-              key={sprint.id}
-              sprint={sprint}
-              atualizacoes={atualizacoes[sprint.id] ?? []}
-              podeEscrever={podeEscrever}
-              usuarioId={usuarioId}
-            />
-          ))}
+        <div className="mt-8 grid grid-cols-1 gap-8 xl:grid-cols-4 xl:gap-4">
+          {STATUS_SPRINT.filter((st) => !status || st === status).map((st) => {
+            const doStatus = visiveis.filter((s) => s.status === st)
+            return (
+              <section key={st} aria-label={st}>
+                <h2 className="mb-3 flex items-baseline justify-between border-b border-white/10 pb-2 font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground">
+                  {st}
+                  <span className="tabular-nums">{doStatus.length}</span>
+                </h2>
+                <div className="flex flex-col gap-4">
+                  {doStatus.map((sprint) => (
+                    <SprintCartao
+                      key={sprint.id}
+                      sprint={sprint}
+                      atualizacoes={atualizacoes[sprint.id] ?? []}
+                      podeEscrever={podeEscrever}
+                      usuarioId={usuarioId}
+                    />
+                  ))}
+                </div>
+              </section>
+            )
+          })}
         </div>
       )}
     </>
