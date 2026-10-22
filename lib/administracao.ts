@@ -57,6 +57,15 @@ export function rotaDaFrente(nome: string | null | undefined) {
 }
 
 /**
+ * Link para um sprint na página da frente DELE (não a do perfil de quem vê).
+ * Frente desconhecida cai no seletor de /membros/frente.
+ */
+export function hrefDoSprint(frente: string | null | undefined, id: string) {
+  const achada = FRENTES_ROTAS.find((t) => t.nome === frente?.trim())
+  return achada ? `/membros/sprints/${achada.slug}#sprint-${id}` : "/membros/frente"
+}
+
+/**
  * Membro validado pela diretoria. Espelha perfis.aprovado e a função
  * e_membro() em 014 — é o que separa "tem conta" de "enxerga o interno".
  */

@@ -1,5 +1,6 @@
 import assert from "node:assert/strict"
-import { agruparMetas, maisDias, ordenarSprints, prazosDaSemana } from "../lib/hoje.ts"
+import { hrefDoSprint } from "../lib/administracao.ts"
+import { agruparMetas, eventoVisivel, maisDias, ordenarSprints, prazosDaSemana } from "../lib/hoje.ts"
 
 // maisDias atravessa mês e ano.
 assert.equal(maisDias("2026-10-21", 7), "2026-10-28")
@@ -47,5 +48,19 @@ assert.deepEqual(g.atrasadas.map((m) => m.id), [1])
 assert.deepEqual(g.semana.map((m) => m.id), [3])
 assert.deepEqual(g.depois.map((m) => m.id), [4])
 assert.deepEqual(g.concluidas.map((m) => m.id), [2])
+
+// Achado do revisor: o link de um sprint leva à frente DO SPRINT, não à do perfil.
+assert.equal(hrefDoSprint("Pesquisa", "abc"), "/membros/sprints/pesquisa#sprint-abc")
+assert.equal(hrefDoSprint("Projetos", "x"), "/membros/sprints/projetos#sprint-x")
+assert.equal(hrefDoSprint("Competição", "y"), "/membros/sprints/competicao#sprint-y")
+// Frente desconhecida ou vazia cai no seletor, nunca em Competição por acidente.
+assert.equal(hrefDoSprint(null, "x"), "/membros/frente")
+assert.equal(hrefDoSprint("Outra", "x"), "/membros/frente")
+
+// Quem não tem frente (diretoria) vê eventos de todas as frentes; quem tem, só os seus e os gerais.
+assert.equal(eventoVisivel(null, "Pesquisa"), true)
+assert.equal(eventoVisivel("Pesquisa", null), true)
+assert.equal(eventoVisivel("Pesquisa", "Pesquisa"), true)
+assert.equal(eventoVisivel("Competição", "Pesquisa"), false)
 
 console.log("hoje: ok")

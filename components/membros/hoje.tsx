@@ -5,6 +5,7 @@ import { Pilula } from "@/components/membros/pilula"
 import { Secao } from "@/components/membros/secao"
 import { ErroDados } from "@/components/erro-dados"
 import type { ErroDeDados } from "@/lib/erros"
+import { hrefDoSprint } from "@/lib/administracao"
 import type { ItemPrazo } from "@/lib/hoje"
 import { aparenciaDoStatus, type Sprint } from "@/lib/sprints"
 import { prazoRelativo } from "@/lib/metas"
@@ -31,7 +32,7 @@ export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; e
             const aparencia = aparenciaDoStatus(s.status)
             return (
               <li key={s.id} className={linha}>
-                <Link href={`${rotaFrente}#sprint-${s.id}`} className="min-w-0 flex-1 basis-64 font-sans text-base hover:text-[var(--gear-amber)]">
+                <Link href={hrefDoSprint(s.frente, s.id)} className="min-w-0 flex-1 basis-64 font-sans text-base hover:text-[var(--gear-amber)]">
                   {s.titulo}
                   <span className="block font-sans text-sm font-light text-muted-foreground">
                     {s.proximo_passo?.trim() || "Próximo passo ainda não declarado."}

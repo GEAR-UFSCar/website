@@ -22,6 +22,14 @@ export function ordenarSprints<T extends { status: string; updated_at: string }>
   })
 }
 
+/**
+ * Evento aparece se é geral, se a pessoa não tem frente (diretoria enxerga
+ * todas) ou se é da frente dela.
+ */
+export function eventoVisivel(frenteDoEvento: string | null, frenteDoUsuario: string | null): boolean {
+  return !frenteDoEvento || !frenteDoUsuario || frenteDoEvento === frenteDoUsuario
+}
+
 export type ItemPrazo = {
   id: string
   origem: "evento" | "meta"

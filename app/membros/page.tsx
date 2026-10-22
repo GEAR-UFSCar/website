@@ -16,7 +16,7 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { diaGear, hojeISO, horaGear, inicioDoDiaGear, saudacao } from "@/lib/datas"
 import { primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
-import { maisDias, ordenarSprints, prazosDaSemana, type ItemPrazo } from "@/lib/hoje"
+import { eventoVisivel, maisDias, ordenarSprints, prazosDaSemana, type ItemPrazo } from "@/lib/hoje"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
 import { COLUNAS_META, type Meta } from "@/lib/metas"
 import { COLUNAS_MODULO, montarEstagios, type Modulo, type Progresso } from "@/lib/academia"
@@ -46,7 +46,8 @@ export default async function HojePage() {
 
   const frente = perfil?.frente?.trim() || null
   const comCargo = temCargo(perfil?.cargo)
-  const rotaFrente = rotaDaFrente(frente)
+  // Sem frente definida, o atalho abre o seletor em vez de cair em Competição.
+  const rotaFrente = frente ? rotaDaFrente(frente) : "/membros/frente"
 
   const hoje = hojeISO()
   const ate = maisDias(hoje, 7)
@@ -84,7 +85,7 @@ export default async function HojePage() {
   // Evento da minha frente ou sem frente; as metas já são só minhas.
   const itens: ItemPrazo[] = [
     ...((eventosR.data ?? []) as { id: string; titulo: string; tipo: string; data_inicio: string; frente_vinculada: string | null }[])
-      .filter((e) => !e.frente_vinculada || e.frente_vinculada === frente)
+      .filter((e) => eventoVisivel(e.frente_vinculada, frente))
       .map((e) => ({
         id: `evento-${e.id}`,
         origem: "evento" as const,
@@ -115,7 +116,8 @@ export default async function HojePage() {
 
   // Academia: primeiro módulo não concluído da trilha, na ordem da formação.
   let moduloAtual: ModuloAtual | null = null
-  if (!modulosR.error) {
+  // Sem o progresso, "0% da formação" seria dado errado: o bloco some em vez de mentir.
+  if (!modulosR.error && !progressoR.error) {
     const lista = (modulosR.data ?? []) as Modulo[]
     const concluidos = new Set(
       ((progressoR.data ?? []) as Progresso[]).filter((p) => p.concluido_em).map((p) => p.modulo_id),
