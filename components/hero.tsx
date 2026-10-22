@@ -3,13 +3,7 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
-import dynamic from "next/dynamic"
-
-// O WebGL (three + r3f) não precisa travar o primeiro desenho: carrega depois do HTML.
-const SentientGear = dynamic(() => import("./sentient-gear").then((m) => m.SentientGear), {
-  ssr: false,
-  loading: () => null,
-})
+import { SentientGear } from "./sentient-gear"
 import { HeroCursor } from "@/components/hero-cursor"
 
 const MotionLink = motion.create(Link)
@@ -32,7 +26,7 @@ export function Hero() {
      */
     <section
       ref={containerRef}
-      className="hero relative min-h-[100dvh] w-full overflow-hidden bg-[var(--gear-ink)]"
+      className="hero relative min-h-[100dvh] w-full overflow-hidden bg-[#050505]"
     >
       {/*
        * O h1 da home. As duas frases grandes abaixo são h2 de propósito, são

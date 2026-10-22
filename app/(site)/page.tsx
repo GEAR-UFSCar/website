@@ -4,11 +4,13 @@ import { Works } from "@/components/works"
 import { UniversidadeAberta } from "@/components/universidade-aberta"
 import { TechMarquee } from "@/components/tech-marquee"
 import { Numeros } from "@/components/numeros"
+import { SectionBlend } from "@/components/section-blend"
 
 export default function Home() {
   return (
     <>
       <Hero />
+      <SectionBlend />
       <Numeros />
       {/*
        * Works antes de About de propósito. "Como Construímos a GEAR" traz
