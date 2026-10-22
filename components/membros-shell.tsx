@@ -6,6 +6,7 @@ import Image from "next/image"
 import { usePathname } from "next/navigation"
 import { ChevronDown, LogOut } from "lucide-react"
 
+import { Paleta } from "@/components/membros/paleta"
 import { abaAtual, grupoAtual, gruposVisiveis } from "@/lib/navegacao"
 
 type Props = {
@@ -62,6 +63,7 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
   const etiquetaCargo = cargo?.trim() || "Membro"
 
   return (
+    <>
     <div className="nao-imprimir sticky top-0 z-50 border-b border-white/10 bg-[var(--gear-navy)]/95 backdrop-blur-md">
       <div className="flex h-14 items-center gap-4 px-4 md:gap-6 md:px-8">
         <Link href="/membros" className="flex shrink-0 items-center gap-2" aria-label="GEAR, início da área de membros">
@@ -185,6 +187,10 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
           </ul>
         </nav>
       )}
+
     </div>
+    {/* Fora da barra: backdrop-filter faz de um ancestral o bloco de contenção de filhos fixed. */}
+    <Paleta comCargo={comCargo} />
+    </>
   )
 }

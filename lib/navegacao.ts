@@ -84,6 +84,23 @@ export function gruposVisiveis(comCargo: boolean): Grupo[] {
   return GRUPOS.filter((g) => !g.exigeCargo || comCargo)
 }
 
+export type Destino = { rotulo: string; detalhe: string; href: string }
+
+/** Destinos de Ctrl+K: as telas do usuário (por cargo) mais atalhos de criação. */
+export function destinosDaPaleta(comCargo: boolean): Destino[] {
+  const telas = gruposVisiveis(comCargo).flatMap((g) =>
+    g.abas.length > 0
+      ? g.abas.map((a) => ({ rotulo: a.rotulo, detalhe: g.rotulo, href: a.href }))
+      : [{ rotulo: g.rotulo, detalhe: "Tela", href: g.href }],
+  )
+  return [
+    ...telas,
+    { rotulo: "Nova meta", detalhe: "Atalho", href: "/membros/metas" },
+    ...(comCargo ? [{ rotulo: "Novo aviso", detalhe: "Atalho", href: "/membros/mural" }] : []),
+    { rotulo: "Editar perfil", detalhe: "Conta", href: "/membros/completar-perfil" },
+  ]
+}
+
 const casa = (pathname: string, prefixo: string, exato?: boolean) =>
   pathname === prefixo || (!exato && pathname.startsWith(`${prefixo}/`))
 

@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { GRUPOS, abaAtual, grupoAtual, gruposVisiveis, titulo } from "../lib/navegacao.ts"
+import { GRUPOS, abaAtual, destinosDaPaleta, grupoAtual, gruposVisiveis, titulo } from "../lib/navegacao.ts"
 
 const id = (p, g = GRUPOS) => grupoAtual(p, g)?.id
 
@@ -48,5 +48,18 @@ assert.equal(titulo("/membros/diretorio"), "Pessoas")
 assert.equal(titulo("/membros/administracao/cargos"), "Cargos e aprovação")
 assert.equal(titulo("/membros/sprints/pesquisa"), "Pesquisa")
 assert.equal(titulo("/membros/rota-nova"), "Área de membros")
+
+// Paleta Ctrl+K: o que cada pessoa pode ver como destino.
+const rotulos = (comCargo) => destinosDaPaleta(comCargo).map((d) => d.rotulo)
+assert.ok(rotulos(false).includes("Hoje"))
+assert.ok(rotulos(false).includes("Nova meta"))
+assert.ok(!rotulos(false).includes("Novo aviso"))
+assert.ok(!rotulos(false).includes("Atas"))
+assert.ok(!rotulos(false).includes("Patrimônio"))
+assert.ok(rotulos(true).includes("Novo aviso"))
+assert.ok(rotulos(true).includes("Atas"))
+// Nenhum destino repetido.
+const hrefs = destinosDaPaleta(true).map((d) => `${d.rotulo}|${d.href}`)
+assert.equal(new Set(hrefs).size, hrefs.length)
 
 console.log("navegacao: ok")
