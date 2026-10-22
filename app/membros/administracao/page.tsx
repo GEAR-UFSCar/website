@@ -1,57 +1,52 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { botaoSecundario } from "@/lib/ui"
-import { Surge } from "@/components/surge"
+import { BlocoPendencias } from "@/components/membros/hoje"
+import { PageHeader } from "@/components/membros/page-header"
+import { Secao } from "@/components/membros/secao"
+import { createClient } from "@/lib/supabase/server"
 
 export const metadata: Metadata = {
-  title: "Administração | GEAR",
+  title: "Gestão | GEAR",
   robots: { index: false, follow: false },
 }
 
-const SECOES = [
-  { href: "/membros/administracao/patrimonio", nome: "Patrimônio", texto: "Inventário de robôs, componentes, ferramentas e equipamentos da entidade." },
+const CADASTROS = [
   { href: "/membros/administracao/atas", nome: "Atas", texto: "Registro de reuniões: presentes, pauta, decisões e pendências." },
-  { href: "/membros/administracao/cargos", nome: "Cargos", texto: "Atribuir e trocar cargos dos membros. Restrito a Presidente e Vice-Presidente." },
+  { href: "/membros/administracao/cargos", nome: "Cargos e aprovação", texto: "Atribuir e trocar cargos e aprovar membros. Restrito a Presidente e Vice-Presidente." },
+  { href: "/membros/administracao/patrimonio", nome: "Patrimônio", texto: "Inventário de robôs, componentes, ferramentas e equipamentos." },
 ]
 
-export default function AdministracaoPage() {
+export default async function GestaoPage() {
+  const supabase = await createClient()
+  const [aprovacoes, bloqueados] = await Promise.all([
+    supabase.from("perfis").select("id", { count: "exact", head: true }).eq("aprovado", false).not("nome_completo", "is", null),
+    supabase.from("sprints").select("id", { count: "exact", head: true }).eq("status", "Bloqueado"),
+  ])
+
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-        <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          Patrimônio, atas e cargos da entidade. Tudo aqui exige cargo preenchido; cargo e
-          aprovação de membro, só Presidente e Vice-Presidente.
-        </p>
-      </Surge>
+    <section className="mx-auto max-w-4xl px-4 pt-10 pb-24 md:px-8">
+      <PageHeader titulo="Gestão">
+        Patrimônio, atas e cargos da entidade. Cargo e aprovação de membro são só de Presidente e Vice-Presidente.
+      </PageHeader>
 
-      <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
-        {SECOES.map((secao, i) => (
-          <Surge key={secao.href} index={i} className="h-full">
-          <Link
-            href={secao.href}
-            data-cursor-hover
-            className="group block h-full border border-white/10 p-7 transition-colors duration-300 hover:border-[var(--gear-amber)]"
-          >
-            <h2 className="font-sans text-2xl md:text-3xl font-light tracking-tight">{secao.nome}</h2>
-            <p className="mt-3 font-sans text-sm font-light leading-relaxed text-muted-foreground">
-              {secao.texto}
-            </p>
-            <span className="mt-5 inline-block font-mono text-[10px] tracking-[0.25em] text-[var(--gear-amber)]">
-              ABRIR →
-            </span>
-          </Link>
-          </Surge>
-        ))}
-      </div>
+      <BlocoPendencias
+        aprovacoes={aprovacoes.error ? null : (aprovacoes.count ?? 0)}
+        bloqueados={bloqueados.error ? null : (bloqueados.count ?? 0)}
+      />
 
-      <Link
-        href="/membros"
-        data-cursor-hover
-        className={`mt-16 inline-block ${botaoSecundario}`}
-      >
-        Voltar para membros
-      </Link>
+      <Secao titulo="Cadastros">
+        <ul className="grid gap-px border border-linha bg-linha md:grid-cols-3">
+          {CADASTROS.map((c) => (
+            <li key={c.href} className="bg-[var(--gear-ink)]">
+              <Link href={c.href} className="block h-full p-5 hover:bg-[var(--gear-navy)]">
+                <span className="block font-sans text-lg">{c.nome}</span>
+                <span className="mt-2 block font-sans text-sm font-light leading-relaxed text-muted-foreground">{c.texto}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </Secao>
     </section>
   )
 }

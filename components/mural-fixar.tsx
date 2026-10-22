@@ -46,7 +46,7 @@ export function MuralFixar({ id, fixado }: { id: string; fixado: boolean }) {
         className={`inline-flex min-h-11 items-center border px-4 py-2.5 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase transition-colors duration-300 disabled:opacity-50 ${
           fixado
             ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-            : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+            : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
         }`}
       >
         {fixado ? "Desafixar" : "Fixar"}

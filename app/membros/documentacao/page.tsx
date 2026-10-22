@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
 import { ErroDados } from "@/components/erro-dados"
 import { DocumentoForm } from "@/components/documento-form"
@@ -8,7 +8,6 @@ import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
-import { botaoSecundario } from "@/lib/ui"
 import {
   BUCKET,
   CATEGORIAS,
@@ -28,7 +27,7 @@ export default async function DocumentacaoPage() {
   const { perfil } = await exigirMembroAprovado()
   /*
    * Portão só da tela. A RLS de 006 (escrita com cargo, na tabela e no bucket)
-   * é quem barra de fato — quem não tem cargo e chamar o endpoint direto
+   * é quem barra de fato, quem não tem cargo e chamar o endpoint direto
    * recebe 42501, com ou sem estes botões renderizados.
    */
   const podeEscrever = temCargo(perfil?.cargo)
@@ -84,21 +83,16 @@ export default async function DocumentacaoPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
+      <PageHeader titulo="Documentos">
         Regimento, manuais e normas da entidade, abertos a qualquer membro. O que ainda não tem
-        arquivo aparece listado mesmo assim — e quem tem cargo anexa ali na linha.
-      </p>
-
-      <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {documentos.length} DOCUMENTO(S) · {anexados} COM ARQUIVO
-      </p>
-      </Surge>
+        arquivo aparece listado mesmo assim, e quem tem cargo anexa ali na linha.{" "}
+        {documentos.length} documento(s), {anexados} com arquivo.
+      </PageHeader>
 
       {error && (
         <ErroDados titulo="DOCUMENTOS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
           Se a tabela não existe, rode <code>supabase/006_documentos.sql</code> no SQL Editor do
-          painel — ele cria a tabela, as políticas, o bucket e cadastra os documentos já
+          painel, ele cria a tabela, as políticas, o bucket e cadastra os documentos já
           conhecidos.
         </ErroDados>
       )}
@@ -110,26 +104,23 @@ export default async function DocumentacaoPage() {
       )}
 
       {/* Uma seção por categoria */}
-      {CATEGORIAS.map((categoria, indice) => {
+      {CATEGORIAS.map((categoria) => {
         const daCategoria = porCategoria.get(categoria)
         if (!daCategoria?.length) return null
 
         return (
           <section key={categoria} className="mt-16">
-            <div className="border-t border-white/10 pt-8">
-              <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-                0{indice + 1} — {categoria.toUpperCase()}
-              </p>
-              <h2 className="font-sans text-2xl md:text-4xl font-light italic">{categoria}</h2>
+            <div className="border-t border-linha pt-8">
+              <h2 className="font-sans text-2xl md:text-4xl font-normal">{categoria}</h2>
             </div>
 
             {/*
               Grade em vez de lista: cada documento é título, versão e um
-              botão — três linhas curtas que, empilhadas em coluna única,
+              botão, três linhas curtas que, empilhadas em coluna única,
               deixavam dois terços da largura vazios e transformavam uma
               categoria de seis itens em meia tela de rolagem.
             */}
-            <ul className="mt-8 grid grid-cols-1 gap-px bg-white/10 lg:grid-cols-2">
+            <ul className="mt-8 grid grid-cols-1 gap-px bg-linha lg:grid-cols-2">
               {daCategoria.map((documento, i) => (
                 <Surge
                   as="li"
@@ -184,8 +175,8 @@ export default async function DocumentacaoPage() {
 
       {podeEscrever && (
         <section className="mt-20">
-          <div className="border-t border-white/10 pt-8">
-            <h2 className="font-sans text-2xl md:text-4xl font-light italic">Cadastrar documento</h2>
+          <div className="border-t border-linha pt-8">
+            <h2 className="font-sans text-2xl md:text-4xl font-normal">Cadastrar documento</h2>
             <p className="mt-3 max-w-2xl font-sans text-sm font-light leading-relaxed text-muted-foreground">
               O arquivo vai para um bucket privado: ninguém abre sem sessão, e o link que aparece na
               lista é assinado e expira em uma hora.
@@ -196,12 +187,6 @@ export default async function DocumentacaoPage() {
           </div>
         </section>
       )}
-
-      <div className="mt-16">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

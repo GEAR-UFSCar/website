@@ -29,7 +29,7 @@ const dataSimples = (iso: string) => {
  * Um sprint como cartão: quem toca, em que pé está, o que vem a seguir e o
  * que andou até aqui.
  *
- * É Client Component porque vive dentro do quadro filtrável — o filtro roda no
+ * É Client Component porque vive dentro do quadro filtrável, o filtro roda no
  * navegador, então os cartões que ele monta e desmonta também. Os dados já
  * vieram prontos do servidor; aqui não há consulta nenhuma até alguém editar.
  */
@@ -38,13 +38,13 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId }: 
   const responsavel = sprint.responsavel?.nome_completo?.trim()
 
   return (
-    <article className="border border-white/10 bg-[var(--gear-navy)] p-6 md:p-8">
+    <article id={`sprint-${sprint.id}`} className="scroll-mt-32 border border-linha bg-[var(--gear-navy)] p-5 md:p-6">
       {/* Cabeçalho: quem toca, à esquerda; em que pé está, à direita. */}
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 font-mono text-[11px] text-muted-foreground"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-linha-forte font-mono text-[11px] text-muted-foreground"
           >
             {iniciais(sprint.responsavel?.nome_completo)}
           </span>
@@ -88,7 +88,7 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId }: 
           aria-valuemin={0}
           aria-valuemax={100}
           aria-label={`Progresso de ${sprint.titulo}`}
-          className="mt-2 h-2 w-full bg-white/10"
+          className="mt-2 h-2 w-full bg-linha"
         >
           {/*
             O preenchimento muda de tratamento com o status (lib/sprints.ts):
@@ -122,7 +122,7 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId }: 
 
       {/* Controles de quem tem cargo na frente. Ficam juntos e rotulados. */}
       {podeEscrever && (
-        <div className="mt-5 flex flex-wrap items-start gap-5 border-t border-white/10 pt-5">
+        <div className="mt-5 flex flex-wrap items-start gap-5 border-t border-linha pt-5">
           <div>
             <p className="mb-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
               Mudar status

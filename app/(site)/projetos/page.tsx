@@ -9,7 +9,7 @@ import { PROJETOS, type Projeto } from "@/lib/projetos"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 const DESCRICAO =
-  "Os robôs e sistemas que a GEAR construiu — problema atacado, decisões técnicas com a alternativa descartada, arquitetura e resultados."
+  "Os robôs e sistemas que a GEAR construiu: problema atacado, decisões técnicas com a alternativa descartada, arquitetura e resultados."
 
 export const metadata: Metadata = {
   title: "Projetos | GEAR",
@@ -23,12 +23,12 @@ export const metadata: Metadata = {
 }
 
 /*
- * PORTFÓLIO TÉCNICO — UM CAPÍTULO POR ROBÔ
+ * PORTFÓLIO TÉCNICO, UM CAPÍTULO POR ROBÔ
  *
  * Três princípios que separam isto de uma página comercial:
  *
  * 1. Toda seção vazia se DECLARA. "Ainda não competiu" é melhor que esconder
- *    a seção — omitir é o que página de vendas faz.
+ *    a seção, omitir é o que página de vendas faz.
  * 2. Número acompanhado de método: o parâmetro fica ao lado do algoritmo que
  *    o usa, não solto numa lista de especificações.
  * 3. Nenhum adjetivo de qualidade. Sem "robusto", "inovador", "de ponta".
@@ -41,8 +41,8 @@ export const metadata: Metadata = {
  * object-cover, o que descartava ~62% da imagem e deixava só uma faixa central
  * do robô. Aqui a foto nunca é cortada: `object-contain` preserva o quadro
  * inteiro, e o vazio que sobraria nas laterais é preenchido pela mesma imagem
- * desfocada ao fundo. Serve qualquer proporção — retrato, quadrada ou
- * horizontal — sem precisar reenquadrar arquivo nenhum.
+ * desfocada ao fundo. Serve qualquer proporção, retrato, quadrada ou
+ * horizontal, sem precisar reenquadrar arquivo nenhum.
  */
 
 function Rotulo({ children }: { children: ReactNode }) {
@@ -53,7 +53,7 @@ function Rotulo({ children }: { children: ReactNode }) {
   )
 }
 
-/** Estado vazio declarado — a seção nunca some da página. */
+/** Estado vazio declarado, a seção nunca some da página. */
 function Vazio({ children }: { children: ReactNode }) {
   return (
     <p className="mt-3 font-mono text-[11px] tracking-wider uppercase text-muted-foreground">
@@ -80,7 +80,7 @@ function Abertura({ projeto, indice }: { projeto: Projeto; indice: number }) {
         <>
           {/*
             Camada de fundo: a MESMA foto, borrada e escurecida, só para
-            preencher o que sobraria ao lado de um retrato. Decorativa — o alt
+            preencher o que sobraria ao lado de um retrato. Decorativa, o alt
             fica na camada nítida, e um leitor de tela não deve anunciar duas.
           */}
           <Image
@@ -96,7 +96,7 @@ function Abertura({ projeto, indice }: { projeto: Projeto; indice: number }) {
           {/* Camada nítida: quadro inteiro, sem corte, em qualquer proporção. */}
           <Image
             src={projeto.foto}
-            alt={`${projeto.nome} — robô construído pela GEAR UFSCar`}
+            alt={`${projeto.nome}, robô construído pela GEAR UFSCar`}
             fill
             priority={indice === 0}
             sizes="100vw"
@@ -119,7 +119,7 @@ function Abertura({ projeto, indice }: { projeto: Projeto; indice: number }) {
 
       <div className="relative mx-auto w-full max-w-6xl px-8 pb-12 md:px-12 md:pb-16">
         <p className="font-mono text-xs tracking-[0.3em] text-[var(--gear-amber)]">
-          {numero} — {projeto.frente.toUpperCase()}
+          {numero} {projeto.frente.toUpperCase()}
         </p>
         <h2 className="mt-3 font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
           {projeto.nome}
@@ -143,12 +143,12 @@ function Galeria({ projeto }: { projeto: Projeto }) {
       {projeto.galeria.map((foto, i) => (
         <div
           key={foto}
-          className="group relative aspect-[4/3] overflow-hidden border border-white/10 bg-[var(--gear-navy)]"
+          className="group relative aspect-[4/3] overflow-hidden border border-linha bg-[var(--gear-navy)]"
         >
           {/*
             Mesmo tratamento da Abertura, pela mesma razão: aqui entram
             retrato (1200×1600), 16:9 e 4:3 no mesmo quadro. object-cover
-            cortaria — numa foto de tela, corte come justamente o dado que
+            cortaria, numa foto de tela, corte come justamente o dado que
             a foto existe para mostrar. O fundo desfocado preenche a sobra.
           */}
           <Image
@@ -161,7 +161,7 @@ function Galeria({ projeto }: { projeto: Projeto }) {
           />
           <Image
             src={foto}
-            alt={`${projeto.nome} — registro ${i + 1}`}
+            alt={`${projeto.nome}, registro ${i + 1}`}
             fill
             sizes="(min-width: 768px) 24rem, 50vw"
             className="object-contain transition-transform duration-500 ease-out group-hover:scale-105"
@@ -228,7 +228,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
 
       <div className="mx-auto max-w-6xl px-8 md:px-12">
         {/* Entrada em prosa: a frase única, grande, antes de qualquer tabela. */}
-        <div className="border-b border-white/10 py-14 md:py-20">
+        <div className="border-b border-linha py-14 md:py-20">
           <p className="max-w-[46ch] font-sans text-2xl md:text-4xl font-light leading-snug text-balance">
             {projeto.resumo}
           </p>
@@ -246,8 +246,8 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
           <Galeria projeto={projeto} />
         </div>
 
-        {/* 01/02 — por que existe e o que conta como pronto */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-12 lg:grid-cols-2 lg:gap-16">
+        {/* 01/02, por que existe e o que conta como pronto */}
+        <div className="grid grid-cols-1 gap-10 border-b border-linha py-12 lg:grid-cols-2 lg:gap-16">
           <div>
             <Rotulo>01 · O problema</Rotulo>
             <p className="mt-4 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
@@ -272,8 +272,8 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
           </div>
         </div>
 
-        {/* 03 — arquitetura com a stack ao lado, que é o bloco mais escaneável */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-12 lg:grid-cols-12 lg:gap-16">
+        {/* 03, arquitetura com a stack ao lado, que é o bloco mais escaneável */}
+        <div className="grid grid-cols-1 gap-10 border-b border-linha py-12 lg:grid-cols-12 lg:gap-16">
           <div className="lg:col-span-7">
             <Rotulo>03 · Arquitetura</Rotulo>
             {projeto.arquitetura ? (
@@ -293,10 +293,10 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
           </div>
         </div>
 
-        {/* 04 — o núcleo do portfólio: decisão com a alternativa descartada */}
-        <div className="border-b border-white/10 py-12">
+        {/* 04, o núcleo do portfólio: decisão com a alternativa descartada */}
+        <div className="border-b border-linha py-12">
           <Rotulo>04 · Decisões técnicas</Rotulo>
-          <ul className="mt-8 grid grid-cols-1 gap-px bg-white/10 md:grid-cols-2">
+          <ul className="mt-8 grid grid-cols-1 gap-px bg-linha md:grid-cols-2">
             {projeto.decisoes.map((decisao) => (
               <li
                 key={decisao.decisao}
@@ -319,8 +319,8 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
           </ul>
         </div>
 
-        {/* 05/06 — resultado medido e o que vem depois */}
-        <div className="grid grid-cols-1 gap-10 border-b border-white/10 py-12 md:grid-cols-3 md:gap-12">
+        {/* 05/06, resultado medido e o que vem depois */}
+        <div className="grid grid-cols-1 gap-10 border-b border-linha py-12 md:grid-cols-3 md:gap-12">
           <div>
             <Rotulo>05 · Competições</Rotulo>
             {projeto.competicoes?.length ? (
@@ -331,7 +331,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
                     className="font-mono text-[11px] leading-relaxed tracking-wider text-foreground"
                   >
                     <span className="text-[var(--gear-amber)]">{competicao.ano}</span> ·{" "}
-                    {competicao.evento} — {competicao.resultado}
+                    {competicao.evento}: {competicao.resultado}
                   </li>
                 ))}
               </ul>
@@ -382,7 +382,7 @@ function Capitulo({ projeto, indice }: { projeto: Projeto; indice: number }) {
           </div>
         </div>
 
-        {/* 07 — material */}
+        {/* 07, material */}
         <div className="py-12">
           <Rotulo>07 · Material</Rotulo>
           {temMaterial ? (
@@ -424,9 +424,7 @@ export default function ProjetosPage() {
           O QUE CONSTRUÍMOS
         </p>
         <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-          PROJETOS
-          <br />
-          <span className="italic">em andamento</span>
+          Projetos em andamento
         </h1>
 
         <p className="mt-10 max-w-[62ch] font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
@@ -437,7 +435,7 @@ export default function ProjetosPage() {
 
         {/* Índice dos capítulos: com poucos robôs, um sumário vale mais que um filtro. */}
         {PROJETOS.length > 0 && (
-          <nav aria-label="Robôs nesta página" className="mt-12 border-t border-white/10 pt-6">
+          <nav aria-label="Robôs nesta página" className="mt-12 border-t border-linha pt-6">
             <p className="font-mono text-xs tracking-[0.2em] text-muted-foreground">
               {PROJETOS.length === 1
                 ? "UM PROJETO PUBLICADO"
@@ -469,7 +467,7 @@ export default function ProjetosPage() {
 
         {PROJETOS.length === 0 && (
           <Aviso titulo="NENHUM PROJETO PUBLICADO" className="mt-10 max-w-2xl">
-            Adicione entradas em <code>lib/projetos.ts</code> — cada bloco vira um capítulo aqui,
+            Adicione entradas em <code>lib/projetos.ts</code>, cada bloco vira um capítulo aqui,
             sem nenhuma outra mudança.
           </Aviso>
         )}
@@ -481,7 +479,7 @@ export default function ProjetosPage() {
       ))}
 
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pb-24 md:pb-32">
-        <div className="flex flex-col sm:flex-row gap-5 border-t border-white/10 pt-16">
+        <div className="flex flex-col sm:flex-row gap-5 border-t border-linha pt-16">
           <Link href="/time" data-cursor-hover className={`text-center ${botaoPrimario}`}>
             Quem constrói isso
           </Link>

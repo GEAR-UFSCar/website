@@ -1,12 +1,12 @@
 import Link from "next/link"
 import { Surge } from "@/components/surge"
 
-import { CONTATO_INGRESSO } from "@/lib/site"
+import { CONTATO_INGRESSO, TOTAL_MEMBROS } from "@/lib/site"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 type Membro = {
   nome: string
-  cargo: string
+  cargo?: string
 }
 
 type Grupo = {
@@ -36,32 +36,32 @@ const grupos: Grupo[] = [
   {
     frente: "Fundação",
     membros: [
-      { nome: "Michael", cargo: "Membro fundador" },
-      { nome: "Alan", cargo: "Membro fundador" },
+      { nome: "Michael" },
+      { nome: "Alan" },
     ],
   },
   {
     frente: "Competição",
     membros: [
-      { nome: "João", cargo: "Competição" },
-      { nome: "Nasser", cargo: "Competição" },
-      { nome: "Guilherme", cargo: "Competição" },
+      { nome: "João" },
+      { nome: "Nasser" },
+      { nome: "Guilherme" },
     ],
   },
   {
     frente: "Pesquisa",
     membros: [
-      { nome: "Mateus", cargo: "Pesquisa" },
-      { nome: "Pedro", cargo: "Pesquisa" },
-      { nome: "Thomaz", cargo: "Pesquisa" },
+      { nome: "Mateus" },
+      { nome: "Pedro" },
+      { nome: "Thomaz" },
     ],
   },
   {
     frente: "Projetos",
     membros: [
-      { nome: "Luiza", cargo: "Projetos" },
-      { nome: "Julio", cargo: "Projetos" },
-      { nome: "Elis", cargo: "Projetos" },
+      { nome: "Luiza" },
+      { nome: "Julio" },
+      { nome: "Elis" },
     ],
   },
 ]
@@ -74,8 +74,8 @@ const orientador = [
 
 function Card({ membro, index }: { membro: Membro; index: number }) {
   return (
-    <Surge delay={index * 0.08} className="group border border-white/10 p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]">
-      {/* Placeholder da foto — substituir por <Image> quando houver retrato */}
+    <Surge delay={index * 0.08} className="group border border-linha p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]">
+      {/* Placeholder da foto, substituir por <Image> quando houver retrato */}
       <div className="w-16 h-16 flex items-center justify-center border border-[var(--gear-amber)] bg-[var(--gear-navy)]">
         <span className="font-mono text-lg tracking-widest text-[var(--gear-amber)]">
           {iniciais(membro.nome)}
@@ -83,9 +83,11 @@ function Card({ membro, index }: { membro: Membro; index: number }) {
       </div>
 
       <h3 className="mt-5 font-sans text-2xl md:text-3xl font-light tracking-tight">{membro.nome}</h3>
-      <p className="mt-2 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
-        {membro.cargo}
-      </p>
+      {membro.cargo && (
+        <p className="mt-2 font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
+          {membro.cargo}
+        </p>
+      )}
     </Surge>
   )
 }
@@ -97,23 +99,18 @@ export function Time() {
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <Surge delay={0.1}>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            11 MEMBROS FUNDADORES
+            {TOTAL_MEMBROS} MEMBROS FUNDADORES
           </p>
           <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-            QUEM
-            <br />
-            <span className="italic">assina</span>
+            O time
           </h1>
         </Surge>
       </section>
 
       {/* Grupos por frente */}
-      {grupos.map((grupo, grupoIndex) => (
+      {grupos.map((grupo) => (
         <section key={grupo.frente} className="relative mx-auto max-w-6xl px-8 md:px-12 py-16 md:py-20">
-          <Surge className="border-t border-white/10 pt-10 mb-12">
-            <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-              0{grupoIndex + 1} — {grupo.frente.toUpperCase()}
-            </p>
+          <Surge className="border-t border-linha pt-10 mb-12">
             <h2 className="font-sans text-3xl md:text-5xl font-light italic">{grupo.frente}</h2>
           </Surge>
 
@@ -127,16 +124,13 @@ export function Time() {
 
       {/* Orientação institucional */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
-        <Surge className="border-t border-white/10 pt-10 mb-12">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            05 — ORIENTAÇÃO INSTITUCIONAL
-          </p>
+        <Surge className="border-t border-linha pt-10 mb-12">
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem orienta</h2>
         </Surge>
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            A atividade de extensão do GEAR é orientada pelo{" "}
+            A atividade de extensão da GEAR é orientada pelo{" "}
             <span className="text-foreground">Prof. Iago Pacheco Gomes</span>, docente da UFSCar
             Sorocaba. A orientação docente separa grupo de extensão registrado de coletivo informal, e
             dá respaldo institucional ao que é produzido aqui.
@@ -159,12 +153,12 @@ export function Time() {
 
         {/*
          * Destino terminal do candidato. Sem processo seletivo aberto, esta é a
-         * única porta de entrada do site — quem se identificou com o time
+         * única porta de entrada do site, quem se identificou com o time
          * precisa poder agir aqui, não voltar para o começo.
          */}
         <Surge className="mt-16 flex flex-col sm:flex-row gap-5">
           <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoPrimario}`}>
-            Quero fazer parte
+            Quero ser avisado
           </a>
           <Link href="/projetos" data-cursor-hover className={`text-center ${botaoSecundario}`}>
             Ver os projetos

@@ -14,13 +14,13 @@ import { proximoPeriodo, type MetricaPeriodo } from "@/lib/metricas"
  * Só os INSUMOS. Membros ativos, horas médias, patrimônio e patrocínio mudam
  * pouco de um semestre para outro e servem de ponto de partida a corrigir.
  * Atividades, Resultados e Impacto começam zerados porque são justamente o que
- * o novo período tem de produzir — herdá-los faria a entidade começar o
+ * o novo período tem de produzir, herdá-los faria a entidade começar o
  * semestre já "tendo feito" o que fez no anterior, que é a maneira mais
  * silenciosa de um painel de métricas passar a mentir.
  *
  * Dois passos sem transação: o insert vem PRIMEIRO. Se ele falhar, nada muda
  * e a pessoa tenta de novo. Na ordem inversa, uma falha deixaria o período
- * corrente fechado e nenhum aberto — a entidade sem onde registrar.
+ * corrente fechado e nenhum aberto, a entidade sem onde registrar.
  */
 export function MetricasNovoPeriodo({ metrica }: { metrica: MetricaPeriodo }) {
   const router = useRouter()
@@ -79,7 +79,7 @@ export function MetricasNovoPeriodo({ metrica }: { metrica: MetricaPeriodo }) {
         type="button"
         onClick={() => setConfirmando(true)}
         data-cursor-hover
-        className="min-h-11 border border-white/20 px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
+        className="min-h-11 border border-linha-forte px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]"
       >
         Novo período
       </button>
@@ -116,7 +116,7 @@ export function MetricasNovoPeriodo({ metrica }: { metrica: MetricaPeriodo }) {
           onClick={() => setConfirmando(false)}
           disabled={salvando}
           data-cursor-hover
-          className="min-h-11 border border-white/20 px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
+          className="min-h-11 border border-linha-forte px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
         >
           Cancelar
         </button>

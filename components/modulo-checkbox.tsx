@@ -83,7 +83,7 @@ export function ModuloCheckbox({
               ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
               : habilitado
                 ? "border-white/30 hover:border-[var(--gear-amber)]"
-                : "border-white/10 cursor-not-allowed"
+                : "border-linha cursor-not-allowed"
           }`}
         >
         {concluido && (

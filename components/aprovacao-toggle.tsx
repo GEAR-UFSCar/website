@@ -112,7 +112,7 @@ export function AprovacaoToggle({
         className={`${botaoBase} ${
           aprovado
             ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-            : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+            : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
         }`}
       >
         {aprovado ? "Aprovado" : "Aprovar"}

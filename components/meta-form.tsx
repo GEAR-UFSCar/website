@@ -87,7 +87,7 @@ export function MetaForm({ usuarioId, meta, aoEncerrar }: Props) {
         return
       }
       if (!data || data.length === 0) {
-        setErro("Nenhuma linha alterada — a política de acesso recusou a mudança.")
+        setErro("Nenhuma linha alterada, a política de acesso recusou a mudança.")
         setSalvando(false)
         return
       }
@@ -118,7 +118,7 @@ export function MetaForm({ usuarioId, meta, aoEncerrar }: Props) {
   return (
     <form
       onSubmit={enviar}
-      className={editando ? "mt-5 border border-white/15 p-5 space-y-5" : "border border-white/10 p-6 space-y-5"}
+      className={editando ? "mt-5 border border-linha-forte p-5 space-y-5" : "border border-linha p-6 space-y-5"}
     >
       <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">
         {editando ? "EDITANDO META" : "NOVA META"}
@@ -213,7 +213,7 @@ export function MetaForm({ usuarioId, meta, aoEncerrar }: Props) {
                   className={`min-h-11 border px-5 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 disabled:opacity-50 ${
                     ativo
                       ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                      : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+                      : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
                   }`}
                 >
                   {v}
@@ -251,7 +251,7 @@ export function MetaForm({ usuarioId, meta, aoEncerrar }: Props) {
             onClick={aoEncerrar}
             disabled={salvando}
             data-cursor-hover
-            className="border border-white/20 bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
+            className="border border-linha-forte bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground disabled:opacity-50"
           >
             Cancelar
           </button>

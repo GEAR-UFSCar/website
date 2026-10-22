@@ -7,7 +7,7 @@ import { inteiro, type MetricaPeriodo } from "@/lib/metricas"
 
 /**
  * Semanas letivas de um semestre na UFSCar. Entra na conta da carga horária
- * porque o que a entidade registra é hora SEMANAL — e o formulário da ProEx
+ * porque o que a entidade registra é hora SEMANAL, e o formulário da ProEx
  * pede o total. O multiplicador fica visível na tela de propósito: número
  * estimado que se apresenta como medido é o que faz relatório perder
  * credibilidade na primeira conferência.
@@ -22,7 +22,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
   const cargaEquipe = cargaTotal * insumos.membros_ativos
 
   const linhas = [
-    `GEAR — Grupo de Extensão em Automação e Robótica · Período ${metrica.periodo}` +
+    `GEAR: Grupo de Extensão em Automação e Robótica · Período ${metrica.periodo}` +
       (metrica.frente ? ` · Frente ${metrica.frente}` : " · Entidade"),
     "",
     "PARTICIPANTES",
@@ -56,7 +56,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
     } catch {
       /*
        * clipboard exige contexto seguro e permissão; em http:// simples ele
-       * recusa. O texto continua na tela, selecionável — o botão é atalho, não
+       * recusa. O texto continua na tela, selecionável, o botão é atalho, não
        * a única via.
        */
       setCopiado(false)
@@ -67,7 +67,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
     <div>
       {/* Fica visível na tela E no papel: é o mal-entendido mais caro possível aqui. */}
       <Aviso titulo="ATENÇÃO" className="max-w-3xl">
-        Isto ajuda a preencher o formulário oficial da ProExWeb — não é o formulário em si. Nada
+        Isto ajuda a preencher o formulário oficial da ProExWeb, não é o formulário em si. Nada
         enviado aqui chega à Pró-Reitoria.
       </Aviso>
 
@@ -84,7 +84,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
           type="button"
           onClick={() => window.print()}
           data-cursor-hover
-          className="min-h-11 border border-white/20 px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
+          className="min-h-11 border border-linha-forte px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
         >
           Imprimir / PDF
         </button>
@@ -97,7 +97,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
         <pre> e não uma tabela: o destino é um campo de texto do ProExWeb, e o
         que se cola tem de sair com as mesmas quebras de linha que se vê aqui.
       */}
-      <pre className="mt-8 max-w-3xl overflow-x-auto border border-white/10 bg-[var(--gear-navy)] p-6 font-mono text-[12px] leading-relaxed text-foreground whitespace-pre-wrap">
+      <pre className="mt-8 max-w-3xl overflow-x-auto border border-linha bg-[var(--gear-navy)] p-6 font-mono text-[12px] leading-relaxed text-foreground whitespace-pre-wrap">
         {texto}
       </pre>
 

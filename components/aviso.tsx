@@ -17,7 +17,7 @@ type Props = {
  * repetido em cada página que precisava explicar um erro ou uma pendência.
  */
 export function Aviso({ titulo, tom = "alerta", className = "", children, role }: Props) {
-  const borda = tom === "alerta" ? "border-[var(--gear-amber)]" : "border-white/20"
+  const borda = tom === "alerta" ? "border-[var(--gear-amber)]" : "border-linha-forte"
   const corTitulo = tom === "alerta" ? "text-[var(--gear-amber)]" : "text-muted-foreground"
   // Erro que a pessoa precisa ler agora vai em contraste cheio; explicação de
   // estado (pendência, aviso de configuração) fica no tom secundário.

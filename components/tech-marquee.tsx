@@ -15,29 +15,9 @@ const techItems = [
   "C++",
 ]
 
-/*
- * Segunda faixa. Antes eram oito adjetivos — AUTONOMIA, PRECISÃO, DISCIPLINA
- * — que qualquer entidade de robótica assinaria, e que não diziam nada sobre
- * esta. Trocados pelo que a GEAR de fato tem: os robôs, a estrutura de
- * frentes e o vínculo institucional. Tudo verificável em /projetos e /sobre.
- *
- * Liga e linha de pesquisa saíram: a /sobre passou a tratar competição-alvo
- * e tema de pesquisa como definidos por ciclo, e a faixa os anunciava como
- * fechados.
- */
-const contexto = [
-  "AI ROVER",
-  "NAVEGADOR MECANUM",
-  "TRÊS FRENTES",
-  "ORIENTAÇÃO DOCENTE",
-  "PROEX-UFSCAR",
-  "EXTENSÃO",
-]
-
 export function TechMarquee() {
   return (
     <section className="relative py-24 overflow-hidden md:py-32">
-      {/* Section Header */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -45,14 +25,10 @@ export function TechMarquee() {
         transition={{ duration: 0.8 }}
         className="px-8 md:px-12 mb-16"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">06 — ARSENAL TÉCNICO</p>
+        <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que roda nos robôs</h2>
       </motion.div>
 
-      {/* Marquee Rows */}
-      <div className="space-y-4">
-        <MarqueeRow items={techItems} direction="left" />
-        <MarqueeRow items={contexto} direction="right" />
-      </div>
+      <MarqueeRow items={techItems} direction="left" />
     </section>
   )
 }

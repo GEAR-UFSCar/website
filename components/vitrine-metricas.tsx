@@ -18,7 +18,7 @@ import {
  *
  * Silêncio é a falha correta: sem a 019 aplicada, sem período aberto ou sem
  * número nenhum preenchido, a seção não renderiza. Uma página pública não
- * mostra a um visitante que falta rodar migração — e uma vitrine de zeros é
+ * mostra a um visitante que falta rodar migração, e uma vitrine de zeros é
  * pior que vitrine nenhuma.
  */
 export async function VitrineMetricas() {
@@ -39,7 +39,7 @@ export async function VitrineMetricas() {
 
   /*
    * A view devolve cada indicador como jsonb solto (`resultados -> 'campo'`),
-   * então aqui eles voltam a ser os objetos que MetricasPublico espera — e
+   * então aqui eles voltam a ser os objetos que MetricasPublico espera, e
    * passam pelo mesmo normalizador do resto do sistema, que é o que garante
    * que um campo ausente vire 0 em vez de "NaN" na tela.
    */
@@ -64,13 +64,10 @@ export async function VitrineMetricas() {
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
       <Surge className="mb-12">
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-          06 — O QUE SAIU DISSO
-        </p>
         <h2 className="font-sans text-3xl md:text-5xl font-light italic">Números do semestre</h2>
         <p className="mt-6 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
           Período {String(linha.periodo)}, em andamento. São os números que a entidade fecha
-          internamente — publicados aqui como estão, sem arredondar para cima.
+          internamente, publicados aqui como estão, sem arredondar para cima.
         </p>
       </Surge>
 

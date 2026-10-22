@@ -15,7 +15,7 @@ export default async function NovaSenhaPage() {
   /*
    * Quem chega aqui já passou por /auth/confirmar, que trocou o código do
    * e-mail por uma sessão. Sem sessão, a pessoa abriu a URL na mão ou o link
-   * expirou — e a saída é pedir outro, não um formulário que não teria em quem
+   * expirou, e a saída é pedir outro, não um formulário que não teria em quem
    * gravar. Sem redirect: dizer o que aconteceu vale mais que sumir da tela.
    */
   const user = await getUsuario()

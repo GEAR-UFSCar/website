@@ -1,4 +1,3 @@
-import Link from "next/link"
 
 import { ErroDados } from "@/components/erro-dados"
 import { FrenteAbas } from "@/components/frente-abas"
@@ -12,9 +11,8 @@ import {
   type Atualizacao,
   type Sprint,
 } from "@/lib/sprints"
-import { botaoSecundario } from "@/lib/ui"
 import type { ErroDeDados } from "@/lib/erros"
-import { Surge } from "@/components/surge"
+import { PageHeader } from "@/components/membros/page-header"
 
 /**
  * Conteúdo das três páginas de frente. A frente vem fixa da rota, não do
@@ -48,7 +46,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   /*
    * Segunda consulta, e ela depende da primeira: o diário é buscado pelos ids
    * que acabaram de chegar. Dava para trazer tudo numa consulta só, embutindo
-   * `sprint_atualizacoes` dentro de `sprints` — o PostgREST faz isso, mas com
+   * `sprint_atualizacoes` dentro de `sprints`, o PostgREST faz isso, mas com
    * um embed dentro de outro (o autor dentro da atualização dentro do sprint)
    * e a ordenação do aninhado por `referencedTable`. Duas consultas legíveis
    * valem mais que uma clever, e a segunda só roda se houver sprint.
@@ -79,15 +77,12 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <FrenteAbas atual={frente} />
-
-      <p className="mt-10 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
+      <PageHeader titulo={frente}>
         Os sprints da frente {frente}. Qualquer membro acompanha as três; mudar status, progresso
-        e diário é de quem tem cargo nesta frente — ou da diretoria, em qualquer uma.
+        e diário é de quem tem cargo nesta frente, ou da diretoria, em qualquer uma.
         {eMinhaFrente ? " Esta é a sua frente." : ""}
-      </p>
-      </Surge>
+      </PageHeader>
+      <FrenteAbas atual={frente} />
 
       {error && (
         <ErroDados titulo="SPRINTS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
@@ -122,11 +117,6 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
         />
       )}
 
-      <div className="mt-16">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
 import { ErroDados } from "@/components/erro-dados"
 import { MuralForm } from "@/components/mural-form"
@@ -8,7 +8,6 @@ import { createClient } from "@/lib/supabase/server"
 import { dataHora } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
-import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -49,7 +48,7 @@ export default async function MuralPage() {
 
   const avisos = (data ?? []) as AvisoMural[]
 
-  // Sem 009_diretorio.sql este mapa só tem a própria linha — daí o autor
+  // Sem 009_diretorio.sql este mapa só tem a própria linha, daí o autor
   // aparecer em branco em vez de errado.
   const nomes = new Map(
     ((pessoas ?? []) as { id: string; nome_completo: string | null }[])
@@ -61,15 +60,10 @@ export default async function MuralPage() {
 
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-        Comunicados da diretoria. Qualquer membro lê; publicar e fixar é de quem tem cargo.
-      </p>
-
-      <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {avisos.length} AVISO(S) · {fixados} FIXADO(S)
-      </p>
-      </Surge>
+      <PageHeader titulo="Mural">
+        Comunicados da diretoria. Qualquer membro lê; publicar e fixar é de quem tem cargo.{" "}
+        {avisos.length} aviso(s), {fixados} fixado(s).
+      </PageHeader>
 
       {error && (
         <ErroDados titulo="MURAL INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
@@ -84,7 +78,7 @@ export default async function MuralPage() {
         </p>
       )}
 
-      {/* Fixados primeiro, depois os mais recentes — a ordem vem do banco. */}
+      {/* Fixados primeiro, depois os mais recentes, a ordem vem do banco. */}
       <div className="mt-12 max-w-4xl">
         {avisos.map((aviso, indice) => {
           const autor = aviso.autor_id ? nomes.get(aviso.autor_id) : null
@@ -94,7 +88,7 @@ export default async function MuralPage() {
               as="article"
               index={indice}
               key={aviso.id}
-              className={`border-t border-white/10 py-8 ${
+              className={`border-t border-linha py-8 ${
                 aviso.fixado ? "border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8" : ""
               }`}
             >
@@ -131,12 +125,6 @@ export default async function MuralPage() {
           <MuralForm usuarioId={user.id} />
         </div>
       )}
-
-      <div className="mt-16">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

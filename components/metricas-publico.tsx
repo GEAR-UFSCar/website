@@ -8,12 +8,12 @@ type Props = {
 }
 
 /**
- * O recorte apresentável das métricas — usado na aba Público da área de
+ * O recorte apresentável das métricas, usado na aba Público da área de
  * membros e na vitrine de /sobre. Server Component: são números e texto, não
  * há nada para o navegador fazer aqui.
  *
  * Os campos são os mesmos que a view `metricas_publicas` (019) expõe. Se um
- * número novo entrar aqui, precisa entrar lá também, e vice-versa — a view é
+ * número novo entrar aqui, precisa entrar lá também, e vice-versa, a view é
  * quem decide o que é publicável.
  */
 export function MetricasPublico({ resultados, impacto, ocultarZeros = false }: Props) {
@@ -38,7 +38,7 @@ export function MetricasPublico({ resultados, impacto, ocultarZeros = false }: P
   return (
     <div>
       {numeros.length > 0 && (
-        <dl className="grid grid-cols-2 gap-px bg-white/10 md:grid-cols-3 lg:grid-cols-5">
+        <dl className="grid grid-cols-2 gap-px bg-linha md:grid-cols-3 lg:grid-cols-5">
           {numeros.map((n) => (
             <div key={n.rotulo} className="bg-[var(--gear-ink)] p-6">
               <dd className="font-sans text-4xl md:text-5xl font-light tracking-tight text-[var(--gear-amber)]">

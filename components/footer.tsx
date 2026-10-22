@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { ArrowUpRight, createLucideIcon } from "lucide-react"
@@ -13,13 +13,13 @@ const EMAIL = EMAIL_CONTATO
 /*
  * Ícone, não o nome escrito: três palavras lado a lado competiam com os links
  * de navegação do mesmo rodapé, que também são mono em caixa alta. O nome
- * continua existindo em `nome` — vira o aria-label, porque um <a> só com SVG
+ * continua existindo em `nome`, vira o aria-label, porque um <a> só com SVG
  * não tem nome acessível nenhum.
  */
 /*
  * O lucide descontinuou os ícones de marca (questão de marca registrada) e vai
  * removê-los. Os traços abaixo são os mesmos da versão instalada, recriados
- * pela API pública — o visual não muda e a atualização da lib não quebra.
+ * pela API pública, o visual não muda e a atualização da lib não quebra.
  */
 const Instagram = createLucideIcon("Instagram", [
   ["rect", { width: "20", height: "20", x: "2", y: "2", rx: "5", ry: "5", key: "a" }],
@@ -48,32 +48,11 @@ const sociais: Array<{ nome: string; href: string; Icone: LucideIcon }> = [
   { nome: "GitHub", href: "https://github.com/GEAR-UFSCar", Icone: Github },
 ]
 
-/*
- * O relógio re-renderiza o rodapé inteiro uma vez por segundo. Cada transition
- * inline era um objeto novo por segundo, por elemento animado — fixos aqui.
- */
 const SUAVE = { duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] } as const
 const RAPIDA = { duration: 0.3 } as const
 
 export function Footer() {
-  const [hora, setHora] = useState("")
   const [isHovered, setIsHovered] = useState(false)
-
-  useEffect(() => {
-    // Fuso fixo: o rótulo diz Sorocaba, e getHours() daria a hora de quem visita.
-    const formato = new Intl.DateTimeFormat("pt-BR", {
-      timeZone: "America/Sao_Paulo",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h23",
-    })
-    const atualizarHora = () => setHora(formato.format(new Date()))
-
-    atualizarHora()
-    const intervalo = setInterval(atualizarHora, 1000)
-    return () => clearInterval(intervalo)
-  }, [])
 
   return (
     <footer className="relative">
@@ -94,7 +73,7 @@ export function Footer() {
         />
 
         {/* Conteúdo */}
-        <div className="relative py-16 md:py-24 px-8 md:px-12 border-t border-white/10">
+        <div className="relative py-16 md:py-24 px-8 md:px-12 border-t border-linha">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <motion.h2
               className="font-sans text-4xl md:text-6xl lg:text-8xl font-light tracking-tight text-center md:text-left"
@@ -128,14 +107,8 @@ export function Footer() {
       </motion.a>
 
       {/* Rodapé */}
-      <div className="px-8 md:px-12 py-8 border-t border-white/10">
+      <div className="px-8 md:px-12 py-8 border-t border-linha">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-          {/* Horário local */}
-          <div className="font-mono text-xs tracking-widest text-muted-foreground">
-            <span className="mr-2">HORÁRIO SOROCABA</span>
-            <span className="text-foreground tabular-nums">{hora}</span>
-          </div>
-
           {/* Sociais */}
           <div className="flex gap-6">
             {sociais.map((social) => (
@@ -145,7 +118,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor-hover
-                aria-label={`${social.nome} da GEAR — abre em nova aba`}
+                aria-label={`${social.nome} da GEAR, abre em nova aba`}
                 className="text-muted-foreground hover:text-foreground transition-colors duration-300"
               >
                 <social.Icone className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
@@ -178,7 +151,7 @@ export function Footer() {
               PRIVACIDADE
             </Link>
             <p className="font-mono text-xs tracking-widest text-muted-foreground">
-              GEAR · UFSCAR SOROCABA · {new Date().getFullYear()}
+              © {new Date().getFullYear()} GEAR UFSCAR SOROCABA
             </p>
           </div>
         </div>

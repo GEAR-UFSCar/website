@@ -5,6 +5,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
+import { useLenis } from "lenis/react"
 
 import { AuthLink } from "@/components/auth-link"
 
@@ -20,6 +21,19 @@ export function Navbar() {
   const pathname = usePathname()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const lenis = useLenis()
+
+  // Menu aberto: Esc fecha e a página por trás não rola (o Lenis ignora overflow:hidden).
+  useEffect(() => {
+    if (!isMenuOpen) return
+    lenis?.stop()
+    const fechar = (e: KeyboardEvent) => e.key === "Escape" && setIsMenuOpen(false)
+    window.addEventListener("keydown", fechar)
+    return () => {
+      lenis?.start()
+      window.removeEventListener("keydown", fechar)
+    }
+  }, [isMenuOpen, lenis])
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,14 +57,13 @@ export function Navbar() {
       >
         <nav className="flex items-center justify-between px-6 py-4 my-0 md:px-12 md:py-5">
           {/* Logo */}
-          <Link href="/" className="group flex items-center gap-2" aria-label="GEAR — página inicial">
+          <Link href="/" className="flex items-center" aria-label="GEAR, página inicial">
             <Image src="/gear-icon-g.svg" alt="GEAR" width={32} height={32} priority className="w-8 h-8" />
-            <span className="w-1.5 h-1.5 rounded-full bg-accent group-hover:scale-150 transition-transform duration-300" />
           </Link>
 
           {/* Desktop Navigation */}
           <ul className="hidden lg:flex items-center gap-6 xl:gap-8">
-            {navLinks.map((link, index) => {
+            {navLinks.map((link) => {
               const ativo = pathname === link.href
 
               return (
@@ -62,7 +75,6 @@ export function Navbar() {
                       ativo ? "text-[var(--gear-amber)]" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <span className="text-accent mr-1">0{index + 1}</span>
                     {link.label.toUpperCase()}
                     {/* na rota ativa o sublinhado já nasce inteiro, em âmbar */}
                     <span
@@ -85,7 +97,7 @@ export function Navbar() {
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="lg:hidden relative w-8 h-8 flex flex-col items-center justify-center gap-1.5"
-            aria-label="Abrir menu"
+            aria-label={isMenuOpen ? "Fechar menu" : "Abrir menu"}
             aria-expanded={isMenuOpen}
           >
             <motion.span
@@ -131,7 +143,6 @@ export function Navbar() {
                       pathname === link.href ? "text-[var(--gear-amber)]" : "text-foreground"
                     }`}
                   >
-                    <span className="text-accent font-mono text-sm mr-2">0{index + 1}</span>
                     {link.label}
                   </Link>
                 </motion.div>

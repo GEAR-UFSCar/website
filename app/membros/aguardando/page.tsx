@@ -24,7 +24,7 @@ async function sair() {
 /*
  * Sala de espera de quem tem conta mas ainda não foi aprovado.
  *
- * Usa exigirPerfilCompleto, NÃO exigirMembroAprovado — exigir aprovação aqui
+ * Usa exigirPerfilCompleto, NÃO exigirMembroAprovado, exigir aprovação aqui
  * criaria um laço de redirecionamento com a própria página.
  */
 export default async function AguardandoPage() {
@@ -46,7 +46,7 @@ export default async function AguardandoPage() {
 
       <p className="mt-8 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
         Seu cadastro chegou. A área de membros abre quando a diretoria confirmar seu vínculo com
-        a entidade — é o que impede que qualquer pessoa de fora leia o diretório e os documentos
+        a entidade, é o que impede que qualquer pessoa de fora leia o diretório e os documentos
         internos.
       </p>
 
@@ -69,7 +69,7 @@ export default async function AguardandoPage() {
         </dl>
         <p className="mt-5">
           É por esses dados que a diretoria vai te reconhecer. Se algo estiver errado, corrija
-          antes — depois de aprovado, só a diretoria altera cargo e vínculo.
+          antes, depois de aprovado, só a diretoria altera cargo e vínculo.
         </p>
       </Aviso>
 

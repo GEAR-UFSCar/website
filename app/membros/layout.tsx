@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { redirect } from "next/navigation"
+import { MotionConfig } from "framer-motion"
 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -21,15 +22,15 @@ async function sair() {
 }
 
 /**
- * Casca comum de /membros. Antes, cada uma das onze páginas montava a própria
- * moldura — SmoothScroll, CustomCursor, Navbar, main, Footer — e a navegação
- * entre elas era o menu do site público, que não sabe nada da área interna.
+ * Casca comum de /membros. A moldura completa tem a barra de grupos, sem cursor
+ * customizado, sem rolagem suave e sem rodapé público: é uma ferramenta de
+ * trabalho, não uma vitrine.
  *
  * DUAS MOLDURAS, E A ESCOLHA NÃO É PELA ROTA
  * Quem ainda não preencheu o perfil ou não foi aprovado recebe a moldura
  * pública: as abas levariam a páginas que a RLS devolve vazias, e oferecer
  * nove destinos fechados a quem está esperando aprovação é pior que não
- * oferecer nenhum. A condição é o ESTADO DA CONTA, não o pathname — é a mesma
+ * oferecer nenhum. A condição é o ESTADO DA CONTA, não o pathname, é a mesma
  * régua dos portões de /membros/page.tsx, então as duas nunca divergem.
  *
  * `getPerfil()` é memoizado por request (lib/supabase/sessao.ts): este layout
@@ -60,8 +61,7 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
   }
 
   return (
-    <SmoothScroll>
-      <CustomCursor />
+    <MotionConfig reducedMotion="always">
       <MembrosShell
         nome={perfil?.nome_completo?.trim() || user.email || "Membro"}
         cargo={perfil?.cargo ?? null}
@@ -77,8 +77,7 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
         */}
         <BadgeAmbiente />
         {children}
-        <Footer />
       </main>
-    </SmoothScroll>
+    </MotionConfig>
   )
 }

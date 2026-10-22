@@ -4,23 +4,18 @@ import { useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 
+import { TOTAL_MEMBROS } from "@/lib/site"
+
 /*
- * Cada frase aqui tem prova a um clique. As cinco anteriores eram afirmações
- * sobre a GEAR que nada no site sustentava — e uma delas ("pesquisa que vira
- * artigo de verdade") seria desmentida hoje, já que não há publicação. Num
- * site cuja marca editorial é assumir limitação, promessa sem lastro custa
- * mais caro do que não dizer nada.
- *
- * Regra para editar: só entra frase que alguém consiga verificar em /projetos,
- * /frentes, /time ou /sobre. Se depender de algo que ainda não aconteceu,
- * fica de fora até acontecer.
+ * Só entra frase que alguém consiga verificar em /projetos, /sobre ou /time.
+ * Se depender de algo que ainda não aconteceu, fica de fora.
  */
 const statements = [
   "Dois robôs em bancada: AI Rover e Navegador Mecanum.",
   "ROS 2, Webots e SLAM: a stack que roda nos robôs hoje.",
   "Extensão registrada na ProEx-UFSCar, com orientação docente.",
-  "Toda decisão técnica publicada com a justificativa — e com o que não funcionou.",
-  "Onze pessoas, três frentes, uma formação comum antes de escolher.",
+  "Toda decisão técnica publicada com a justificativa, e com o que não funcionou.",
+  `${TOTAL_MEMBROS} pessoas, três frentes, uma formação comum antes de escolher.`,
 ]
 
 export function About() {
@@ -43,9 +38,8 @@ export function About() {
         transition={{ duration: 0.8 }}
         className="px-8 md:px-12 mb-0 py-20"
       >
-        <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">04 — ONDE A GEAR ESTÁ</p>
         <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que existe hoje</h2>
-        {/* /sobre não recebia nenhum link no corpo do site — só o menu levava lá */}
+        {/* /sobre não recebia nenhum link no corpo do site, só o menu levava lá */}
         <p className="mt-5 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
           O registro na ProEx, a formação completa e as três frentes estão em{" "}
           <Link href="/sobre" data-cursor-hover className="text-[var(--gear-amber)] hover:underline">
@@ -56,7 +50,7 @@ export function About() {
       </motion.div>
 
       {/* Horizontal Scroll Container */}
-      <div className="relative flex items-center overflow-hidden py-0 gap-0 h-16">
+      <div className="relative flex items-center overflow-hidden py-6">
         <motion.div style={{ x: smoothX }} className="flex gap-16 md:gap-24 px-8 md:px-12 whitespace-nowrap">
           {statements.map((statement, index) => (
             <motion.p

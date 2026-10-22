@@ -24,33 +24,27 @@ export function Sobre() {
       {/* Cabeçalho */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <Surge delay={0.1}>
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            UFSCAR SOROCABA · EXTENSÃO
-          </p>
           <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-            QUEM
-            <br />
-            <span className="italic">constrói</span>
+            Sobre a GEAR
           </h1>
         </Surge>
       </section>
 
-      {/* 01 — Missão */}
+      {/* 01, Missão */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">01 — MISSÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Por que existimos</h2>
         </Surge>
 
         {/*
           Duas colunas a partir de lg: a prosa em 7 de 12, a foto em 5. A
-          medida de leitura não muda — o parágrafo continua estreito; o que
+          medida de leitura não muda, o parágrafo continua estreito; o que
           era espaço vazio à direita virou a foto.
         */}
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
         <Surge delay={0.1} className="lg:col-span-7 space-y-6 font-sans text-lg md:text-xl font-light leading-relaxed">
           <p>
-            O GEAR é o Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Existimos para que
+            A GEAR é o Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Existimos para que
             estudantes de graduação construam sistemas reais, que saem da bancada, falham, são
             consertados e voltam a funcionar.
           </p>
@@ -66,7 +60,7 @@ export function Sobre() {
         </Surge>
 
         <Surge delay={0.2} className="lg:col-span-5">
-          <div className="relative aspect-[4/3] w-full overflow-hidden border border-white/10">
+          <div className="relative aspect-[4/3] w-full overflow-hidden border border-linha">
             <Image
               src="/fotos/universidade-aberta/foto-01.jpg"
               alt="Estudantes em computadores durante a Universidade Aberta na UFSCar Sorocaba"
@@ -76,16 +70,15 @@ export function Sobre() {
             />
           </div>
           <p className="mt-3 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
-            Universidade Aberta · UFSCar Sorocaba
+            Universidade Aberta UFSCar, Sorocaba
           </p>
         </Surge>
         </div>
       </section>
 
-      {/* 02 — Formação */}
+      {/* 02, Formação */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">02 — FORMAÇÃO</p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">A jornada completa</h2>
           <p className="mt-6 max-w-2xl font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
             Ninguém entra direto numa frente. Todo mundo passa pelas mesmas seis etapas, na mesma
@@ -94,11 +87,11 @@ export function Sobre() {
         </Surge>
 
         {/*
-          Seis etapas em grade de 3. A ordem continua legível — o número 01…06
-          é quem a carrega — e a comparação entre elas passa a ser lado a lado,
+          Seis etapas em grade de 3. A ordem continua legível, o número 01…06
+          é quem a carrega, e a comparação entre elas passa a ser lado a lado,
           em vez de seis blocos de altura inteira exigindo rolagem.
         */}
-        <div className="grid grid-cols-1 gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-px bg-linha sm:grid-cols-2 lg:grid-cols-3">
           {ETAPAS_FORMACAO.map((etapa, index) => (
             <Surge
               key={etapa.nome}
@@ -120,26 +113,23 @@ export function Sobre() {
         </div>
       </section>
 
-      {/* 03/04 — As frentes e as áreas de apoio, absorvidas de /frentes */}
+      {/* 03/04, As frentes e as áreas de apoio, absorvidas de /frentes */}
       <Frentes />
 
-      {/* 05 — Vínculo institucional */}
+      {/* 05, Vínculo institucional */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            05 — VÍNCULO INSTITUCIONAL
-          </p>
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde isso está registrado</h2>
         </Surge>
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            O GEAR é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, sob
+            A GEAR é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, sob
             coordenação do <span className="text-foreground">Prof. Iago Pacheco Gomes</span>. Existe
             processo, orientação docente e prestação de contas à universidade.
           </Surge>
 
-          {/* Ficha do registro — mesma linguagem das fichas técnicas de /projetos */}
+          {/* Ficha do registro, mesma linguagem das fichas técnicas de /projetos */}
           <Surge delay={0.2} className="w-full max-w-sm shrink-0 border border-[var(--gear-amber)] bg-[var(--gear-navy)] p-6">
             <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">REGISTRO</p>
             <dl className="mt-4 space-y-4">
@@ -157,7 +147,7 @@ export function Sobre() {
 
         {/*
          * Saída da página. Antes /sobre terminava na ficha de registro, sem
-         * nenhum destino — a auditoria classificou como beco sem saída: quem
+         * nenhum destino, a auditoria classificou como beco sem saída: quem
          * leu a página inteira e se interessou não tinha o que fazer.
          */}
         <Surge className="mt-16 flex flex-col sm:flex-row gap-5">
@@ -165,7 +155,7 @@ export function Sobre() {
             Ver o que construímos
           </Link>
           <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoSecundario}`}>
-            Falar com a gente
+            Quero ser avisado
           </a>
         </Surge>
       </section>

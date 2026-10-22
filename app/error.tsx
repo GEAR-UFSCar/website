@@ -6,9 +6,9 @@ import Link from "next/link"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 /*
- * Fronteira de erro das rotas. Sem ela, qualquer exceção não tratada — uma
+ * Fronteira de erro das rotas. Sem ela, qualquer exceção não tratada, uma
  * consulta ao Supabase que falha, uma coluna que não existe porque a migração
- * não rodou — mostrava a tela padrão do Next, fora da identidade e sem saída.
+ * não rodou, mostrava a tela padrão do Next, fora da identidade e sem saída.
  *
  * `reset()` remonta o segmento sem recarregar a página: erro transitório de
  * rede se resolve no botão, sem perder a sessão.
@@ -37,7 +37,7 @@ export default function Error({
         </h1>
 
         <p className="mt-8 max-w-[62ch] font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          Não foi você. Esta parte do site falhou ao carregar — pode ser uma instabilidade
+          Não foi você. Esta parte do site falhou ao carregar: pode ser uma instabilidade
           momentânea. Tentar de novo costuma resolver; se insistir, o resto do site continua de pé.
         </p>
 

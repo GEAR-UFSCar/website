@@ -46,7 +46,7 @@ export function Carregando({ linhas = 4 }: { linhas?: number }) {
         {/* lista */}
         <div className="mt-12 space-y-px">
           {Array.from({ length: linhas }, (_, i) => (
-            <div key={i} className="border-t border-white/10 py-6">
+            <div key={i} className="border-t border-linha py-6">
               <Barra className="h-5 w-1/2" />
               <Barra className="mt-3 h-3 w-1/3" />
             </div>

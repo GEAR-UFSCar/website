@@ -5,6 +5,7 @@ import { CargoSelect } from "@/components/cargo-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { AprovacaoPendentes, type Pendente } from "@/components/aprovacao-pendentes"
 import { Aviso } from "@/components/aviso"
+import { PageHeader } from "@/components/membros/page-header"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
@@ -30,7 +31,7 @@ type Perfil = {
 }
 
 export default async function CargosPage() {
-  // sessão e perfil vêm do cache do layout — sem nova consulta
+  // sessão e perfil vêm do cache do layout, sem nova consulta
   const user = await exigirUsuario()
   const { perfil: meu } = await getPerfil()
 
@@ -82,19 +83,15 @@ export default async function CargosPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
-      <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Cargos</h1>
-      <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {perfis.length} PERFIL(S) · {comCargo} COM CARGO · {pendentes} AGUARDANDO APROVAÇÃO
-      </p>
-      </Surge>
+      <PageHeader titulo="Cargos e aprovação">
+        {perfis.length} perfis, {comCargo} com cargo, {pendentes} aguardando aprovação.
+      </PageHeader>
 
       <Aviso titulo="ATENÇÃO" tom="neutro" className="mt-8 max-w-3xl">
         Aprovar é o que abre a área de membros: sem isso a conta existe mas não lê diretório,
         documentos, avisos nem calendário. Qualquer cargo preenchido dá acesso ao painel de
         Patrimônio e Atas, e exige aprovação. Só Presidente e Vice-Presidente alteram cargo e
-        aprovação — e ninguém altera a própria. Revogar corta leitura e escrita de uma vez.
+        aprovação, e ninguém altera a própria. Revogar corta leitura e escrita de uma vez.
       </Aviso>
 
       {error && (
@@ -105,8 +102,8 @@ export default async function CargosPage() {
 
       {!error && <AprovacaoPendentes pendentes={fila} />}
 
-      <div className="mt-16 border-t border-white/10 pt-8">
-        <h2 className="font-sans text-2xl md:text-3xl font-light italic">Todos os perfis</h2>
+      <div className="mt-16 border-t border-linha pt-8">
+        <h2 className="font-sans text-2xl md:text-3xl font-normal">Todos os perfis</h2>
         <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
           Cargo, frente e histórico de alteração. Aprovados e pendentes, na mesma lista.
         </p>
@@ -115,7 +112,7 @@ export default async function CargosPage() {
       <div className="mt-8 overflow-x-auto">
         <table className="w-full min-w-[46rem] border-collapse">
           <thead>
-            <tr className="border-b border-white/15 text-left">
+            <tr className="border-b border-linha-forte text-left">
               {["Membro", "Curso", "Frente", "Aprovação", "Cargo", "Alterado em"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
@@ -130,7 +127,7 @@ export default async function CargosPage() {
               </td></tr>
             )}
             {perfis.map((p, indice) => (
-              <Surge as="tr" index={indice} key={p.id} className="border-b border-white/10 align-top">
+              <Surge as="tr" index={indice} key={p.id} className="border-b border-linha align-top">
                 <td className="py-4 pr-4">
                   <p className="font-sans text-base font-light">{p.nome_completo ?? "sem nome"}</p>
                   {p.id === user.id && (

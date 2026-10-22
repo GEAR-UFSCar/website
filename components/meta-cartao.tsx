@@ -46,7 +46,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
       return false
     }
     if (!data || data.length === 0) {
-      setErro("Nenhuma linha alterada — a política de acesso recusou a mudança.")
+      setErro("Nenhuma linha alterada, a política de acesso recusou a mudança.")
       return false
     }
     return true
@@ -88,7 +88,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
        * numa lista de dez metas atrasadas, o destaque por preenchimento vira
        * parede e deixa de destacar.
        */
-      className={`border-t border-white/10 py-6 ${
+      className={`border-t border-linha py-6 ${
         vencida ? "border-l-2 border-l-[var(--gear-amber)] pl-5" : ""
       }`}
     >
@@ -122,7 +122,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
             </span>
           )}
           {meta.concluida && (
-            <span className={`${etiqueta} border-white/20 text-muted-foreground`}>Concluída</span>
+            <span className={`${etiqueta} border-linha-forte text-muted-foreground`}>Concluída</span>
           )}
           {meta.frente_vinculada && (
             <span className={`${etiqueta} border-[var(--gear-amber)] text-[var(--gear-amber)]`}>
@@ -131,7 +131,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
           )}
           {/* A visibilidade só interessa a quem pode mudá-la. */}
           {editavel && (
-            <span className={`${etiqueta} border-white/20 text-muted-foreground`}>
+            <span className={`${etiqueta} border-linha-forte text-muted-foreground`}>
               {meta.visibilidade}
             </span>
           )}
@@ -149,7 +149,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
             className={`${acao} ${
               meta.concluida
                 ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                : "border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground"
+                : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
             }`}
           >
             {meta.concluida ? "Reabrir" : "Concluir"}
@@ -165,7 +165,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
             disabled={travado}
             aria-expanded={editando}
             data-cursor-hover
-            className={`${acao} border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground`}
+            className={`${acao} border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground`}
           >
             {editando ? "Fechar" : "Editar"}
           </button>
@@ -191,7 +191,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
                 onClick={() => setConfirmando(false)}
                 disabled={travado}
                 data-cursor-hover
-                className={`${acao} border-white/20 text-muted-foreground hover:border-foreground hover:text-foreground`}
+                className={`${acao} border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground`}
               >
                 Cancelar
               </button>
@@ -205,7 +205,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
               }}
               disabled={travado}
               data-cursor-hover
-              className={`${acao} border-white/20 text-muted-foreground hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]`}
+              className={`${acao} border-linha-forte text-muted-foreground hover:border-[var(--gear-amber)] hover:text-[var(--gear-amber)]`}
             >
               Apagar
             </button>

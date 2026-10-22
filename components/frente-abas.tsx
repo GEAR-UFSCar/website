@@ -5,11 +5,11 @@ import { FRENTES_ROTAS, type FrenteNome } from "@/lib/administracao"
 /**
  * Navegação entre as três frentes. A aba ativa vem por prop em vez de
  * usePathname: a página já sabe qual frente está mostrando, e assim isto
- * continua sendo Server Component — sem JS no cliente só para pintar uma aba.
+ * continua sendo Server Component, sem JS no cliente só para pintar uma aba.
  */
 export function FrenteAbas({ atual }: { atual: FrenteNome }) {
   return (
-    <nav aria-label="Frentes" className="mt-10 flex flex-wrap border border-white/15">
+    <nav aria-label="Frentes" className="mb-8 flex flex-wrap border border-linha-forte">
       {FRENTES_ROTAS.map((frente) => {
         const ativa = frente.nome === atual
 

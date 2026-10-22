@@ -31,7 +31,7 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
        * Mandado por compatibilidade com bancos em que a 016 ainda não rodou.
        * Depois dela o valor é irrelevante: o trigger de autoria sobrescreve
        * esta coluna com auth.uid() antes de gravar. Não confie neste campo
-       * como prova de autoria — a prova está no banco.
+       * como prova de autoria, a prova está no banco.
        */
       autor_id: usuarioId,
     })
@@ -50,7 +50,7 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
   }
 
   return (
-    <form onSubmit={enviar} className="border border-white/10 p-6 space-y-5">
+    <form onSubmit={enviar} className="border border-linha p-6 space-y-5">
       <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVO AVISO</p>
 
       <div>
