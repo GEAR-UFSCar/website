@@ -1,5 +1,6 @@
 import type { ReactNode } from "react"
 import { redirect } from "next/navigation"
+import { MotionConfig } from "framer-motion"
 
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -60,8 +61,7 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
   }
 
   return (
-    <SmoothScroll>
-      <CustomCursor />
+    <MotionConfig reducedMotion="always">
       <MembrosShell
         nome={perfil?.nome_completo?.trim() || user.email || "Membro"}
         cargo={perfil?.cargo ?? null}
@@ -77,8 +77,7 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
         */}
         <BadgeAmbiente />
         {children}
-        <Footer />
       </main>
-    </SmoothScroll>
+    </MotionConfig>
   )
 }
