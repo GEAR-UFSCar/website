@@ -1,0 +1,53 @@
+# Roda em todo PR e em todo push na main: lint, tipos e build.
+#
+# Existe porque o Dependabot abre PRs sozinho, e sem isto eles entravam sem
+# nenhuma checagem — a Vercel só constrói, não roda lint nem tsc. Se este
+# workflow falhar, o PR não está pronto para entrar.
+#
+# O build roda SEM as chaves do Supabase de propósito: o site tem de construir
+# assim (as seções que dependem do banco se escondem). Um build que só passa
+# com segredo de produção é um build que quebra no primeiro projeto novo.
+name: Verificação
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: verificacao-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: package.json
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # next-env.d.ts (tipos de import de imagem) e os tipos de rota são gerados
+      # pelo Next e ficam fora do git. Sem gerar antes, o tsc não reconhece o
+      # `import logo from "@/public/….png"` e falha num checkout limpo.
+      - name: Tipos
+        run: |
+          npx next typegen
+          npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"

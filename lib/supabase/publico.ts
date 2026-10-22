@@ -13,9 +13,17 @@ import { createClient as criarClienteSupabase } from "@supabase/supabase-js"
  * nada que dependa de quem está olhando.
  */
 export function createClientePublico() {
-  return criarClienteSupabase(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { auth: { persistSession: false, autoRefreshToken: false } },
-  )
+  /*
+   * Sem as variáveis, null — e quem chama esconde a seção. Antes os `!` faziam
+   * o createClient lançar "supabaseUrl is required" durante o build, e uma
+   * variável faltando num projeto da Vercel derrubava o site INTEIRO por
+   * causa de uma vitrine de números no /sobre.
+   */
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const chave = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  if (!url || !chave) return null
+
+  return criarClienteSupabase(url, chave, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  })
 }

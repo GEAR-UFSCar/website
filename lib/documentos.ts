@@ -45,8 +45,15 @@ export const TAMANHO_MAXIMO = 20 * 1024 * 1024
  * manuais); imagem entra por causa da categoria Marca; as duas planilhas e o
  * texto cobrem o financeiro. Qualquer outra coisa é sinal de que o arquivo
  * errado foi selecionado.
+ *
+ * SEM SVG: um SVG pode carregar <script>, e ele roda quando alguém abre o
+ * link assinado do arquivo. Logo em vetor vai em PDF.
+ *
+ * Esta lista e TAMANHO_MAXIMO são só o aviso na tela. Quem recusa de verdade
+ * é o próprio bucket (file_size_limit e allowed_mime_types, migração 024) —
+ * mudou aqui, muda lá.
  */
-export const TIPOS_ACEITOS = [".pdf", ".png", ".jpg", ".jpeg", ".svg", ".odt", ".ods", ".docx", ".xlsx"]
+export const TIPOS_ACEITOS = [".pdf", ".png", ".jpg", ".jpeg", ".odt", ".ods", ".docx", ".xlsx"]
 
 /**
  * Extensão em minúsculas, sem ponto — e vazia quando não há extensão.

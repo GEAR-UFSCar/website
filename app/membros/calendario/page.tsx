@@ -1,24 +1,24 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { PageHeader } from "@/components/membros/page-header"
 
 import { ErroDados } from "@/components/erro-dados"
 import { EventoForm } from "@/components/evento-form"
-import { CalendarioMensal } from "@/components/calendario-mensal"
-import { AgendaLista } from "@/components/membros/agenda-lista"
-import { Secao } from "@/components/membros/secao"
+import { CalendarioClean, type Prazo } from "@/components/calendario-clean"
 import { Surge } from "@/components/surge"
+import { PageHeader } from "@/components/membros/page-header"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
-import { temCargo } from "@/lib/administracao"
+import { FRENTES, temCargo } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
-import { hojeISO, horaGear, inicioDoDiaGear } from "@/lib/datas"
+import { hojeISO, horaGear, inicioDeHoje, inicioDoDiaGear, saudacao } from "@/lib/datas"
 import { COLUNAS_META, estaVencida, type Meta } from "@/lib/metas"
 import {
+  chaveDeDiaValida,
   chaveDeMesValida,
   chaveDoTimestamp,
   intervaloDaGrade,
   mesDaChave,
+  visaoValida,
   type ItemAgenda,
 } from "@/lib/agenda"
 
@@ -37,22 +37,42 @@ type Evento = {
   frente_vinculada: string | null
 }
 
+/** Quantos cards de prazo cabem no topo. Três é uma linha no desktop. */
+const PRAZOS_NO_TOPO = 3
+
 export default async function CalendarioPage({
   searchParams,
 }: {
-  searchParams: Promise<{ mes?: string }>
+  searchParams: Promise<{ visao?: string; mes?: string; dia?: string; frente?: string }>
 }) {
   const { user, perfil } = await exigirMembroAprovado()
   // Portão só da tela; a RLS de 008 é quem barra de fato.
   const podeEscrever = temCargo(perfil?.cargo)
 
+  const params = await searchParams
   const hoje = hojeISO()
-  const mes = chaveDeMesValida((await searchParams).mes, mesDaChave(hoje))
 
   /*
-   * A consulta cobre a GRADE, não o mês: a primeira e a última semana trazem
-   * dias do mês vizinho, e eles são células reais da tela. Buscar só o mês
-   * deixaria a última linha sempre vazia, o que se lê como "nada marcado".
+   * Estado da tela inteiro na URL. Sem `visao`, um link antigo com `?mes=`
+   * continua abrindo o mês, como sempre abriu; sem nada, abre a semana — que
+   * é a pergunta mais comum ("o que tem essa semana?").
+   */
+  const visao = visaoValida(params.visao, params.mes ? "mes" : "semana")
+  const frente = (FRENTES as readonly string[]).includes(params.frente ?? "") ? (params.frente as string) : null
+
+  let dia = chaveDeDiaValida(params.dia, hoje)
+  if (visao === "mes" && params.mes) {
+    const mesPedido = chaveDeMesValida(params.mes, mesDaChave(hoje))
+    dia = mesDaChave(hoje) === mesPedido ? hoje : `${mesPedido}-01`
+  }
+  const mes = mesDaChave(dia)
+
+  /*
+   * A consulta cobre sempre a GRADE do mês de `dia`, qualquer que seja a
+   * visão: o mini-calendário da lateral marca os dias com compromisso, e a
+   * semana e o dia de referência estão sempre dentro dessa grade. A grade, e
+   * não o mês, porque a primeira e a última semana trazem dias do mês
+   * vizinho, e eles são células reais da tela.
    */
   const { primeira, ultima } = intervaloDaGrade(mes)
   // Limites em Brasília: meia-noite local do servidor (UTC) cortaria os
@@ -63,7 +83,7 @@ export default async function CalendarioPage({
   const supabase = await createClient()
 
   /*
-   * Três consultas, nenhum join, o mesmo motivo do mural e de /membros/metas:
+   * Três consultas, nenhum join — o mesmo motivo do mural e de /membros/metas:
    * a FK aponta para auth.users, não para perfis, e o PostgREST não tem
    * relação para embutir.
    *
@@ -71,8 +91,13 @@ export default async function CalendarioPage({
    * minhas (privadas inclusive) mais as públicas dos outros. Repetir a regra
    * aqui seria uma segunda definição do mesmo acesso, livre para divergir.
    */
-  const [{ data: eventosData, error: erroEventos }, { data: metasData, error: erroMetas }, { data: pessoas }] =
-    await Promise.all([
+  const [
+    { data: eventosData, error: erroEventos },
+    { data: metasData, error: erroMetas },
+    { data: pessoas },
+    { data: prazosEventosData },
+    { data: prazosMetasData },
+  ] = await Promise.all([
       supabase
         .from("eventos")
         .select("id, titulo, descricao, tipo, data_inicio, data_fim, frente_vinculada")
@@ -86,6 +111,29 @@ export default async function CalendarioPage({
         .lte("prazo", ultima)
         .order("prazo", { ascending: true }),
       supabase.from("perfis").select("id, nome_completo"),
+      /*
+       * Cards de prazo: os próximos da entidade e as MINHAS metas abertas,
+       * independentes do período na tela — o prazo de sexta que vem tem de
+       * aparecer mesmo com a semana passada aberta. Pede-se um pouco mais que
+       * o necessário porque o filtro de frente corta depois, em memória.
+       * As metas públicas dos outros ficam de fora: já estão na grade, e aqui
+       * virariam ruído sobre o que é seu para entregar.
+       */
+      supabase
+        .from("eventos")
+        .select("id, titulo, data_inicio, frente_vinculada")
+        .eq("tipo", "Prazo")
+        .gte("data_inicio", inicioDeHoje())
+        .order("data_inicio", { ascending: true })
+        .limit(PRAZOS_NO_TOPO * 3),
+      supabase
+        .from("metas")
+        .select("id, titulo, prazo, frente_vinculada")
+        .eq("usuario_id", user.id)
+        .eq("concluida", false)
+        .gte("prazo", hoje)
+        .order("prazo", { ascending: true })
+        .limit(PRAZOS_NO_TOPO * 3),
     ])
 
   const eventos = (eventosData ?? []) as Evento[]
@@ -131,9 +179,44 @@ export default async function CalendarioPage({
     return (a.hora ?? "").localeCompare(b.hora ?? "")
   })
 
+  /*
+   * Filtro de frente em memória: o volume de uma grade é pequeno, e fazer
+   * aqui mantém UMA regra para eventos, metas e prazos. Item geral (sem
+   * frente) passa sempre — reunião geral é da entidade inteira.
+   */
+  const daFrente = (f: string | null) => !frente || !f || f === frente
+  const visiveis = itens.filter((i) => daFrente(i.frente))
+
+  type LinhaPrazoEvento = { id: string; titulo: string; data_inicio: string; frente_vinculada: string | null }
+  type LinhaPrazoMeta = { id: string; titulo: string; prazo: string; frente_vinculada: string | null }
+
+  const prazos: Prazo[] = [
+    ...((prazosEventosData ?? []) as LinhaPrazoEvento[]).map((e) => ({
+      id: `evento-${e.id}`,
+      titulo: e.titulo,
+      dia: chaveDoTimestamp(e.data_inicio),
+      rotulo: "Prazo da GEAR",
+      frente: e.frente_vinculada,
+    })),
+    ...((prazosMetasData ?? []) as LinhaPrazoMeta[]).map((m) => ({
+      id: `meta-${m.id}`,
+      titulo: m.titulo,
+      dia: m.prazo.slice(0, 10),
+      rotulo: "Sua meta",
+      frente: m.frente_vinculada,
+    })),
+  ]
+    .filter((p) => daFrente(p.frente))
+    .sort((a, b) => a.dia.localeCompare(b.dia))
+    .slice(0, PRAZOS_NO_TOPO)
+
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <PageHeader titulo="Calendário">Reuniões, sprints e prazos da GEAR na mesma grade das suas metas e das que a equipe tornou públicas. Criar evento é de quem tem cargo.</PageHeader>
+    <section className="relative mx-auto max-w-[90rem] px-4 sm:px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+      <PageHeader titulo="Calendário">
+        Reuniões, sprints e prazos da GEAR junto com as suas metas e as que a equipe tornou
+        públicas, por semana, dia ou mês. Para registrar uma obrigação sua, crie uma meta; criar
+        evento da entidade é de quem tem cargo.
+      </PageHeader>
 
       {erroEventos && (
         <ErroDados titulo="CALENDÁRIO INDISPONÍVEL" erro={erroEventos} className="mt-10 max-w-2xl">
@@ -150,16 +233,21 @@ export default async function CalendarioPage({
         </ErroDados>
       )}
 
-      <Surge className="mt-16">
-        <CalendarioMensal mes={mes} itens={itens} hoje={hoje} />
+      <Surge className="mt-12">
+        <CalendarioClean
+          visao={visao}
+          dia={dia}
+          hoje={hoje}
+          frente={frente}
+          itens={visiveis}
+          prazos={prazos}
+          saudacao={`${saudacao()}, ${perfil?.nome_completo?.trim().split(" ")[0] || "membro"}`}
+          podeCriarEvento={podeEscrever}
+        />
       </Surge>
 
-      <Secao titulo="Agenda">
-        <AgendaLista itens={itens} hoje={hoje} />
-      </Secao>
-
       {podeEscrever && (
-        <div className="mt-20 max-w-4xl">
+        <div id="novo-evento" className="mt-20 max-w-4xl scroll-mt-28">
           <EventoForm usuarioId={user.id} />
         </div>
       )}

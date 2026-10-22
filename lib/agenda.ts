@@ -130,3 +130,80 @@ export function agruparPorDia(itens: ItemAgenda[]) {
   }
   return mapa
 }
+
+// -----------------------------------------------------------------------------
+// Visões Semana e Dia
+//
+// Mesma regra do resto do arquivo: tudo é chave "YYYY-MM-DD", e Date só entra
+// para a aritmética de calendário (somar dias, achar a segunda-feira) — nunca
+// para decidir em que dia um timestamp cai, que é trabalho de diaGear().
+// -----------------------------------------------------------------------------
+
+export const VISOES = ["semana", "dia", "mes"] as const
+export type Visao = (typeof VISOES)[number]
+
+export const ROTULO_DA_VISAO: Record<Visao, string> = {
+  semana: "Semana",
+  dia: "Dia",
+  mes: "Mês",
+}
+
+/** Visão válida, ou `alternativa` quando vier lixo pela URL. */
+export function visaoValida(bruta: string | undefined, alternativa: Visao): Visao {
+  return (VISOES as readonly string[]).includes(bruta ?? "") ? (bruta as Visao) : alternativa
+}
+
+/** "YYYY-MM-DD" que existe de verdade no calendário, ou `alternativa`. */
+export function chaveDeDiaValida(bruta: string | undefined, alternativa: string) {
+  if (!bruta || !/^\d{4}-\d{2}-\d{2}$/.test(bruta)) return alternativa
+  // 2026-02-31 passa na regex; o Date normaliza para março e a ida e volta denuncia.
+  return chaveDoDia(dataDaChave(bruta)) === bruta ? bruta : alternativa
+}
+
+/** Desloca a chave de dia em `passo` dias. */
+export function deslocarDia(chave: string, passo: number) {
+  const d = dataDaChave(chave)
+  return chaveDoDia(new Date(d.getFullYear(), d.getMonth(), d.getDate() + passo))
+}
+
+/** As 7 chaves da semana (segunda a domingo) que contém `chave`. */
+export function semanaDe(chave: string): string[] {
+  const recuo = (dataDaChave(chave).getDay() + 6) % 7
+  const segunda = deslocarDia(chave, -recuo)
+  return Array.from({ length: 7 }, (_, i) => deslocarDia(segunda, i))
+}
+
+/** "Semana de 12 a 18 de outubro" — ou com os dois meses, quando ela vira o mês. */
+export function rotuloDaSemana(chave: string) {
+  const dias = semanaDe(chave)
+  const ini = dataDaChave(dias[0])
+  const fim = dataDaChave(dias[6])
+  if (ini.getMonth() === fim.getMonth()) {
+    return `Semana de ${ini.getDate()} a ${diaPorExtenso(dias[6])}`
+  }
+  return `Semana de ${diaPorExtenso(dias[0])} a ${diaPorExtenso(dias[6])}`
+}
+
+/** "Sexta-feira, 16 de outubro". */
+export function rotuloDoDia(chave: string) {
+  const semana = diaDaSemanaPorExtenso(chave)
+  return `${semana[0].toUpperCase()}${semana.slice(1)}, ${diaPorExtenso(chave)}`
+}
+
+/** Dias inteiros de `de` até `ate`, as duas como chave. Negativo = já passou. */
+export function diasEntre(de: string, ate: string) {
+  return Math.round((dataDaChave(ate).getTime() - dataDaChave(de).getTime()) / 86_400_000)
+}
+
+/**
+ * Endereço do calendário com o estado na URL. Visão e dia moram na URL (e não
+ * em useState) pelo mesmo motivo do `?mes=` que já existia: a página busca no
+ * servidor só o intervalo que vai desenhar, e o link pode ser mandado no grupo.
+ */
+export function hrefCalendario(estado: { visao: Visao; dia: string; frente?: string | null }) {
+  const p = new URLSearchParams({ visao: estado.visao })
+  if (estado.visao === "mes") p.set("mes", mesDaChave(estado.dia))
+  else p.set("dia", estado.dia)
+  if (estado.frente) p.set("frente", estado.frente)
+  return `/membros/calendario?${p.toString()}`
+}
