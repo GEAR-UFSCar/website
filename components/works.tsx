@@ -95,7 +95,7 @@ export function Works() {
           >
 
             <div className="flex flex-col md:flex-row md:items-baseline justify-between gap-3 md:gap-10">
-              <span className="font-mono text-xs text-muted-foreground tracking-widest order-1 md:order-none shrink-0 uppercase">
+              <span className="font-mono text-xs text-muted-foreground tracking-widest order-1 md:order-none shrink-0 md:w-36 uppercase">
                 {entrada.tema}
               </span>
 

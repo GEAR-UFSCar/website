@@ -3,7 +3,13 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { SentientGear } from "./sentient-gear"
+import dynamic from "next/dynamic"
+
+// O WebGL (three + r3f) não precisa travar o primeiro desenho: carrega depois do HTML.
+const SentientGear = dynamic(() => import("./sentient-gear").then((m) => m.SentientGear), {
+  ssr: false,
+  loading: () => null,
+})
 import { HeroCursor } from "@/components/hero-cursor"
 
 const MotionLink = motion.create(Link)
@@ -60,7 +66,7 @@ export function Hero() {
       <HeroCursor />
 
       {/* Typography Overlay */}
-      <motion.div style={{ opacity, scale }} className="relative z-10 min-h-[100dvh] flex flex-col justify-between p-8 md:p-12 md:px-12 md:py-20 pointer-events-none">
+      <motion.div style={{ opacity, scale }} className="relative z-10 min-h-[100dvh] flex flex-col justify-between px-8 pt-24 pb-8 md:p-12 md:px-12 md:py-20 pointer-events-none">
         {/* Top Left */}
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -87,7 +93,7 @@ export function Hero() {
             data-cursor-hover
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="relative inline-block px-8 py-4 border border-linha-forte rounded-full font-mono text-sm tracking-widest uppercase bg-transparent backdrop-blur-sm hover:bg-white hover:text-black transition-colors duration-500 pointer-events-auto"
+            className="relative inline-block whitespace-nowrap px-6 md:px-8 py-4 border border-linha-forte rounded-full font-mono text-xs md:text-sm tracking-widest uppercase bg-transparent backdrop-blur-sm hover:bg-white hover:text-black transition-colors duration-500 pointer-events-auto"
           >
             Conheça as Frentes
           </MotionLink>

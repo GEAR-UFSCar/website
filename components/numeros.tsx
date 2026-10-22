@@ -13,7 +13,7 @@ const itens = [
 export function Numeros() {
   return (
     <section aria-label="A GEAR em números" className="px-8 md:px-12">
-      <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-px border-y border-linha bg-linha md:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-px border-y border-linha bg-linha md:grid-cols-4">
         {itens.map((i) => (
           <div key={i.rotulo} className="bg-[var(--gear-ink)] px-2 py-8 md:px-6 md:py-10">
             <dd className="font-mono text-4xl tabular-nums tracking-tight md:text-5xl">{i.valor}</dd>
