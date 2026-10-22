@@ -16,7 +16,7 @@ import {
 } from "@/lib/agenda"
 
 type Props = {
-  /** "YYYY-MM" — o mês desenhado. Vem da URL, resolvido no servidor. */
+  /** "YYYY-MM", o mês desenhado. Vem da URL, resolvido no servidor. */
   mes: string
   itens: ItemAgenda[]
   /** Hoje calculado no SERVIDOR. Se viesse de new Date() aqui, o primeiro
@@ -30,7 +30,7 @@ const POR_CELULA = 2
 /**
  * Cor é informação, não enfeite: âmbar = compromisso da entidade, mist = meta
  * pessoal. Prazo institucional sai em contorno âmbar (não preenchido) porque
- * é marco, não encontro — e ver os dois no mesmo tom apagaria a diferença
+ * é marco, não encontro, e ver os dois no mesmo tom apagaria a diferença
  * justamente na semana cheia, que é quando ela importa.
  */
 function estiloDoPill(item: ItemAgenda) {
@@ -122,7 +122,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
 
           {/*
             gap-px sobre o fundo claro desenha as linhas da grade sem precisar
-            de border em cada célula — border de célula duplica na fronteira e
+            de border em cada célula, border de célula duplica na fronteira e
             engrossa a linha do meio.
           */}
           <div className="mt-px grid grid-cols-7 gap-px bg-linha">
@@ -139,7 +139,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
                   type="button"
                   onClick={() => setSelecionado(chave)}
                   aria-pressed={ehSelecionado}
-                  aria-label={`${diaPorExtenso(chave)}, ${diaDaSemanaPorExtenso(chave)} — ${
+                  aria-label={`${diaPorExtenso(chave)}, ${diaDaSemanaPorExtenso(chave)}, ${
                     lista.length === 0 ? "sem compromissos" : `${lista.length} item(ns)`
                   }`}
                   data-cursor-hover
@@ -199,7 +199,7 @@ export function CalendarioMensal({ mes, itens, hoje }: Props) {
           {/*
             O indicador diz o que os dados são de fato: uma agenda compartilhada
             (eventos da entidade + metas públicas dos outros) contada neste mês.
-            Não diz "tempo real" porque não há assinatura de realtime aqui — a
+            Não diz "tempo real" porque não há assinatura de realtime aqui, a
             página busca no servidor a cada navegação.
           */}
           <p className="flex items-center gap-2 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">

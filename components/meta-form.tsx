@@ -87,7 +87,7 @@ export function MetaForm({ usuarioId, meta, aoEncerrar }: Props) {
         return
       }
       if (!data || data.length === 0) {
-        setErro("Nenhuma linha alterada — a política de acesso recusou a mudança.")
+        setErro("Nenhuma linha alterada, a política de acesso recusou a mudança.")
         setSalvando(false)
         return
       }

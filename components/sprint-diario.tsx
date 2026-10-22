@@ -23,7 +23,7 @@ type Props = {
  * naquela frente, o campo para acrescentar.
  *
  * O diário é append-only no banco (021, sem policy de UPDATE nem DELETE), e a
- * tela não finge o contrário — não há botão de editar nem de apagar, porque
+ * tela não finge o contrário, não há botão de editar nem de apagar, porque
  * nenhum dos dois funcionaria.
  */
 export function SprintDiario({ sprintId, atualizacoes, podeEscrever }: Props) {
@@ -61,7 +61,7 @@ export function SprintDiario({ sprintId, atualizacoes, podeEscrever }: Props) {
       return
     }
     if (!data || data.length === 0) {
-      setErro("Nenhuma linha gravada — a política de acesso recusou a atualização.")
+      setErro("Nenhuma linha gravada, a política de acesso recusou a atualização.")
       setSalvando(false)
       return
     }

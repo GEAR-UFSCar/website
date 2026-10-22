@@ -5,7 +5,7 @@ import { FRENTES_ROTAS, type FrenteNome } from "@/lib/administracao"
 /**
  * Navegação entre as três frentes. A aba ativa vem por prop em vez de
  * usePathname: a página já sabe qual frente está mostrando, e assim isto
- * continua sendo Server Component — sem JS no cliente só para pintar uma aba.
+ * continua sendo Server Component, sem JS no cliente só para pintar uma aba.
  */
 export function FrenteAbas({ atual }: { atual: FrenteNome }) {
   return (

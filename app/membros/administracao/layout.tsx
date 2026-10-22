@@ -5,7 +5,7 @@ import { PageHeader } from "@/components/membros/page-header"
 
 export default async function AdministracaoLayout({ children }: { children: ReactNode }) {
   /*
-   * Sessão, perfil preenchido e aprovação, nessa ordem — depois o cargo.
+   * Sessão, perfil preenchido e aprovação, nessa ordem, depois o cargo.
    * Memoizado por request: as páginas filhas releem daqui, sem nova ida ao
    * banco.
    */

@@ -104,6 +104,13 @@ Cliente, sem dependência nova. Lista estática derivada de `GRUPOS` (todas as t
 - `lib/navegacao.ts` com um script de asserts (`scripts/testar-navegacao.mjs`, no estilo de `testar-rls.mjs`) cobrindo: grupo ativo para cada rota, aba de Gestão ausente sem cargo, `/membros` não casando com tudo.
 - Passada manual no `npm run dev` em 1440px e 390px por etapa (o Playwright do ambiente não abre; fica a cargo de quem rodar).
 
+### Desvios registrados na implementação
+
+- `rotaDaFrente` permanece em `lib/administracao.ts`; `lib/navegacao.ts` não importa nada, para o teste rodar em Node puro.
+- O movimento de entrada é neutralizado por `MotionConfig reducedMotion="always"` no layout de membros, o que deixa só o fade de opacidade do `Surge`, em vez de remover o `Surge` de 13 arquivos.
+- A lista da paleta `Ctrl+K` virou `destinosDaPaleta()` em `lib/navegacao.ts`, com teste.
+- A paleta é renderizada fora da barra, porque o `backdrop-filter` da barra seria o bloco de contenção de um filho `fixed`.
+
 ## Etapas (cada uma publicável)
 
 1. Casca nova, `lib/navegacao.ts`, `/membros/frente`, kit de componentes.

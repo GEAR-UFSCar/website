@@ -27,7 +27,7 @@ export default async function DocumentacaoPage() {
   const { perfil } = await exigirMembroAprovado()
   /*
    * Portão só da tela. A RLS de 006 (escrita com cargo, na tabela e no bucket)
-   * é quem barra de fato — quem não tem cargo e chamar o endpoint direto
+   * é quem barra de fato, quem não tem cargo e chamar o endpoint direto
    * recebe 42501, com ou sem estes botões renderizados.
    */
   const podeEscrever = temCargo(perfil?.cargo)
@@ -92,7 +92,7 @@ export default async function DocumentacaoPage() {
       {error && (
         <ErroDados titulo="DOCUMENTOS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
           Se a tabela não existe, rode <code>supabase/006_documentos.sql</code> no SQL Editor do
-          painel — ele cria a tabela, as políticas, o bucket e cadastra os documentos já
+          painel, ele cria a tabela, as políticas, o bucket e cadastra os documentos já
           conhecidos.
         </ErroDados>
       )}
@@ -116,7 +116,7 @@ export default async function DocumentacaoPage() {
 
             {/*
               Grade em vez de lista: cada documento é título, versão e um
-              botão — três linhas curtas que, empilhadas em coluna única,
+              botão, três linhas curtas que, empilhadas em coluna única,
               deixavam dois terços da largura vazios e transformavam uma
               categoria de seis itens em meia tela de rolagem.
             */}

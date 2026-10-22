@@ -9,7 +9,7 @@ type Props = {
   erro: ErroDeDados
   className?: string
   /**
-   * Instrução para quem administra — tipicamente "rode supabase/00X.sql".
+   * Instrução para quem administra, tipicamente "rode supabase/00X.sql".
    * Renderiza SÓ em desenvolvimento: em produção, dizer a um membro comum para
    * rodar SQL não é ajuda, é ruído, e entrega a estrutura interna de graça.
    */
@@ -22,7 +22,7 @@ type Props = {
  * Antes eram dez páginas repetindo `<Aviso>{error.message}. Se a tabela não
  * existe, rode <code>…</code></Aviso>`. Além da repetição, o padrão fazia com
  * que corrigir o vazamento de mensagem do Postgres (SEC-08) exigisse lembrar
- * de todos os dez pontos — e o décimo primeiro, escrito depois, nasceria
+ * de todos os dez pontos, e o décimo primeiro, escrito depois, nasceria
  * errado de novo. Agora nasce certo por construção.
  *
  * `role="alert"` vem de `Aviso`: é falha real, o leitor de tela anuncia na

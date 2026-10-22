@@ -29,7 +29,7 @@ const dataSimples = (iso: string) => {
  * Um sprint como cartão: quem toca, em que pé está, o que vem a seguir e o
  * que andou até aqui.
  *
- * É Client Component porque vive dentro do quadro filtrável — o filtro roda no
+ * É Client Component porque vive dentro do quadro filtrável, o filtro roda no
  * navegador, então os cartões que ele monta e desmonta também. Os dados já
  * vieram prontos do servidor; aqui não há consulta nenhuma até alguém editar.
  */

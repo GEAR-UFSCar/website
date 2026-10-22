@@ -97,7 +97,7 @@ export default async function MetricasPage({
 
       {!error && metricas.length === 0 && (
         <p className="mt-10 max-w-2xl font-sans text-sm font-light text-muted-foreground">
-          Nenhum período cadastrado. O primeiro registro é criado no SQL Editor — o rodapé de{" "}
+          Nenhum período cadastrado. O primeiro registro é criado no SQL Editor, o rodapé de{" "}
           <code className="font-mono">supabase/019_metricas.sql</code> tem o insert pronto.
         </p>
       )}
@@ -197,7 +197,7 @@ export default async function MetricasPage({
               <div>
                 <p className="mb-8 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
                   É exatamente isto que aparece em <span className="font-mono">/sobre</span> para
-                  quem não é membro — e só isto: insumos, atividades e o funil de retenção não saem
+                  quem não é membro, e só isto: insumos, atividades e o funil de retenção não saem
                   daqui.
                 </p>
                 <MetricasPublico resultados={emFoco.resultados} impacto={emFoco.impacto} />

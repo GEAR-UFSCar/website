@@ -8,12 +8,12 @@ type Props = {
 }
 
 /**
- * O recorte apresentável das métricas — usado na aba Público da área de
+ * O recorte apresentável das métricas, usado na aba Público da área de
  * membros e na vitrine de /sobre. Server Component: são números e texto, não
  * há nada para o navegador fazer aqui.
  *
  * Os campos são os mesmos que a view `metricas_publicas` (019) expõe. Se um
- * número novo entrar aqui, precisa entrar lá também, e vice-versa — a view é
+ * número novo entrar aqui, precisa entrar lá também, e vice-versa, a view é
  * quem decide o que é publicável.
  */
 export function MetricasPublico({ resultados, impacto, ocultarZeros = false }: Props) {

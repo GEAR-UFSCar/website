@@ -53,14 +53,14 @@ export default async function AprendizagemPage() {
   const comModulos = estagios.filter((e) => e.total > 0)
 
   /*
-   * Estágio atual: o primeiro inacabado — onde a pessoa parou. Terminada a
+   * Estágio atual: o primeiro inacabado, onde a pessoa parou. Terminada a
    * formação, o último, para a página nunca aparecer sem nível de referência.
    */
   const estagioAtual = comModulos.find((e) => !e.completo) ?? comModulos.at(-1)
 
   /*
    * A trilha achatada, na ordem da formação. É ela que dá a numeração global
-   * (01…09) do grid — `modulo.ordem` reinicia em 1 a cada nível, e numerar
+   * (01…09) do grid, `modulo.ordem` reinicia em 1 a cada nível, e numerar
    * "01, 02, 03, 01, 02, 03" num grid corrido não orienta ninguém.
    */
   const trilha = comModulos.flatMap((estagio) => estagio.modulos)
@@ -71,8 +71,8 @@ export default async function AprendizagemPage() {
    * Não é o "mais recente" por data porque essa data não existe: `progresso`
    * (002) guarda `concluido_em` e nada sobre início, e uma linha com
    * concluido_em null significa "desmarcado", não "começado agora". Como a
-   * conclusão é sequencial — trigger da 005 dentro do nível, trava de tela
-   * entre níveis — o primeiro pendente É onde a pessoa está.
+   * conclusão é sequencial, trigger da 005 dentro do nível, trava de tela
+   * entre níveis, o primeiro pendente É onde a pessoa está.
    */
   const continuando = trilha.find((m) => !concluidos.has(m.id))
   const estagioDoAtual = continuando
@@ -100,7 +100,7 @@ export default async function AprendizagemPage() {
 
       {erroModulos && (
         <ErroDados titulo="MÓDULOS INDISPONÍVEIS" erro={erroModulos} className="mt-10 max-w-2xl">
-          Rode <code>supabase/002_academia.sql</code> no SQL Editor do painel — ele cria as
+          Rode <code>supabase/002_academia.sql</code> no SQL Editor do painel, ele cria as
           tabelas e cadastra os 9 módulos. Se o erro fala em <code>prazo_conclusao</code> ou{" "}
           <code>duracao_estimada</code>, falta rodar{" "}
           <code>supabase/022_academia_prazo_e_duracao.sql</code>.
@@ -109,7 +109,7 @@ export default async function AprendizagemPage() {
 
       {/* Três cartões: quando fecha, onde parou, quanto andou. */}
       <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-px bg-linha">
-        {/* 01 — PRAZO DO NÍVEL ATUAL */}
+        {/* 01, PRAZO DO NÍVEL ATUAL */}
         <Surge as="section" className="h-full">
           <div className={cartao}>
             <p className={rotulo}>
@@ -148,7 +148,7 @@ export default async function AprendizagemPage() {
           </div>
         </Surge>
 
-        {/* 02 — CONTINUANDO */}
+        {/* 02, CONTINUANDO */}
         <Surge as="section" delay={0.1} className="h-full">
           <div className={cartao}>
             <p className={rotulo}>Continuando</p>
@@ -168,7 +168,7 @@ export default async function AprendizagemPage() {
 
                 {/*
                   A barra é o avanço NO NÍVEL, e o rótulo diz isso. A Academia
-                  registra conclusão por módulo — não há sub-itens no banco, e
+                  registra conclusão por módulo, não há sub-itens no banco, e
                   desenhar "43% deste módulo" seria inventar uma medida.
                 */}
                 <div className="mt-6">
@@ -223,7 +223,7 @@ export default async function AprendizagemPage() {
           </div>
         </Surge>
 
-        {/* 03 — PROGRESSO GERAL */}
+        {/* 03, PROGRESSO GERAL */}
         <Surge as="section" delay={0.2} className="h-full">
           <div className={cartao}>
             <p className={rotulo}>Progresso geral</p>
@@ -257,7 +257,7 @@ export default async function AprendizagemPage() {
               tarefas, é aqui que a segunda linha entra.
             */}
             <p className="mt-1 font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground/70">
-              Conclusão registrada por módulo — não há sub-itens
+              Conclusão registrada por módulo, não há sub-itens
             </p>
 
             {minutosRestantes > 0 && (
@@ -270,12 +270,12 @@ export default async function AprendizagemPage() {
         </Surge>
       </div>
 
-      {/* GRID — Sua trilha */}
+      {/* GRID, Sua trilha */}
       <section className="mt-20">
         <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-2xl md:text-3xl font-normal">Sua trilha</h2>
           <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
-            Os nove módulos na ordem da formação. Cada nível abre quando o anterior fecha — cada
+            Os nove módulos na ordem da formação. Cada nível abre quando o anterior fecha, cada
             um assume o vocabulário do anterior, não é burocracia.
           </p>
         </div>

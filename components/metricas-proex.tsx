@@ -7,7 +7,7 @@ import { inteiro, type MetricaPeriodo } from "@/lib/metricas"
 
 /**
  * Semanas letivas de um semestre na UFSCar. Entra na conta da carga horária
- * porque o que a entidade registra é hora SEMANAL — e o formulário da ProEx
+ * porque o que a entidade registra é hora SEMANAL, e o formulário da ProEx
  * pede o total. O multiplicador fica visível na tela de propósito: número
  * estimado que se apresenta como medido é o que faz relatório perder
  * credibilidade na primeira conferência.
@@ -22,7 +22,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
   const cargaEquipe = cargaTotal * insumos.membros_ativos
 
   const linhas = [
-    `GEAR — Grupo de Extensão em Automação e Robótica · Período ${metrica.periodo}` +
+    `GEAR: Grupo de Extensão em Automação e Robótica · Período ${metrica.periodo}` +
       (metrica.frente ? ` · Frente ${metrica.frente}` : " · Entidade"),
     "",
     "PARTICIPANTES",
@@ -56,7 +56,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
     } catch {
       /*
        * clipboard exige contexto seguro e permissão; em http:// simples ele
-       * recusa. O texto continua na tela, selecionável — o botão é atalho, não
+       * recusa. O texto continua na tela, selecionável, o botão é atalho, não
        * a única via.
        */
       setCopiado(false)
@@ -67,7 +67,7 @@ export function MetricasProex({ metrica }: { metrica: MetricaPeriodo }) {
     <div>
       {/* Fica visível na tela E no papel: é o mal-entendido mais caro possível aqui. */}
       <Aviso titulo="ATENÇÃO" className="max-w-3xl">
-        Isto ajuda a preencher o formulário oficial da ProExWeb — não é o formulário em si. Nada
+        Isto ajuda a preencher o formulário oficial da ProExWeb, não é o formulário em si. Nada
         enviado aqui chega à Pró-Reitoria.
       </Aviso>
 

@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-/** Frente fixa da rota — não depende do perfil de quem está vendo. */
+/** Frente fixa da rota, não depende do perfil de quem está vendo. */
 export default function FrenteProjetosPage() {
   return <FrentePainel frente="Projetos" />
 }

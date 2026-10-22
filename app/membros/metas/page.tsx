@@ -33,7 +33,7 @@ export default async function MetasPage() {
   /*
    * Três consultas em paralelo, e nenhum join.
    *
-   * A FK de metas.usuario_id aponta para auth.users, não para perfis — o
+   * A FK de metas.usuario_id aponta para auth.users, não para perfis, o
    * PostgREST não tem relação para embutir, como já acontece no mural. Os
    * nomes vêm de perfis e são casados por id aqui embaixo.
    *
@@ -85,7 +85,7 @@ export default async function MetasPage() {
         </ErroDados>
       )}
 
-      {/* 01 — NOVA META */}
+      {/* 01, NOVA META */}
       <Surge as="section" className="mt-16 max-w-4xl">
         <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-2xl md:text-4xl font-normal">Nova meta</h2>
@@ -116,7 +116,7 @@ export default async function MetasPage() {
         </Secao>
       )}
 
-      {/* 03 — PÚBLICAS DA EQUIPE */}
+      {/* 03, PÚBLICAS DA EQUIPE */}
       <section className="mt-16 max-w-4xl">
         <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-2xl md:text-4xl font-normal">Metas públicas</h2>
@@ -138,7 +138,7 @@ export default async function MetasPage() {
                 <Surge key={meta.id} index={i}>
                   {/*
                     `editavel={false}`: leitura e nada mais. A RLS de 017 já
-                    recusaria a escrita — aqui a interface só para de
+                    recusaria a escrita, aqui a interface só para de
                     prometer o que o banco não entrega.
                   */}
                   <MetaCartao

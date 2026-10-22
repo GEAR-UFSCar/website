@@ -31,7 +31,7 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
        * Mandado por compatibilidade com bancos em que a 016 ainda não rodou.
        * Depois dela o valor é irrelevante: o trigger de autoria sobrescreve
        * esta coluna com auth.uid() antes de gravar. Não confie neste campo
-       * como prova de autoria — a prova está no banco.
+       * como prova de autoria, a prova está no banco.
        */
       autor_id: usuarioId,
     })

@@ -31,7 +31,7 @@ type Perfil = {
 }
 
 export default async function CargosPage() {
-  // sessão e perfil vêm do cache do layout — sem nova consulta
+  // sessão e perfil vêm do cache do layout, sem nova consulta
   const user = await exigirUsuario()
   const { perfil: meu } = await getPerfil()
 
@@ -91,7 +91,7 @@ export default async function CargosPage() {
         Aprovar é o que abre a área de membros: sem isso a conta existe mas não lê diretório,
         documentos, avisos nem calendário. Qualquer cargo preenchido dá acesso ao painel de
         Patrimônio e Atas, e exige aprovação. Só Presidente e Vice-Presidente alteram cargo e
-        aprovação — e ninguém altera a própria. Revogar corta leitura e escrita de uma vez.
+        aprovação, e ninguém altera a própria. Revogar corta leitura e escrita de uma vez.
       </Aviso>
 
       {error && (

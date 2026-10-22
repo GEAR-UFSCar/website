@@ -46,7 +46,7 @@ export function MetaCartao({ meta, usuarioId, autor, editavel }: Props) {
       return false
     }
     if (!data || data.length === 0) {
-      setErro("Nenhuma linha alterada — a política de acesso recusou a mudança.")
+      setErro("Nenhuma linha alterada, a política de acesso recusou a mudança.")
       return false
     }
     return true

@@ -63,7 +63,7 @@ export default async function CalendarioPage({
   const supabase = await createClient()
 
   /*
-   * Três consultas, nenhum join — o mesmo motivo do mural e de /membros/metas:
+   * Três consultas, nenhum join, o mesmo motivo do mural e de /membros/metas:
    * a FK aponta para auth.users, não para perfis, e o PostgREST não tem
    * relação para embutir.
    *

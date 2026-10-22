@@ -28,7 +28,7 @@ type Props = {
 
 /**
  * Um indicador numérico. O mesmo componente serve para quem edita e para quem
- * só olha — duas versões da mesma grade divergiriam no primeiro campo novo,
+ * só olha, duas versões da mesma grade divergiriam no primeiro campo novo,
  * e a diferença entre ler e editar não é de layout, é de permissão.
  */
 function Numero({
@@ -245,7 +245,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
       return
     }
     if (!data || data.length === 0) {
-      setErro("Nenhuma linha alterada — a política de acesso recusou a mudança.")
+      setErro("Nenhuma linha alterada, a política de acesso recusou a mudança.")
       return
     }
 
@@ -260,7 +260,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
       <Camada
         ordem="01"
         nome="Insumos"
-        explicacao="O que entra: gente, tempo, bens e dinheiro. É a base de comparação — sem ela, um resultado bom não se distingue de um resultado caro."
+        explicacao="O que entra: gente, tempo, bens e dinheiro. É a base de comparação, sem ela, um resultado bom não se distingue de um resultado caro."
       >
         <Numero rotulo="Membros ativos" valor={insumos.membros_ativos} editavel={podeEditar} aoMudar={campoI("membros_ativos")} />
         <Numero rotulo="Horas semanais (média)" valor={insumos.horas_semanais_media} editavel={podeEditar} aoMudar={campoI("horas_semanais_media")} sufixo="h" />
@@ -280,7 +280,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
       <Camada
         ordem="02"
         nome="Atividades"
-        explicacao="O que a entidade fez com os insumos. Mede esforço, não efeito — reunião realizada não é resultado, é trabalho."
+        explicacao="O que a entidade fez com os insumos. Mede esforço, não efeito, reunião realizada não é resultado, é trabalho."
       >
         <Numero rotulo="Sprints concluídos" valor={atividades.sprints_concluidos} editavel={podeEditar} aoMudar={campoA("sprints_concluidos")} />
         <Numero rotulo="Módulos ministrados" valor={atividades.modulos_ministrados} editavel={podeEditar} aoMudar={campoA("modulos_ministrados")} />
@@ -310,7 +310,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
       <Camada
         ordem="04"
         nome="Impacto"
-        explicacao="O que mudou na vida de quem passou pela GEAR e no que a entidade deixa fora dela. É a camada que demora a aparecer — e a única que justifica o resto."
+        explicacao="O que mudou na vida de quem passou pela GEAR e no que a entidade deixa fora dela. É a camada que demora a aparecer, e a única que justifica o resto."
       >
         <Numero rotulo="Membros em estágio, IC ou bolsa" valor={impacto.membros_estagio_ic_bolsa} editavel={podeEditar} aoMudar={campoM("membros_estagio_ic_bolsa")} />
         <Numero rotulo="Projetos que viraram TCC ou pesquisa" valor={impacto.projetos_viraram_tcc_pesquisa} editavel={podeEditar} aoMudar={campoM("projetos_viraram_tcc_pesquisa")} />
@@ -441,7 +441,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
       ) : (
         <p className="mt-12 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
           Você está vendo os números em leitura. Editar este registro é de quem tem cargo na frente
-          correspondente — ou da Presidência, no registro geral da entidade.
+          correspondente, ou da Presidência, no registro geral da entidade.
         </p>
       )}
     </form>

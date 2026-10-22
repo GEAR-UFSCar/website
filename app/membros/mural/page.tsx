@@ -48,7 +48,7 @@ export default async function MuralPage() {
 
   const avisos = (data ?? []) as AvisoMural[]
 
-  // Sem 009_diretorio.sql este mapa só tem a própria linha — daí o autor
+  // Sem 009_diretorio.sql este mapa só tem a própria linha, daí o autor
   // aparecer em branco em vez de errado.
   const nomes = new Map(
     ((pessoas ?? []) as { id: string; nome_completo: string | null }[])
@@ -78,7 +78,7 @@ export default async function MuralPage() {
         </p>
       )}
 
-      {/* Fixados primeiro, depois os mais recentes — a ordem vem do banco. */}
+      {/* Fixados primeiro, depois os mais recentes, a ordem vem do banco. */}
       <div className="mt-12 max-w-4xl">
         {avisos.map((aviso, indice) => {
           const autor = aviso.autor_id ? nomes.get(aviso.autor_id) : null

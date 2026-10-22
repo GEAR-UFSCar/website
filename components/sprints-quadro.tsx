@@ -9,7 +9,7 @@ import { FILTROS_STATUS, corresponde, type Atualizacao, type Sprint } from "@/li
 
 type Props = {
   sprints: Sprint[]
-  /** Diário já agrupado por sprint no servidor — o cartão só consome. */
+  /** Diário já agrupado por sprint no servidor, o cartão só consome. */
   atualizacoes: Record<string, Atualizacao[]>
   podeEscrever: boolean
   usuarioId: string
@@ -22,7 +22,7 @@ type Props = {
  * milhares: a consulta já trouxe todos, e refazer a ida ao Supabase a cada
  * tecla digitada custaria latência para reencontrar linhas que já estão na
  * memória. Se um dia uma frente passar de algumas centenas, o lugar de mudar
- * é aqui — vira `.ilike()` no servidor e paginação.
+ * é aqui, vira `.ilike()` no servidor e paginação.
  *
  * As contagens dos chips seguem a BUSCA, não o total: com "mecanum" digitado,
  * "Concluído · 0" é a resposta certa, e um "Concluído · 7" que não leva a nada

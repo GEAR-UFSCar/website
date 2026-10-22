@@ -70,7 +70,7 @@ export default async function DiretorioPage() {
       {error && (
         <ErroDados titulo="DIRETÓRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
           Se a tabela não existe, rode <code>supabase/001_perfis.sql</code>. Se ela existe mas só
-          a sua linha aparece, falta rodar <code>supabase/009_diretorio.sql</code> — é ele que
+          a sua linha aparece, falta rodar <code>supabase/009_diretorio.sql</code>, é ele que
           libera a leitura dos perfis para todos os membros.
         </ErroDados>
       )}
@@ -78,7 +78,7 @@ export default async function DiretorioPage() {
       {!error && membros.length <= 1 && (
         <Aviso titulo="SÓ VOCÊ APARECE" tom="neutro" className="mt-10 max-w-2xl">
           A lista veio com {membros.length} perfil(s). Se a entidade já tem mais gente
-          cadastrada, a política de leitura ainda é a antiga — rode{" "}
+          cadastrada, a política de leitura ainda é a antiga, rode{" "}
           <code>supabase/009_diretorio.sql</code> no SQL Editor.
         </Aviso>
       )}

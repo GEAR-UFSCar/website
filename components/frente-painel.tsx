@@ -46,7 +46,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   /*
    * Segunda consulta, e ela depende da primeira: o diário é buscado pelos ids
    * que acabaram de chegar. Dava para trazer tudo numa consulta só, embutindo
-   * `sprint_atualizacoes` dentro de `sprints` — o PostgREST faz isso, mas com
+   * `sprint_atualizacoes` dentro de `sprints`, o PostgREST faz isso, mas com
    * um embed dentro de outro (o autor dentro da atualização dentro do sprint)
    * e a ordenação do aninhado por `referencedTable`. Duas consultas legíveis
    * valem mais que uma clever, e a segunda só roda se houver sprint.
