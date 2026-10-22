@@ -1,12 +1,11 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 import { PatrimonioForm } from "@/components/patrimonio-form"
 import { PatrimonioStatus } from "@/components/patrimonio-status"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
-import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
+import { PageHeader } from "@/components/membros/page-header"
 
 export const metadata: Metadata = {
   title: "Patrimônio | GEAR",
@@ -37,11 +36,9 @@ export default async function PatrimonioPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {itens.length} REGISTRO(S) · {unidades} UNIDADE(S)
-      </p>
-      </Surge>
+      <PageHeader titulo="Patrimônio">
+        {itens.length} registro(s), {unidades} unidade(s).
+      </PageHeader>
 
       {error && (
         <ErroDados titulo="INVENTÁRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
@@ -95,10 +92,6 @@ export default async function PatrimonioPage() {
         <PatrimonioForm />
       </div>
 
-      <Link href="/membros/administracao" data-cursor-hover
-        className={`mt-14 inline-block ${botaoSecundario}`}>
-        Voltar ao painel
-      </Link>
     </section>
   )
 }

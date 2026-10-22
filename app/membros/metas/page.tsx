@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
 import { ErroDados } from "@/components/erro-dados"
 import { MetaForm } from "@/components/meta-form"
@@ -8,7 +8,6 @@ import { Surge } from "@/components/surge"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { COLUNAS_META, estaVencida, type Meta } from "@/lib/metas"
-import { botaoSecundario } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Metas | GEAR",
@@ -61,16 +60,11 @@ export default async function MetasPage() {
 
   return (
     <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-        <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          O calendário é da entidade; isto aqui é seu. Cada meta nasce privada — o formulário
-          abaixo explica o que muda ao torná-la pública.
-        </p>
-
-        <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-          {abertas} EM ABERTO · {vencidas} VENCIDA(S) · {minhas.length} NO TOTAL
-        </p>
-      </Surge>
+      <PageHeader titulo="Metas">
+        O calendário é da entidade; isto aqui é seu. Cada meta nasce privada, e o formulário abaixo
+        explica o que muda ao torná-la pública. {abertas} em aberto, {vencidas} vencida(s),{" "}
+        {minhas.length} no total.
+      </PageHeader>
 
       {error && (
         <ErroDados titulo="METAS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
@@ -82,10 +76,7 @@ export default async function MetasPage() {
       {/* 01 — NOVA META */}
       <Surge as="section" className="mt-16 max-w-4xl">
         <div className="border-t border-white/10 pt-8">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-            01 — REGISTRAR
-          </p>
-          <h2 className="font-sans text-2xl md:text-4xl font-light italic">Nova meta</h2>
+          <h2 className="font-sans text-2xl md:text-4xl font-normal">Nova meta</h2>
         </div>
 
         <div className="mt-8">
@@ -96,10 +87,7 @@ export default async function MetasPage() {
       {/* 02 — MINHAS METAS */}
       <section className="mt-16 max-w-4xl">
         <div className="border-t border-white/10 pt-8">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-            02 — SUAS
-          </p>
-          <h2 className="font-sans text-2xl md:text-4xl font-light italic">Minhas metas</h2>
+          <h2 className="font-sans text-2xl md:text-4xl font-normal">Minhas metas</h2>
         </div>
 
         <div className="mt-8">
@@ -122,10 +110,7 @@ export default async function MetasPage() {
       {/* 03 — PÚBLICAS DA EQUIPE */}
       <section className="mt-16 max-w-4xl">
         <div className="border-t border-white/10 pt-8">
-          <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-            03 — DA EQUIPE
-          </p>
-          <h2 className="font-sans text-2xl md:text-4xl font-light italic">Metas públicas</h2>
+          <h2 className="font-sans text-2xl md:text-4xl font-normal">Metas públicas</h2>
         </div>
 
         {erroPublicas ? (
@@ -159,12 +144,6 @@ export default async function MetasPage() {
           </div>
         )}
       </section>
-
-      <div className="mt-16">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

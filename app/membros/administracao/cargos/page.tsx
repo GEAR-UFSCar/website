@@ -5,6 +5,7 @@ import { CargoSelect } from "@/components/cargo-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { AprovacaoPendentes, type Pendente } from "@/components/aprovacao-pendentes"
 import { Aviso } from "@/components/aviso"
+import { PageHeader } from "@/components/membros/page-header"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
@@ -82,13 +83,9 @@ export default async function CargosPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">ADMINISTRAÇÃO</p>
-      <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">Cargos</h1>
-      <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {perfis.length} PERFIL(S) · {comCargo} COM CARGO · {pendentes} AGUARDANDO APROVAÇÃO
-      </p>
-      </Surge>
+      <PageHeader titulo="Cargos e aprovação">
+        {perfis.length} perfis, {comCargo} com cargo, {pendentes} aguardando aprovação.
+      </PageHeader>
 
       <Aviso titulo="ATENÇÃO" tom="neutro" className="mt-8 max-w-3xl">
         Aprovar é o que abre a área de membros: sem isso a conta existe mas não lê diretório,
@@ -106,7 +103,7 @@ export default async function CargosPage() {
       {!error && <AprovacaoPendentes pendentes={fila} />}
 
       <div className="mt-16 border-t border-white/10 pt-8">
-        <h2 className="font-sans text-2xl md:text-3xl font-light italic">Todos os perfis</h2>
+        <h2 className="font-sans text-2xl md:text-3xl font-normal">Todos os perfis</h2>
         <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
           Cargo, frente e histórico de alteração. Aprovados e pendentes, na mesma lista.
         </p>

@@ -1,5 +1,4 @@
 import type { Metadata } from "next"
-import Link from "next/link"
 
 import { ModuloCheckbox } from "@/components/modulo-checkbox"
 import { AnelProgresso } from "@/components/anel-progresso"
@@ -18,8 +17,8 @@ import {
 } from "@/lib/academia"
 import { dataDoDia, hojeISO } from "@/lib/datas"
 import { prazoRelativo } from "@/lib/metas"
-import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
+import { PageHeader } from "@/components/membros/page-header"
 
 export const metadata: Metadata = {
   title: "Aprendizagem | GEAR",
@@ -97,6 +96,8 @@ export default async function AprendizagemPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+      <PageHeader titulo="Aprendizagem">Sua formação na Academia GEAR: módulos, prazos e progresso.</PageHeader>
+
       {erroModulos && (
         <ErroDados titulo="MÓDULOS INDISPONÍVEIS" erro={erroModulos} className="mt-10 max-w-2xl">
           Rode <code>supabase/002_academia.sql</code> no SQL Editor do painel — ele cria as
@@ -117,7 +118,7 @@ export default async function AprendizagemPage() {
 
             {prazoDoNivel ? (
               <>
-                <p className="mt-5 font-sans text-xl md:text-2xl font-light italic leading-snug">
+                <p className="mt-5 font-sans text-xl md:text-2xl font-normal leading-snug">
                   Conclusão até {dataDoDia(prazoDoNivel)}
                 </p>
                 {/*
@@ -272,7 +273,7 @@ export default async function AprendizagemPage() {
       {/* GRID — Sua trilha */}
       <section className="mt-20">
         <div className="border-t border-white/10 pt-8">
-          <h2 className="font-sans text-2xl md:text-3xl font-light italic">Sua trilha</h2>
+          <h2 className="font-sans text-2xl md:text-3xl font-normal">Sua trilha</h2>
           <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
             Os nove módulos na ordem da formação. Cada nível abre quando o anterior fecha — cada
             um assume o vocabulário do anterior, não é burocracia.
@@ -296,7 +297,7 @@ export default async function AprendizagemPage() {
                   <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-muted-foreground">
                     Estágio 0{estagio.indice + 1}
                   </p>
-                  <h3 className="mt-1 font-sans text-xl md:text-2xl font-light italic">
+                  <h3 className="mt-1 font-sans text-xl md:text-2xl font-normal">
                     {estagio.nivel}
                   </h3>
                   <p className="mt-1 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
@@ -428,11 +429,6 @@ export default async function AprendizagemPage() {
         })}
       </section>
 
-      <div className="mt-16">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

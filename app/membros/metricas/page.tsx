@@ -1,17 +1,16 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
 import { ErroDados } from "@/components/erro-dados"
 import { MetricasForm } from "@/components/metricas-form"
 import { MetricasProex } from "@/components/metricas-proex"
 import { MetricasPublico } from "@/components/metricas-publico"
 import { MetricasNovoPeriodo } from "@/components/metricas-novo-periodo"
-import { Surge } from "@/components/surge"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { eDiretoria } from "@/lib/administracao"
 import { dataHora } from "@/lib/datas"
-import { botaoSecundario } from "@/lib/ui"
 import {
   COLUNAS_METRICA,
   normalizarMetrica,
@@ -87,12 +86,7 @@ export default async function MetricasPage({
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-        <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          Insumos viram atividades, atividades viram resultados, resultados viram impacto. A cadeia
-          é o ponto: número solto não diz se a entidade está funcionando.
-        </p>
-      </Surge>
+      <PageHeader titulo="Métricas">Insumos viram atividades, atividades viram resultados, resultados viram impacto. A cadeia é o ponto: número solto não diz se a entidade está funcionando.</PageHeader>
 
       {error && (
         <ErroDados titulo="MÉTRICAS INDISPONÍVEIS" erro={error} className="mt-10 max-w-2xl">
@@ -184,7 +178,7 @@ export default async function MetricasPage({
 
                 {podeEditar && (
                   <div className="mt-16 border-t border-white/10 pt-8">
-                    <h3 className="font-sans text-2xl font-light italic">Virar o período</h3>
+                    <h3 className="font-sans text-2xl font-normal">Virar o período</h3>
                     <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
                       Fecha {emFoco.periodo} e abre o seguinte para{" "}
                       {emFoco.frente ?? "a entidade"}, copiando os insumos.
@@ -219,12 +213,6 @@ export default async function MetricasPage({
           )}
         </>
       )}
-
-      <div className="mt-16 nao-imprimir">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

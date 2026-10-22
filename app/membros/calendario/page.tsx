@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
 import { ErroDados } from "@/components/erro-dados"
 import { EventoForm } from "@/components/evento-form"
@@ -130,12 +131,7 @@ export default async function CalendarioPage({
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-        <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-              Reuniões, sprints e prazos da GEAR na mesma grade das suas metas e das que a equipe
-              tornou públicas. Criar evento é de quem tem cargo.
-            </p>
-      </Surge>
+      <PageHeader titulo="Calendário">Reuniões, sprints e prazos da GEAR na mesma grade das suas metas e das que a equipe tornou públicas. Criar evento é de quem tem cargo.</PageHeader>
 
       {erroEventos && (
         <ErroDados titulo="CALENDÁRIO INDISPONÍVEL" erro={erroEventos} className="mt-10 max-w-2xl">
@@ -163,9 +159,6 @@ export default async function CalendarioPage({
       )}
 
       <div className="mt-16 flex flex-wrap gap-5">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
         <Link
           href="/membros/metas"
           data-cursor-hover

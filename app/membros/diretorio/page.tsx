@@ -1,12 +1,11 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
 import { Aviso } from "@/components/aviso"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
-import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -63,16 +62,10 @@ export default async function DiretorioPage() {
 
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-      <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-        Quem está na GEAR e em que frente. Nome, curso, frente e cargo — nada de contato pessoal:
-        e-mail não aparece aqui para ninguém.
-      </p>
-
-      <p className="mt-10 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {membros.length} MEMBRO(S)
-      </p>
-      </Surge>
+      <PageHeader titulo="Pessoas">
+        Quem está na GEAR e em que frente. Nome, curso, frente e cargo, sem contato pessoal: e-mail
+        não aparece aqui para ninguém. {membros.length} membro(s).
+      </PageHeader>
 
       {error && (
         <ErroDados titulo="DIRETÓRIO INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
@@ -91,17 +84,14 @@ export default async function DiretorioPage() {
       )}
 
       {/* Uma seção por grupo */}
-      {GRUPOS.map((grupo, indice) => {
+      {GRUPOS.map((grupo) => {
         const doGrupo = porGrupo.get(grupo.chave)
         if (!doGrupo?.length) return null
 
         return (
           <section key={grupo.chave} className="mt-16">
             <div className="border-t border-white/10 pt-8">
-              <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
-                0{indice + 1} — {grupo.rotulo.toUpperCase()} · {doGrupo.length}
-              </p>
-              <h2 className="font-sans text-2xl md:text-4xl font-light italic">{grupo.rotulo}</h2>
+              <h2 className="font-sans text-2xl md:text-4xl font-normal">{grupo.rotulo}</h2>
             </div>
 
             <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
@@ -146,12 +136,6 @@ export default async function DiretorioPage() {
           </section>
         )
       })}
-
-      <div className="mt-16">
-        <Link href="/membros" data-cursor-hover className={`inline-block ${botaoSecundario}`}>
-          Voltar para membros
-        </Link>
-      </div>
     </section>
   )
 }

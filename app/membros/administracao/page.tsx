@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
+import { PageHeader } from "@/components/membros/page-header"
 
-import { botaoSecundario } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -18,12 +18,7 @@ const SECOES = [
 export default function AdministracaoPage() {
   return (
     <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
-      <Surge>
-        <p className="max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-          Patrimônio, atas e cargos da entidade. Tudo aqui exige cargo preenchido; cargo e
-          aprovação de membro, só Presidente e Vice-Presidente.
-        </p>
-      </Surge>
+      <PageHeader titulo="Gestão">Patrimônio, atas e cargos da entidade. Tudo aqui exige cargo preenchido; cargo e aprovação de membro, só Presidente e Vice-Presidente.</PageHeader>
 
       <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl">
         {SECOES.map((secao, i) => (
@@ -44,14 +39,6 @@ export default function AdministracaoPage() {
           </Surge>
         ))}
       </div>
-
-      <Link
-        href="/membros"
-        data-cursor-hover
-        className={`mt-16 inline-block ${botaoSecundario}`}
-      >
-        Voltar para membros
-      </Link>
     </section>
   )
 }
