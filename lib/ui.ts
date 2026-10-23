@@ -47,3 +47,18 @@ export const rotuloBase =
  */
 export const selectInline =
   "w-full min-h-11 bg-transparent border border-white/15 px-3 py-2.5 font-mono text-[11px] text-foreground outline-none transition-colors duration-300 focus:border-[var(--gear-amber)] focus-visible:ring-2 focus-visible:ring-[var(--gear-amber)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--gear-ink)] disabled:opacity-50"
+
+/**
+ * Moldura de página da área de membros: UMA largura, UM respiro.
+ *
+ * Antes cada tela escolhia a sua (de max-w-3xl a max-w-[90rem]) e o conteúdo
+ * mudava de largura a cada aba. O pb largo no celular libera a barra inferior
+ * de navegação (components/membros-shell.tsx); a tela já cobre o resto.
+ */
+export const paginaMembros = "mx-auto w-full max-w-5xl px-4 pt-6 pb-28 md:px-8 md:pt-10 md:pb-20"
+
+/**
+ * A ÚNICA exceção de largura: o calendário, que desenha sete colunas ao lado de
+ * uma lateral e fica ilegível ("Re un ião de Di…") na largura padrão.
+ */
+export const paginaMembrosLarga = "mx-auto w-full max-w-7xl px-4 pt-6 pb-28 md:px-8 md:pt-10 md:pb-20"

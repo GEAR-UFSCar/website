@@ -13,6 +13,7 @@ import {
 } from "@/lib/sprints"
 import type { ErroDeDados } from "@/lib/erros"
 import { PageHeader } from "@/components/membros/page-header"
+import { paginaMembros } from "@/lib/ui"
 
 /**
  * Conteúdo das três páginas de frente. A frente vem fixa da rota, não do
@@ -76,7 +77,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   const eMinhaFrente = perfil?.frente?.trim() === frente
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo={frente}>
         Os sprints da frente {frente}. Qualquer membro acompanha as três; mudar status, progresso
         e diário é de quem tem cargo nesta frente, ou da diretoria, em qualquer uma.

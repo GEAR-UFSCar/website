@@ -9,6 +9,8 @@ import {
   BlocoAvisos,
   BlocoPendencias,
   BlocoPrazos,
+  FaixaNumeros,
+  ProximaAcaoCard,
   type AvisoResumo,
   type ModuloAtual,
 } from "@/components/membros/hoje"
@@ -16,11 +18,12 @@ import { detalheTecnico, mensagemSegura } from "@/lib/erros"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { diaGear, hojeISO, horaGear, inicioDoDiaGear, saudacao } from "@/lib/datas"
-import { primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
-import { eventoVisivel, maisDias, ordenarSprints, prazosDaSemana, type ItemPrazo } from "@/lib/hoje"
+import { hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
+import { eventoVisivel, maisDias, ordenarSprints, prazosDaSemana, proximaAcao, type ItemPrazo } from "@/lib/hoje"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
 import { COLUNAS_META, type Meta } from "@/lib/metas"
 import { COLUNAS_MODULO, montarEstagios, type Modulo, type Progresso } from "@/lib/academia"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Hoje | GEAR",
@@ -39,7 +42,7 @@ export default async function HojePage() {
     // Vai para os logs da Vercel; na tela só a frase segura.
     console.error("[membros] getPerfil falhou", erro.code, erro.message)
     return (
-      <section className="mx-auto max-w-4xl px-4 pt-10 pb-24 md:px-8">
+      <section className={paginaMembros}>
         <Aviso titulo="PERFIL INDISPONÍVEL">
           {mensagemSegura(erro)}
           {detalheTecnico(erro) && <code className="mt-2 block break-words">{detalheTecnico(erro)}</code>}
@@ -144,22 +147,51 @@ export default async function HojePage() {
     }
   }
 
+  const hrefSprint = (id: string) => {
+    const sprint = sprints.find((x) => x.id === id)
+    return hrefDoSprint(sprint?.frente, id)
+  }
+  const acao = proximaAcao({
+    sprints,
+    atrasados,
+    proximos,
+    hoje,
+    moduloAtual: moduloAtual?.titulo ?? null,
+  })
+
+  const numeros = [
+    { rotulo: "Sprints abertos", valor: String(sprints.length), href: rotaFrente },
+    { rotulo: "Prazos em 7 dias", valor: String(proximos.length), href: "/membros/calendario" },
+    { rotulo: "Atrasados", valor: String(atrasados.length), href: "/membros/metas", alerta: atrasados.length > 0 },
+    { rotulo: "Formação", valor: moduloAtual ? `${moduloAtual.percentual}%` : "—", href: "/membros/aprendizagem" },
+  ]
+
   return (
-    <section className="mx-auto max-w-4xl px-4 pt-10 pb-24 md:px-8">
+    <section className={paginaMembros}>
       <PageHeader titulo={`${saudacao()}, ${primeiroNome(perfil?.nome_completo)}`}>
         {frente ? `Frente ${frente}.` : "Você ainda não tem uma frente definida."} O que pede a sua atenção agora.
       </PageHeader>
 
-      <BlocoAgora sprints={sprints} erro={sprintsR.error} rotaFrente={rotaFrente} />
-      <BlocoPrazos atrasados={atrasados} proximos={proximos} hoje={hoje} erros={errosPrazos} />
-      <BlocoAvisos avisos={(avisosR.data ?? []) as unknown as AvisoResumo[]} erro={avisosR.error} />
-      {moduloAtual && <BlocoAcademia atual={moduloAtual} />}
-      {comCargo && (
-        <BlocoPendencias
-          aprovacoes={aprovacoesR.error ? null : (aprovacoesR.count ?? 0)}
-          bloqueados={bloqueadosR.error ? null : (bloqueadosR.count ?? 0)}
-        />
-      )}
+      {/* Primeiro a resposta; depois o contexto. */}
+      <ProximaAcaoCard acao={acao} hoje={hoje} hrefSprint={hrefSprint} rotaFrente={rotaFrente} />
+      <FaixaNumeros itens={numeros} />
+
+      <div className="mt-2 grid grid-cols-1 gap-x-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <div>
+          <BlocoAgora sprints={sprints} erro={sprintsR.error} rotaFrente={rotaFrente} />
+          <BlocoPrazos atrasados={atrasados} proximos={proximos} hoje={hoje} erros={errosPrazos} />
+        </div>
+        <div>
+          <BlocoAvisos avisos={(avisosR.data ?? []) as unknown as AvisoResumo[]} erro={avisosR.error} />
+          {moduloAtual && <BlocoAcademia atual={moduloAtual} />}
+          {comCargo && (
+            <BlocoPendencias
+              aprovacoes={aprovacoesR.error ? null : (aprovacoesR.count ?? 0)}
+              bloqueados={bloqueadosR.error ? null : (bloqueadosR.count ?? 0)}
+            />
+          )}
+        </div>
+      </div>
     </section>
   )
 }

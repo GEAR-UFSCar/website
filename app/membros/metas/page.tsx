@@ -12,6 +12,7 @@ import { agruparMetas } from "@/lib/hoje"
 import { hojeISO } from "@/lib/datas"
 import { Secao } from "@/components/membros/secao"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
+import { paginaMembros } from "@/lib/ui"
 
 const SECOES_METAS = [
   { chave: "atrasadas", titulo: "Atrasadas" },
@@ -71,7 +72,7 @@ export default async function MetasPage() {
   const grupos = agruparMetas(minhas, hojeISO())
 
   return (
-    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Metas">
         O calendário é da entidade; isto aqui é seu. Cada meta nasce privada, e o formulário abaixo
         explica o que muda ao torná-la pública. {abertas} em aberto, {vencidas} vencida(s),{" "}
@@ -88,7 +89,7 @@ export default async function MetasPage() {
       {/* 01, NOVA META */}
       <Surge as="section" className="mt-16 max-w-4xl">
         <div className="border-t border-linha pt-8">
-          <h2 className="font-sans text-2xl md:text-4xl font-normal">Nova meta</h2>
+          <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Nova meta</h2>
         </div>
 
         <div className="mt-8">
@@ -117,9 +118,9 @@ export default async function MetasPage() {
       )}
 
       {/* 03, PÚBLICAS DA EQUIPE */}
-      <section className="mt-16 max-w-4xl">
+      <section className="mt-12">
         <div className="border-t border-linha pt-8">
-          <h2 className="font-sans text-2xl md:text-4xl font-normal">Metas públicas</h2>
+          <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Metas públicas</h2>
         </div>
 
         {erroPublicas ? (

@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario } from "@/lib/supabase/sessao"
 import { Surge } from "@/components/surge"
 import { PageHeader } from "@/components/membros/page-header"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Atas | GEAR",
@@ -41,7 +42,7 @@ export default async function AtasPage() {
   }
 
   return (
-    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Atas">{atas.length} ata(s) registrada(s).</PageHeader>
 
       {error && (

@@ -18,7 +18,7 @@ import {
   type Documento,
 } from "@/lib/documentos"
 import { ATALHOS, ROTULO_STATUS, filtrar } from "@/lib/documentos-catalogo"
-import { campoBase } from "@/lib/ui"
+import { campoBase, paginaMembros } from "@/lib/ui"
 import { Surge } from "@/components/surge"
 
 export const metadata: Metadata = {
@@ -118,7 +118,7 @@ export default async function DocumentacaoPage({
   const gruposOrdenados = [...grupos].sort(([a], [b]) => a.localeCompare(b, "pt-BR", { numeric: true }))
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Documentos">
         Regimento, manuais, modelos e normas da entidade, abertos a qualquer membro aprovado. Procure
         pelo que você precisa fazer, não pelo nome do documento. {documentos.length} de {todos.length}{" "}
@@ -136,7 +136,7 @@ export default async function DocumentacaoPage({
       {!error && (
         <>
           {/* Busca por GET: a URL é o estado, então a busca se compartilha e o Voltar funciona */}
-          <form method="get" className="grid grid-cols-1 gap-4 border border-linha p-6 md:grid-cols-[1fr_16rem_auto]">
+          <form method="get" className="grid grid-cols-1 gap-3 md:grid-cols-[1fr_15rem_auto]">
             <div>
               <label htmlFor="doc-busca" className="sr-only">
                 Buscar documento
@@ -173,7 +173,7 @@ export default async function DocumentacaoPage({
               Buscar
             </button>
             {filtros.tag && <input type="hidden" name="tag" value={filtros.tag} />}
-            <label className="flex min-h-11 items-center gap-3 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground md:col-span-3">
+            <label className="flex min-h-11 items-center gap-3 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground md:col-span-3 md:min-h-0">
               <input
                 type="checkbox"
                 name="arquivados"
@@ -185,20 +185,20 @@ export default async function DocumentacaoPage({
             </label>
           </form>
 
-          <nav aria-label="Atalhos" className="mt-6">
+          <nav aria-label="Atalhos" className="mt-4">
             <p className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
               Preciso de…
             </p>
-            <ul className="mt-3 flex flex-wrap gap-3">
+            <ul className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
               {ATALHOS.map((a) => {
                 const ativo = filtros.tag === a.tag
                 return (
-                  <li key={a.tag}>
+                  <li key={a.tag} className="shrink-0">
                     <Link
                       href={ativo ? "/membros/documentacao" : `/membros/documentacao?tag=${a.tag}`}
                       aria-current={ativo ? "true" : undefined}
                       data-cursor-hover
-                      className={`inline-flex min-h-11 items-center border px-4 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 ${
+                      className={`inline-flex min-h-11 items-center whitespace-nowrap border px-4 py-2.5 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 ${
                         ativo
                           ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
                           : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
@@ -241,9 +241,9 @@ export default async function DocumentacaoPage({
       {gruposOrdenados.map(([chave, daSecao]) => {
         const titulo = chave.split("|")[1]
         return (
-          <section key={chave} className="mt-16">
+          <section key={chave} className="mt-12">
             <div className="border-t border-linha pt-8">
-              <h2 className="font-sans text-2xl md:text-4xl font-normal">{titulo}</h2>
+              <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">{titulo}</h2>
             </div>
 
             <ul className="mt-8 grid grid-cols-1 gap-px bg-linha lg:grid-cols-2">
@@ -359,7 +359,7 @@ export default async function DocumentacaoPage({
       {podeEscrever && (
         <section className="mt-20">
           <div className="border-t border-linha pt-8">
-            <h2 className="font-sans text-2xl md:text-4xl font-normal">Cadastrar documento</h2>
+            <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Cadastrar documento</h2>
             <p className="mt-3 max-w-2xl font-sans text-sm font-light leading-relaxed text-muted-foreground">
               O arquivo vai para um bucket privado: ninguém abre sem sessão, e o link que aparece na
               lista é assinado e expira em uma hora. O documento entra como rascunho e interno; a

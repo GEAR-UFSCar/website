@@ -96,7 +96,7 @@ function Camada({
         <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-2">
           {ordem} — {nome.toUpperCase()}
         </p>
-        <h3 className="font-sans text-2xl md:text-3xl font-light italic">{nome}</h3>
+        <h3 className="font-sans text-xl font-normal tracking-tight md:text-2xl">{nome}</h3>
         <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
           {explicacao}
         </p>

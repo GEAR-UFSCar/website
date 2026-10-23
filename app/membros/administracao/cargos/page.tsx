@@ -13,6 +13,7 @@ import { eDiretoria } from "@/lib/administracao"
 import { botaoSecundario } from "@/lib/ui"
 import { FUSO_GEAR } from "@/lib/datas"
 import { Surge } from "@/components/surge"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Cargos | GEAR",
@@ -38,7 +39,7 @@ export default async function CargosPage() {
   // O layout já barra quem não tem cargo; aqui a régua é mais alta.
   if (!eDiretoria(meu?.cargo)) {
     return (
-      <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+      <section className={paginaMembros}>
         <p className="mt-8 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
           Só Presidente e Vice-Presidente atribuem cargos. Seu cargo atual é{" "}
           <span className="text-foreground">{meu?.cargo ?? "nenhum"}</span>.
@@ -82,7 +83,7 @@ export default async function CargosPage() {
   const pendentes = perfis.filter((p) => !p.aprovado).length
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Cargos e aprovação">
         {perfis.length} perfis, {comCargo} com cargo, {pendentes} aguardando aprovação.
       </PageHeader>
@@ -103,7 +104,7 @@ export default async function CargosPage() {
       {!error && <AprovacaoPendentes pendentes={fila} />}
 
       <div className="mt-16 border-t border-linha pt-8">
-        <h2 className="font-sans text-2xl md:text-3xl font-normal">Todos os perfis</h2>
+        <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Todos os perfis</h2>
         <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
           Cargo, frente e histórico de alteração. Aprovados e pendentes, na mesma lista.
         </p>

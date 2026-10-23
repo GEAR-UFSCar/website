@@ -19,6 +19,7 @@ import { dataDoDia, hojeISO } from "@/lib/datas"
 import { prazoRelativo } from "@/lib/metas"
 import { Surge } from "@/components/surge"
 import { PageHeader } from "@/components/membros/page-header"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Aprendizagem | GEAR",
@@ -95,7 +96,7 @@ export default async function AprendizagemPage() {
   const prazoDoNivel = estagioAtual?.prazo ?? null
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Aprendizagem">Sua formação na Academia GEAR: módulos, prazos e progresso.</PageHeader>
 
       {erroModulos && (
@@ -273,7 +274,7 @@ export default async function AprendizagemPage() {
       {/* GRID, Sua trilha */}
       <section className="mt-20">
         <div className="border-t border-linha pt-8">
-          <h2 className="font-sans text-2xl md:text-3xl font-normal">Sua trilha</h2>
+          <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Sua trilha</h2>
           <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
             Os nove módulos na ordem da formação. Cada nível abre quando o anterior fecha, cada
             um assume o vocabulário do anterior, não é burocracia.

@@ -4,10 +4,19 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { ChevronDown, LogOut } from "lucide-react"
+import { ChevronDown, GraduationCap, Home, LogOut, Search, Settings, Target, Users, type LucideIcon } from "lucide-react"
 
 import { Paleta } from "@/components/membros/paleta"
-import { abaAtual, grupoAtual, gruposVisiveis } from "@/lib/navegacao"
+import { abaAtual, grupoAtual, gruposVisiveis, titulo as tituloDaRota } from "@/lib/navegacao"
+
+/** Ícone de cada grupo na barra inferior do celular. */
+const ICONES: Record<string, LucideIcon> = {
+  hoje: Home,
+  frente: Target,
+  aprender: GraduationCap,
+  equipe: Users,
+  gestao: Settings,
+}
 
 type Props = {
   nome: string
@@ -19,8 +28,15 @@ type Props = {
 }
 
 /**
- * Casca de navegação da área de membros: uma barra de 56px com os grupos e,
- * quando o grupo tem mais de uma aba, uma segunda linha com elas.
+ * Casca de navegação da área de membros.
+ *
+ * DESKTOP: barra de 56px com os grupos e, quando o grupo tem mais de uma aba,
+ * uma segunda linha com elas.
+ *
+ * CELULAR: a barra de cima mostra só a tela atual (os grupos não cabem em 390px
+ * e Equipe/Gestão ficavam escondidos atrás de uma rolagem sem indício). Os
+ * grupos vão para uma barra inferior fixa, ao alcance do polegar, e as abas do
+ * grupo ganham um esmaecido na borda que avisa que há mais para rolar.
  *
  * `sticky` e não `fixed`: a barra ocupa altura real no fluxo, então nenhuma
  * página precisa compensar com padding-top. `nao-imprimir` porque a aba ProEx
@@ -30,6 +46,8 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
   const pathname = usePathname()
   const [aberto, setAberto] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
+
+  const abas = useRef<HTMLUListElement>(null)
 
   const grupos = gruposVisiveis(comCargo)
   const grupo = grupoAtual(pathname, grupos)
@@ -52,6 +70,14 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
     }
   }, [aberto])
 
+  // A aba ativa precisa estar visível: com cinco abas, "Métricas" nasce fora da tela.
+  useEffect(() => {
+    abas.current?.querySelector<HTMLElement>('[aria-current="page"]')?.scrollIntoView({
+      inline: "center",
+      block: "nearest",
+    })
+  }, [pathname])
+
   // Fecha ao navegar, durante o render (um efeito pintaria o menu aberto por um frame).
   const [rotaDoMenu, setRotaDoMenu] = useState(pathname)
   if (rotaDoMenu !== pathname) {
@@ -71,7 +97,12 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
           <span className="hidden font-sans text-base font-semibold tracking-tight sm:block">GEAR</span>
         </Link>
 
-        <nav aria-label="Grupos da área de membros" className="min-w-0 flex-1 overflow-x-auto">
+        {/* Celular: o nome da tela. Os grupos estão na barra de baixo. */}
+        <p className="min-w-0 flex-1 truncate font-sans text-base md:hidden" aria-hidden="true">
+          {tituloDaRota(pathname)}
+        </p>
+
+        <nav aria-label="Grupos da área de membros" className="hidden min-w-0 flex-1 overflow-x-auto md:block">
           <ul className="flex min-w-max items-stretch">
             {grupos.map((g) => {
               const ativo = grupo?.id === g.id
@@ -93,6 +124,15 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
             })}
           </ul>
         </nav>
+
+        <button
+          type="button"
+          onClick={() => window.dispatchEvent(new Event("membros:paleta"))}
+          className="flex h-11 w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground md:hidden"
+          aria-label="Buscar telas"
+        >
+          <Search aria-hidden="true" className="h-5 w-5" />
+        </button>
 
         <button
           type="button"
@@ -132,6 +172,10 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
               <div className="border-b border-linha px-3 pb-3 pt-2">
                 <p className="truncate font-sans text-sm">{nome}</p>
                 <p className="font-mono text-[10px] tracking-[0.15em] uppercase text-muted-foreground">{etiquetaCargo}</p>
+                <p className="mt-2 inline-flex items-center gap-1.5 font-mono text-[10px] tracking-[0.15em] uppercase text-[var(--gear-amber)]">
+                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--gear-amber)]" />
+                  Ambiente interno
+                </p>
               </div>
               <Link
                 href="/membros/completar-perfil"
@@ -164,8 +208,11 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
       </div>
 
       {grupo && grupo.abas.length > 1 && (
-        <nav aria-label={`Seções de ${grupo.rotulo}`} className="overflow-x-auto border-t border-linha">
-          <ul className="flex min-w-max items-stretch px-4 md:px-8">
+        <nav
+          aria-label={`Seções de ${grupo.rotulo}`}
+          className="overflow-x-auto border-t border-linha [mask-image:linear-gradient(to_right,transparent,#000_16px,#000_calc(100%-32px),transparent)] md:[mask-image:none]"
+        >
+          <ul ref={abas} className="flex min-w-max items-stretch px-4 md:px-8">
             {grupo.abas.map((a) => {
               const ativa = aba?.href === a.href
               return (
@@ -189,6 +236,32 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
       )}
 
     </div>
+    {/* Celular: grupos ao alcance do polegar. `fixed` fora da barra de cima pelo mesmo motivo do backdrop-filter. */}
+    <nav
+      aria-label="Grupos da área de membros"
+      className="nao-imprimir fixed inset-x-0 bottom-0 z-50 border-t border-linha bg-[var(--gear-navy)]/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:hidden"
+    >
+      <ul className="flex items-stretch">
+        {grupos.map((g) => {
+          const ativo = grupo?.id === g.id
+          const Icone = ICONES[g.id] ?? Home
+          return (
+            <li key={g.id} className="flex-1">
+              <Link
+                href={g.href}
+                aria-current={ativo ? "page" : undefined}
+                className={`flex min-h-14 flex-col items-center justify-center gap-1 px-1 font-sans text-[11px] leading-none transition-colors duration-200 ${
+                  ativo ? "text-[var(--gear-amber)]" : "text-muted-foreground"
+                }`}
+              >
+                <Icone aria-hidden="true" className="h-5 w-5" strokeWidth={ativo ? 2.25 : 1.75} />
+                {g.rotulo}
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
     {/* Fora da barra: backdrop-filter faz de um ancestral o bloco de contenção de filhos fixed. */}
     <Paleta comCargo={comCargo} />
     </>

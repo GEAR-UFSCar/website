@@ -18,6 +18,7 @@ import {
   reais,
   type MetricaPeriodo,
 } from "@/lib/metricas"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Métricas | GEAR",
@@ -85,7 +86,7 @@ export default async function MetricasPage({
     `/membros/metricas?aba=${id}${emFoco ? `&registro=${emFoco.id}` : ""}`
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Métricas">Insumos viram atividades, atividades viram resultados, resultados viram impacto. A cadeia é o ponto: número solto não diz se a entidade está funcionando.</PageHeader>
 
       {error && (
