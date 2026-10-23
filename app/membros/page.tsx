@@ -12,6 +12,7 @@ import {
   type AvisoResumo,
   type ModuloAtual,
 } from "@/components/membros/hoje"
+import { detalheTecnico, mensagemSegura } from "@/lib/erros"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { diaGear, hojeISO, horaGear, inicioDoDiaGear, saudacao } from "@/lib/datas"
@@ -35,10 +36,13 @@ export default async function HojePage() {
   if (!erro && !perfil?.aprovado) redirect("/membros/aguardando")
 
   if (erro) {
+    // Vai para os logs da Vercel; na tela só a frase segura.
+    console.error("[membros] getPerfil falhou", erro.code, erro.message)
     return (
       <section className="mx-auto max-w-4xl px-4 pt-10 pb-24 md:px-8">
         <Aviso titulo="PERFIL INDISPONÍVEL">
-          Não foi possível ler o seu perfil. Se a tabela não existe, rode <code>supabase/001_perfis.sql</code>.
+          {mensagemSegura(erro)}
+          {detalheTecnico(erro) && <code className="mt-2 block break-words">{detalheTecnico(erro)}</code>}
         </Aviso>
       </section>
     )
