@@ -21,6 +21,7 @@ import {
   visaoValida,
   type ItemAgenda,
 } from "@/lib/agenda"
+import { paginaMembrosLarga } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Calendário | GEAR",
@@ -211,7 +212,7 @@ export default async function CalendarioPage({
     .slice(0, PRAZOS_NO_TOPO)
 
   return (
-    <section className="relative mx-auto max-w-[90rem] px-4 sm:px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembrosLarga}>
       <PageHeader titulo="Calendário">
         Reuniões, sprints e prazos da GEAR junto com as suas metas e as que a equipe tornou
         públicas, por semana, dia ou mês. Para registrar uma obrigação sua, crie uma meta; criar

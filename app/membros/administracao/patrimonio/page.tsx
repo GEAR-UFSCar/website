@@ -6,6 +6,7 @@ import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { Surge } from "@/components/surge"
 import { PageHeader } from "@/components/membros/page-header"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Patrimônio | GEAR",
@@ -35,7 +36,7 @@ export default async function PatrimonioPage() {
   const unidades = itens.reduce((soma, i) => soma + i.quantidade, 0)
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Patrimônio">
         {itens.length} registro(s), {unidades} unidade(s).
       </PageHeader>

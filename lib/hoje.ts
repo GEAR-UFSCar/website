@@ -72,3 +72,53 @@ export function agruparMetas<T extends { prazo: string; concluida: boolean }>(me
     concluidas: metas.filter((m) => m.concluida),
   }
 }
+
+/** O mínimo de um sprint que a escolha da próxima ação precisa ler. */
+export type SprintMinimo = { id: string; titulo: string; status: string; proximo_passo: string | null }
+
+export type ProximaAcao =
+  | { tipo: "bloqueado"; sprint: SprintMinimo }
+  | { tipo: "atrasada"; item: ItemPrazo }
+  | { tipo: "hoje"; item: ItemPrazo }
+  | { tipo: "andamento"; sprint: SprintMinimo }
+  | { tipo: "proximo"; item: ItemPrazo }
+  | { tipo: "modulo"; titulo: string }
+  | { tipo: "nada" }
+
+/**
+ * A UMA coisa que "Hoje" põe em destaque. A ordem é a do custo de esperar:
+ *   1. sprint bloqueado — trava quem depende dele, e só o responsável destrava;
+ *   2. meta atrasada — já passou, e fica pior a cada dia;
+ *   3. o que vence hoje (evento ou meta);
+ *   4. sprint em andamento — o trabalho em curso;
+ *   5. o próximo prazo da semana;
+ *   6. o módulo atual da Academia;
+ *   7. nada — e a tela diz isso em vez de inventar tarefa.
+ *
+ * Recebe sprints já ordenados (ordenarSprints) e prazos já separados
+ * (prazosDaSemana); não reordena nada.
+ */
+export function proximaAcao(entrada: {
+  sprints: SprintMinimo[]
+  atrasados: ItemPrazo[]
+  proximos: ItemPrazo[]
+  hoje: string
+  moduloAtual: string | null
+}): ProximaAcao {
+  const { sprints, atrasados, proximos, hoje, moduloAtual } = entrada
+
+  const bloqueado = sprints.find((s) => s.status === "Bloqueado")
+  if (bloqueado) return { tipo: "bloqueado", sprint: bloqueado }
+
+  if (atrasados[0]) return { tipo: "atrasada", item: atrasados[0] }
+
+  const doDia = proximos.find((i) => i.dia === hoje)
+  if (doDia) return { tipo: "hoje", item: doDia }
+
+  const andamento = sprints.find((s) => s.status === "Em andamento")
+  if (andamento) return { tipo: "andamento", sprint: andamento }
+
+  if (proximos[0]) return { tipo: "proximo", item: proximos[0] }
+  if (moduloAtual) return { tipo: "modulo", titulo: moduloAtual }
+  return { tipo: "nada" }
+}

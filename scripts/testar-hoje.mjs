@@ -64,3 +64,26 @@ assert.equal(eventoVisivel("Pesquisa", "Pesquisa"), true)
 assert.equal(eventoVisivel("Competição", "Pesquisa"), false)
 
 console.log("hoje: ok")
+
+// --- proximaAcao: a única coisa em destaque ------------------------------------
+{
+  const { proximaAcao } = await import("../lib/hoje.ts")
+  const sp = (id, status) => ({ id, titulo: `sprint ${id}`, status, proximo_passo: null })
+  const it = (id, dia, origem = "meta") => ({ id, origem, titulo: id, dia, hora: null, href: "/x", detalhe: "" })
+  const base = { sprints: [], atrasados: [], proximos: [], hoje: "2026-10-23", moduloAtual: null }
+  const tipo = (o) => proximaAcao({ ...base, ...o }).tipo
+
+  assert.equal(tipo({}), "nada")
+  assert.equal(tipo({ moduloAtual: "ROS" }), "modulo")
+  assert.equal(tipo({ moduloAtual: "ROS", proximos: [it("a", "2026-10-25")] }), "proximo")
+  assert.equal(tipo({ proximos: [it("a", "2026-10-25")], sprints: [sp(1, "Em andamento")] }), "andamento")
+  assert.equal(tipo({ sprints: [sp(1, "Em andamento")], proximos: [it("h", "2026-10-23")] }), "hoje")
+  assert.equal(tipo({ proximos: [it("h", "2026-10-23")], atrasados: [it("v", "2026-10-20")] }), "atrasada")
+  assert.equal(tipo({ atrasados: [it("v", "2026-10-20")], sprints: [sp(1, "Bloqueado")] }), "bloqueado")
+  // planejado sozinho não é destaque: ninguém começou
+  assert.equal(tipo({ sprints: [sp(1, "Planejado")] }), "nada")
+  // o bloqueado vem mesmo atrás de um em andamento na lista
+  const r = proximaAcao({ ...base, sprints: [sp(1, "Em andamento"), sp(2, "Bloqueado")] })
+  assert.equal(r.tipo === "bloqueado" && r.sprint.id, 2)
+  console.log("proximaAcao: ok")
+}

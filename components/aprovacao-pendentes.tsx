@@ -88,7 +88,7 @@ export function AprovacaoPendentes({ pendentes }: { pendentes: Pendente[] }) {
   if (pendentes.length === 0) {
     return (
       <div className="mt-12 border-t border-linha pt-8">
-        <h2 className="font-sans text-2xl md:text-3xl font-light italic">Fila de aprovação</h2>
+        <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Fila de aprovação</h2>
         <p className="mt-4 font-sans text-sm font-light text-muted-foreground">
           Ninguém esperando. Todo cadastro novo aparece aqui até ser aprovado.
         </p>
@@ -99,7 +99,7 @@ export function AprovacaoPendentes({ pendentes }: { pendentes: Pendente[] }) {
   return (
     <div className="mt-12 border-t border-[var(--gear-amber)] pt-8">
       <div className="flex flex-wrap items-baseline justify-between gap-4">
-        <h2 className="font-sans text-2xl md:text-3xl font-light italic">Fila de aprovação</h2>
+        <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Fila de aprovação</h2>
         <p className="font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
           {pendentes.length} pessoa(s) sem acesso
         </p>

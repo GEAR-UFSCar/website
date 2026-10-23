@@ -5,6 +5,7 @@ import { redirect } from "next/navigation"
 import { PageHeader } from "@/components/membros/page-header"
 import { FRENTES_ROTAS, rotaDaFrente } from "@/lib/administracao"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Minha frente | GEAR",
@@ -24,7 +25,7 @@ export default async function MinhaFrentePage() {
   }
 
   return (
-    <section className="mx-auto max-w-4xl px-4 pt-10 pb-24 md:px-8">
+    <section className={paginaMembros}>
       <PageHeader titulo="Minha frente">
         Você ainda não tem uma frente definida. Escolha qual acompanhar.
       </PageHeader>

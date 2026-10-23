@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react"
 import Link from "next/link"
-import { IBM_Plex_Sans } from "next/font/google"
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
 
 import { FRENTES } from "@/lib/administracao"
@@ -24,11 +23,6 @@ import {
   type Visao,
 } from "@/lib/agenda"
 import s from "./calendario-clean.module.css"
-
-// Texto corrido em IBM Plex Sans: Chakra Petch (a fonte do site) segue nos
-// títulos, mas em corpo pequeno e denso ela cansa — e o calendário é texto
-// pequeno e denso por natureza.
-const plex = IBM_Plex_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--fonte-clean" })
 
 export type Prazo = {
   id: string
@@ -56,14 +50,14 @@ type Props = {
 
 /*
  * Cor por frente. "cor" pinta ponto e contorno; "claro" é o fundo do cartão;
- * "texto" é o tom legível sobre "claro" (contraste ≥ 4.5:1). Item sem frente
+ * "texto" é o tom claro legível sobre "claro" no fundo escuro. Item sem frente
  * é da entidade inteira e fica no cinza.
  */
 const CORES: Record<string, { cor: string; claro: string; texto: string }> = {
-  Geral: { cor: "#7C8C9A", claro: "#E8ECEF", texto: "#33475A" },
-  Competição: { cor: "#FF7A2F", claro: "#FFE6D8", texto: "#9A3A0C" },
-  Pesquisa: { cor: "#3B8FD1", claro: "#DCEBF8", texto: "#1D5683" },
-  Projetos: { cor: "#2BA877", claro: "#D8F2E7", texto: "#17684A" },
+  Geral: { cor: "#7C8C9A", claro: "rgba(124, 140, 154, 0.18)", texto: "#C9D3DB" },
+  Competição: { cor: "#FF7A2F", claro: "rgba(255, 122, 47, 0.16)", texto: "#FFB48A" },
+  Pesquisa: { cor: "#3B8FD1", claro: "rgba(59, 143, 209, 0.18)", texto: "#8CC4EE" },
+  Projetos: { cor: "#2BA877", claro: "rgba(43, 168, 119, 0.18)", texto: "#7FDDB5" },
 }
 
 function corDa(frente: string | null): CSSProperties {
@@ -100,7 +94,7 @@ export function CalendarioClean({ visao, dia, hoje, frente, itens, prazos, sauda
       : hrefCalendario({ visao, dia: deslocarDia(dia, visao === "semana" ? 7 * sentido : sentido), frente })
 
   return (
-    <div className={`${plex.variable} ${s.raiz}`}>
+    <div className={s.raiz}>
       {/* ------------------------------ LATERAL ------------------------------ */}
       <aside className={s.lateral}>
         <div className={s.acoes}>
