@@ -17,9 +17,19 @@ export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
   const mudar = async (novo: string) => {
     setErro(null)
     const supabase = createClient()
-    const { error } = await supabase.from("patrimonio").update({ status: novo }).eq("id", id)
+    // .select() confere se alguma linha mudou: a RLS recusa um UPDATE sem erro
+    // nenhum, e sem esta checagem a tela recarregava com o valor antigo, calada.
+    const { data, error } = await supabase
+      .from("patrimonio")
+      .update({ status: novo })
+      .eq("id", id)
+      .select("id")
     if (error) {
       setErro(mensagemSegura(error))
+      return
+    }
+    if (!data || data.length === 0) {
+      setErro("Nenhuma linha alterada: a política de acesso recusou a mudança.")
       return
     }
     iniciar(() => router.refresh())
