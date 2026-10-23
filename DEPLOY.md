@@ -64,6 +64,16 @@ Ordem recomendada, fora do horário de uso:
 3. Rode a conferência no rodapé de cada migração aplicada.
 4. Só então faça o deploy.
 
+**Documentos (025 e 026).** Rode a 025 e depois a 026, nessa ordem. A 025 só
+acrescenta colunas, uma view e uma policy: não derruba o que já funciona, e o
+código novo de `/membros/documentacao` é que depende dela (sem a 025 a tela
+mostra o aviso de migração pendente). A 026 cadastra os 50 documentos como
+**rascunho**; nenhum aparece como vigente no site público até a diretoria
+mudar o status na própria tela. Os PDFs não estão no repositório (que é
+público): suba cada um pela tela de documentos, que grava no bucket privado.
+Para `/documentos/RI` abrir o PDF, o Regimento precisa estar `vigente`,
+marcado como público e com arquivo anexado — os três.
+
 A **016** é a única com risco de trancar acesso se aplicada pela metade: ela
 revoga `EXECUTE` dos predicados e devolve por `grant`. Se a revogação rodar e o
 grant não, a área de membros inteira para. Rode o arquivo de uma vez, e em
@@ -117,9 +127,9 @@ Nenhum destes é resolvido por código, e por isso nenhum foi implementado:
   direto para `supabase.co` — não passa pelo nosso servidor. Um limitador em
   `proxy.ts` não veria essa requisição e seria proteção de fachada. O controle
   real está em **Supabase → Authentication → Rate Limits**; ajustem lá.
-- **Testes com sessão.** `npm run test:rls` cobre só o visitante anônimo.
+- **Testes com sessão.** `npm run test:rls` cobre só o visitante anônimo (inclusive a vitrine de documentos).
   Cobrir membro aprovado, cargo e diretoria exige três contas de teste no
   projeto — decisão da diretoria, não do código.
-- **Conteúdo.** Sete documentos institucionais sem arquivo, dois projetos sem
+- **Conteúdo.** Os documentos do catálogo (026) sem arquivo anexado e sem aprovação, dois projetos sem
   resultado de competição, `/parceiros` com quantidades a definir. Enquanto
   isso não mudar, o site continua sendo infraestrutura à espera de operação.
