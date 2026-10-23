@@ -191,6 +191,36 @@ const listagem = await objeto.json().catch(() => null)
 const semVazamento = !objeto.ok || (Array.isArray(listagem) && listagem.length === 0)
 checar("documentos: listagem negada a anônimo", semVazamento)
 
+// --- 5. vitrine pública de documentos (025) ---------------------------------
+console.log("\n5. VITRINE — documentos_publicos só entrega arquivo de documento vigente")
+
+const vitrine = await fetch(`${REST}/documentos_publicos?select=*&limit=200`, { headers: CABECALHOS })
+
+if (vitrine.status === 404) {
+  pendente("documentos_publicos: recorte", "view não existe (025 não aplicada)")
+} else if (!vitrine.ok) {
+  checar("documentos_publicos: recorte", false, `respondeu ${vitrine.status}`)
+} else {
+  const publicos = await vitrine.json()
+  // Rascunho listado é esperado; rascunho COM arquivo, ou campo interno, é vazamento.
+  const comArquivoIndevido = publicos.filter((d) => d.status !== "vigente" && d.arquivo)
+  checar(
+    "documentos_publicos: nenhum arquivo fora de documento vigente",
+    comArquivoIndevido.length === 0,
+    `${comArquivoIndevido.length} documento(s) não vigentes expõem arquivo`,
+  )
+  const externos = publicos.filter((d) => /^https?:\/\//i.test(d.arquivo ?? ""))
+  checar("documentos_publicos: link externo não é repassado", externos.length === 0)
+  const internos = ["quando", "quem", "anexos", "publico", "arquivo_url"]
+  const vazou = publicos.length > 0 ? internos.filter((c) => c in publicos[0]) : []
+  checar(
+    "documentos_publicos: sem colunas internas",
+    vazou.length === 0,
+    `expõe: ${vazou.join(", ")}`,
+  )
+  checar("documentos_publicos: nenhum arquivado", publicos.every((d) => d.status !== "arquivado"))
+}
+
 // --- placar ------------------------------------------------------------------
 console.log(`\n${"─".repeat(60)}`)
 console.log(`${passou} passou · ${falhou} falhou · ${pendentes.length} pendente(s)`)

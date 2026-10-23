@@ -12,7 +12,9 @@
     "start": "next start",
     "test:rls": "node scripts/testar-rls.mjs",
     "test:nav": "node --no-warnings --experimental-strip-types scripts/testar-navegacao.mjs",
-    "test:hoje": "node --no-warnings --experimental-strip-types scripts/testar-hoje.mjs"
+    "test:hoje": "node --no-warnings --experimental-strip-types scripts/testar-hoje.mjs",
+    "test:documentos": "node --no-warnings --experimental-strip-types scripts/testar-documentos.mjs",
+    "catalogo:sql": "node --no-warnings --experimental-strip-types scripts/gerar-sql-catalogo.mjs"
   },
   "dependencies": {
     "@react-three/fiber": "9.4.0",

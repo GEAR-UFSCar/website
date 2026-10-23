@@ -11,6 +11,8 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js"
 
+import type { Status } from "@/lib/documentos-catalogo"
+
 /** Espelha o CHECK de supabase/006_documentos.sql. */
 export const CATEGORIAS = ["Governança", "Técnico", "Marca", "Financeiro", "Segurança"] as const
 export type Categoria = (typeof CATEGORIAS)[number]
@@ -19,6 +21,8 @@ export type Categoria = (typeof CATEGORIAS)[number]
 export const BUCKET = "documentos"
 export const VALIDADE_LINK = 60 * 60
 
+export type Anexo = { nome: string; caminho: string }
+
 export type Documento = {
   id: string
   titulo: string
@@ -26,9 +30,22 @@ export type Documento = {
   arquivo_url: string | null
   versao: string | null
   atualizado_em: string
+  // catálogo (supabase/025)
+  codigo: string | null
+  pacote: number | null
+  pacote_nome: string | null
+  resumo: string | null
+  quando: string | null
+  quem: string | null
+  paginas: number | null
+  tags: string[] | null
+  publico: boolean
+  status: Status
+  anexos: Anexo[] | null
 }
 
-export const COLUNAS_DOCUMENTO = "id, titulo, categoria, arquivo_url, versao, atualizado_em"
+export const COLUNAS_DOCUMENTO =
+  "id, titulo, categoria, arquivo_url, versao, atualizado_em, codigo, pacote, pacote_nome, resumo, quando, quem, paginas, tags, publico, status, anexos"
 
 /** arquivo_url aceita caminho no bucket OU url externa; isto separa os dois. */
 export const eExterno = (valor: string) => /^https?:\/\//i.test(valor)

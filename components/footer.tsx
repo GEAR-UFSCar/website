@@ -144,6 +144,13 @@ export function Footer() {
               ÁREA DE MEMBROS
             </Link>
             <Link
+              href="/documentos"
+              data-cursor-hover
+              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+            >
+              DOCUMENTOS
+            </Link>
+            <Link
               href="/privacidade"
               data-cursor-hover
               className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"

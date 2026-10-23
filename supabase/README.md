@@ -40,6 +40,8 @@ a anterior não rodou.
 | 022 | `academia_prazo_e_duracao.sql` | `modulos.prazo_conclusao` e `modulos.duracao_estimada` (minutos) | 002 |
 | 023 | `frente_travada_e_leituras_fechadas.sql` | cargo não troca a própria frente; métricas só para membro aprovado; documentos exigem aprovação; período fechado imutável | 014, 019 |
 | 024 | `diretoria_minima_e_limites_do_bucket.sql` | ninguém tira o último cargo de diretoria aprovado; bucket `documentos` com 20 MB e lista de tipos (sem SVG) no próprio Storage | 006, 023 |
+| 025 | `catalogo_de_documentos.sql` | `documentos` ganha resumo, pacote, tags, `publico`, `status` e `anexos`; gatilho que só deixa a diretoria publicar; view `documentos_publicos`; arquivo de documento vigente e público aberto a anônimo | 006, 014, 023, 024 |
+| 026 | `catalogo_inicial.sql` | os 50 documentos do catálogo, todos como rascunho (**gerado**: `npm run catalogo:sql`) | 025 |
 
 Duas armadilhas conhecidas:
 
@@ -57,7 +59,8 @@ npm run test:rls
 
 O teste fala com o projeto real usando a chave anônima do site e verifica a
 **fronteira anônima**: nenhuma tabela interna devolve linha, nenhuma aceita
-escrita, os predicados de autorização não são chamáveis e o bucket não lista.
+escrita, os predicados de autorização não são chamáveis, o bucket não lista e a
+vitrine de documentos só entrega arquivo de documento vigente.
 Ele não cria, não altera e não apaga nada. Sai com código 1 se qualquer
 verificação falhar, então serve em CI sem adaptação.
 

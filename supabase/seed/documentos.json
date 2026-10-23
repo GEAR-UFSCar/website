@@ -1,0 +1,911 @@
+{
+  "versao": "2026.10.2",
+  "atualizado": "2026-10-23",
+  "pacotes": {
+    "1": "Constituição",
+    "2": "Operação e segurança",
+    "3": "Parcerias e propriedade intelectual",
+    "4": "Dia a dia",
+    "5": "Manuais técnicos e administrativos",
+    "6": "Gestão, conduta e organização",
+    "7": "Ativação e crescimento",
+    "0": "Base"
+  },
+  "documentos": [
+    {
+      "id": "RI",
+      "titulo": "Regimento Interno",
+      "pacote": 0,
+      "pacoteNome": "Base",
+      "resumo": "A norma máxima do Grupo: áreas, Diretoria, mandatos, quóruns, medidas disciplinares, patrimônio, propriedade intelectual e extinção.",
+      "quando": "Sempre que houver dúvida sobre quem decide, como se decide ou o que vale em caso de conflito entre documentos.",
+      "quem": "Todos",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 19,
+      "docx": []
+    },
+    {
+      "id": "01",
+      "titulo": "Edital de Convocação",
+      "pacote": 1,
+      "pacoteNome": "Constituição",
+      "resumo": "Convoca a Assembleia de fundação, com data, pauta e antecedência de 7 dias.",
+      "quando": "Antes da Assembleia de fundação.",
+      "quem": "Presidente",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 3,
+      "docx": []
+    },
+    {
+      "id": "02",
+      "titulo": "Ata de Fundação",
+      "pacote": 1,
+      "pacoteNome": "Constituição",
+      "resumo": "Registra a criação do Grupo, a aprovação do Regimento e a eleição da primeira Diretoria.",
+      "quando": "Na Assembleia de fundação; é assinada pelos fundadores.",
+      "quem": "Presidente, Documentação",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "03",
+      "titulo": "Termo de Compromisso",
+      "pacote": 1,
+      "pacoteNome": "Constituição",
+      "resumo": "O vínculo individual de cada membro: direitos, deveres, conduta, imagem e dados.",
+      "quando": "Quando uma pessoa entra no Grupo.",
+      "quem": "Administração",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "04",
+      "titulo": "Modelo de Ata",
+      "pacote": 1,
+      "pacoteNome": "Constituição",
+      "resumo": "Molde para registrar qualquer reunião: quórum, pauta, deliberações e ações.",
+      "quando": "Em toda reunião de Assembleia, Diretoria ou trilha.",
+      "quem": "Documentação",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 3,
+      "docx": [
+        {
+          "nome": "Modelo de Ata de Reuniao",
+          "arquivo": "formularios/Modelo-de-Ata-de-Reuniao.docx"
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "titulo": "Ofício à ProEx",
+      "pacote": 1,
+      "pacoteNome": "Constituição",
+      "resumo": "Comunica o Grupo e o Regimento à UFSCar.",
+      "quando": "Depois que o Regimento for aprovado.",
+      "quem": "Presidente, professor orientador",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 2,
+      "docx": []
+    },
+    {
+      "id": "06",
+      "titulo": "Termo de Empréstimo",
+      "pacote": 2,
+      "pacoteNome": "Operação e segurança",
+      "resumo": "Controla quem retirou qual equipamento, em que estado e até quando.",
+      "quando": "Toda vez que alguém levar um item do Grupo.",
+      "quem": "Operações e Patrimônio",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "patrimonio"
+      ],
+      "paginas": 3,
+      "docx": [
+        {
+          "nome": "Termo de Emprestimo",
+          "arquivo": "formularios/Termo-de-Emprestimo.docx"
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "titulo": "Normas de Segurança de Oficina",
+      "pacote": 2,
+      "pacoteNome": "Operação e segurança",
+      "resumo": "Regras de bancada, ferramentas e baterias de lítio.",
+      "quando": "Antes de qualquer trabalho na oficina; leitura obrigatória para novos membros.",
+      "quem": "Todos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "seguranca"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "08",
+      "titulo": "Protocolo de Voo",
+      "pacote": 2,
+      "pacoteNome": "Operação e segurança",
+      "resumo": "Condições, checagens, papéis, área de segurança e chave de emergência para aeronaves não tripuladas.",
+      "quando": "Antes de qualquer voo de drone.",
+      "quem": "Competição, coordenador de segurança de voo",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "seguranca",
+        "competicao"
+      ],
+      "paginas": 9,
+      "docx": []
+    },
+    {
+      "id": "09",
+      "titulo": "Relatório de Incidente",
+      "pacote": 2,
+      "pacoteNome": "Operação e segurança",
+      "resumo": "Registro de acidente, incidente ou quase-acidente, para corrigir a causa e não para punir.",
+      "quando": "No mesmo dia de qualquer acidente ou quase-acidente.",
+      "quem": "Todos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "seguranca"
+      ],
+      "paginas": 3,
+      "docx": [
+        {
+          "nome": "Relatorio de Incidente",
+          "arquivo": "formularios/Relatorio-de-Incidente.docx"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "titulo": "Política de Parcerias e Patrocínio",
+      "pacote": 3,
+      "pacoteNome": "Parcerias e propriedade intelectual",
+      "resumo": "Quais apoios o Grupo aceita, quais recusa e quem decide.",
+      "quando": "Ao receber uma proposta de apoio de empresa ou pessoa.",
+      "quem": "Diretoria, Marketing",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "parcerias"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "11",
+      "titulo": "Plano de Patrocínio",
+      "pacote": 3,
+      "pacoteNome": "Parcerias e propriedade intelectual",
+      "resumo": "Cotas de apoio e contrapartidas que o Grupo oferece.",
+      "quando": "Ao conversar com possíveis apoiadores.",
+      "quem": "Marketing",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "parcerias"
+      ],
+      "paginas": 3,
+      "docx": []
+    },
+    {
+      "id": "12",
+      "titulo": "Carta de Intenções",
+      "pacote": 3,
+      "pacoteNome": "Parcerias e propriedade intelectual",
+      "resumo": "Primeiro documento com um parceiro. Não vincula ninguém.",
+      "quando": "Depois da primeira conversa, antes de qualquer acordo formal.",
+      "quem": "Presidente, professor orientador",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "parcerias"
+      ],
+      "paginas": 3,
+      "docx": []
+    },
+    {
+      "id": "13",
+      "titulo": "Pontos do Acordo de Cooperação",
+      "pacote": 3,
+      "pacoteNome": "Parcerias e propriedade intelectual",
+      "resumo": "Lista do que o acordo formal precisa conter. Quem assina é a UFSCar.",
+      "quando": "Ao preparar o pedido de acordo à UFSCar.",
+      "quem": "Presidente, professor orientador",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "parcerias"
+      ],
+      "paginas": 3,
+      "docx": []
+    },
+    {
+      "id": "14",
+      "titulo": "Política de Propriedade Intelectual",
+      "pacote": 3,
+      "pacoteNome": "Parcerias e propriedade intelectual",
+      "resumo": "De quem é o código, o artigo e o robô, e sob quais licenças.",
+      "quando": "Ao iniciar projeto com parceiro, edital ou código de terceiros.",
+      "quem": "Todos",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "parcerias",
+        "pesquisa"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "15",
+      "titulo": "Termo de Sigilo",
+      "pacote": 3,
+      "pacoteNome": "Parcerias e propriedade intelectual",
+      "resumo": "Confidencialidade para quem acessa informação de parceiro.",
+      "quando": "Antes de receber informação confidencial.",
+      "quem": "Diretoria",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "parcerias"
+      ],
+      "paginas": 3,
+      "docx": []
+    },
+    {
+      "id": "16",
+      "titulo": "Manual do Membro",
+      "pacote": 4,
+      "pacoteNome": "Dia a dia",
+      "resumo": "Guia de quem entra: direitos, deveres e como o Grupo funciona.",
+      "quando": "Na entrada e sempre que houver dúvida sobre direitos e deveres.",
+      "quem": "Todos",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "17",
+      "titulo": "Edital do Processo Seletivo",
+      "pacote": 4,
+      "pacoteNome": "Dia a dia",
+      "resumo": "Seleção pública com vagas, etapas, critérios e recursos.",
+      "quando": "A cada abertura de processo seletivo.",
+      "quem": "Administração",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "18",
+      "titulo": "Manual de Marca",
+      "pacote": 4,
+      "pacoteNome": "Dia a dia",
+      "resumo": "Identidade visual e verbal: cores, tipografia, logo e tom.",
+      "quando": "Ao criar qualquer peça de comunicação.",
+      "quem": "Marketing",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "comunicacao"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "19",
+      "titulo": "Manual de Funções",
+      "pacote": 4,
+      "pacoteNome": "Dia a dia",
+      "resumo": "Atribuições de cada cargo, com o relatório de passagem de cargo no anexo.",
+      "quando": "Ao assumir ou deixar um cargo.",
+      "quem": "Diretoria, áreas",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "20",
+      "titulo": "Plano Anual e Relatório ProEx",
+      "pacote": 4,
+      "pacoteNome": "Dia a dia",
+      "resumo": "Planejamento do ano e prestação de contas à UFSCar.",
+      "quando": "No início e no fim de cada período de atividade.",
+      "quem": "Documentação, professor orientador",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "21",
+      "titulo": "Manual de Onboarding Técnico",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Ambiente de trabalho, Git, ROS 2 e padrões de código.",
+      "quando": "Na primeira semana de quem vai programar ou montar robôs.",
+      "quem": "Todos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "academia"
+      ],
+      "paginas": 7,
+      "docx": []
+    },
+    {
+      "id": "22",
+      "titulo": "Grade da Academia GEAR",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Níveis, módulos, projetos finais e critérios de avaliação.",
+      "quando": "Ao planejar ou cursar a Academia.",
+      "quem": "Área Técnica, membros",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "academia"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "23",
+      "titulo": "Manual da Trilha Pesquisa",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Do problema à publicação: método, reprodutibilidade, ética e uso de IA.",
+      "quando": "Ao abrir, conduzir ou submeter um projeto de pesquisa.",
+      "quem": "Pesquisa",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pesquisa"
+      ],
+      "paginas": 5,
+      "docx": [
+        {
+          "nome": "Plano de Projeto de Pesquisa",
+          "arquivo": "formularios/Plano-de-Projeto-de-Pesquisa.docx"
+        },
+        {
+          "nome": "Checklist de Submissao",
+          "arquivo": "formularios/Checklist-de-Submissao.docx"
+        }
+      ]
+    },
+    {
+      "id": "24",
+      "titulo": "Manual da Trilha Competição",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Competições-alvo, equipe, calendário reverso e checklist de inspeção.",
+      "quando": "Ao preparar uma campanha de competição.",
+      "quem": "Competição",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "competicao"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "25",
+      "titulo": "Manual da Trilha Projetos",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Pitch, esquadrões, sprints e como aceitar demandas externas.",
+      "quando": "Ao propor um projeto ou receber um pedido externo.",
+      "quem": "Projetos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "projetos"
+      ],
+      "paginas": 5,
+      "docx": [
+        {
+          "nome": "Ficha de Demanda Externa",
+          "arquivo": "formularios/Ficha-de-Demanda-Externa.docx"
+        }
+      ]
+    },
+    {
+      "id": "26",
+      "titulo": "Manual Financeiro e de Operações",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Compras, patrimônio e contas, sempre pela UFSCar.",
+      "quando": "Ao comprar, receber doação ou prestar contas.",
+      "quem": "Operações e Patrimônio, Diretoria",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "patrimonio"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "27",
+      "titulo": "Manual de Comunicação e Marketing",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Canais, aprovação de peças e gestão de crise.",
+      "quando": "Antes de publicar qualquer coisa em nome do Grupo.",
+      "quem": "Marketing",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "comunicacao"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "28",
+      "titulo": "Manual de Gestão do Conhecimento",
+      "pacote": 5,
+      "pacoteNome": "Manuais técnicos e administrativos",
+      "resumo": "Memória do Grupo, sucessão e desligamento de membros.",
+      "quando": "Ao documentar um projeto ou quando alguém sair.",
+      "quem": "Documentação",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "29",
+      "titulo": "Manual de Metodologia de Gestão",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Kanban, Scrum leve, OKRs, rituais e calendário de reuniões.",
+      "quando": "Ao organizar o trabalho de uma frente ou área.",
+      "quem": "Todos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 7,
+      "docx": []
+    },
+    {
+      "id": "30",
+      "titulo": "Código de Conduta e Ética",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Princípios, vedações e canal de denúncia.",
+      "quando": "Sempre; e ao fazer ou receber uma denúncia.",
+      "quem": "Todos",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "31",
+      "titulo": "Procedimento Disciplinar",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Passo a passo para apurar uma falta, com defesa e recurso.",
+      "quando": "Quando houver denúncia ou falta a apurar.",
+      "quem": "Diretoria",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "32",
+      "titulo": "Política de Privacidade e LGPD",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Que dados o Grupo trata, por quê, por quanto tempo, e o aviso de privacidade.",
+      "quando": "Ao coletar qualquer dado pessoal ou atender demandas assistivas.",
+      "quem": "Todos",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "dados"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "33",
+      "titulo": "Política de Contas e Segurança da Informação",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Acessos, senhas, backups e resposta a incidentes digitais.",
+      "quando": "Ao criar conta, dar acesso ou perder um acesso.",
+      "quem": "Todos, Área Técnica",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "dados"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "34",
+      "titulo": "Termo de Viagem",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Autorização e checklist para eventos, com trecho para menores de 18 anos.",
+      "quando": "Antes de qualquer viagem a evento ou competição.",
+      "quem": "Operações e Patrimônio",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "patrimonio",
+        "competicao"
+      ],
+      "paginas": 4,
+      "docx": [
+        {
+          "nome": "Termo de Viagem",
+          "arquivo": "formularios/Termo-de-Viagem.docx"
+        }
+      ]
+    },
+    {
+      "id": "35",
+      "titulo": "Ofícios e Comunicações-Modelo",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Cartas prontas para pedir espaço, autorizar voo, escrever a parceiros e enviar circulares.",
+      "quando": "Ao precisar de um ofício ou circular.",
+      "quem": "Documentação, Presidente",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "36",
+      "titulo": "Frequência, Horas e Certificados",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Como registrar presença e emitir comprovantes.",
+      "quando": "No fechamento mensal e ao pedir certificado.",
+      "quem": "Administração, Documentação",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "37",
+      "titulo": "Caderno de Modelos de Trabalho",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Fichas de projeto, pitch, ata enxuta, decisão (ADR), teste, design review, post-mortem, experimento e fornecedor.",
+      "quando": "Ao abrir, revisar ou encerrar um projeto.",
+      "quem": "Frentes",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "projetos",
+        "pesquisa",
+        "competicao"
+      ],
+      "paginas": 6,
+      "docx": [
+        {
+          "nome": "Modelo Ficha de Projeto",
+          "arquivo": "formularios/Modelo-Ficha-de-Projeto.docx"
+        },
+        {
+          "nome": "Modelo Roteiro de Pitch 5 Minutos",
+          "arquivo": "formularios/Modelo-Roteiro-de-Pitch-5-Minutos.docx"
+        },
+        {
+          "nome": "Modelo Pauta e Ata de Reuniao Modelo Enxuto",
+          "arquivo": "formularios/Modelo-Pauta-e-Ata-de-Reuniao-Modelo-Enxuto.docx"
+        },
+        {
+          "nome": "Modelo Registro de Decisao ADR",
+          "arquivo": "formularios/Modelo-Registro-de-Decisao-ADR.docx"
+        },
+        {
+          "nome": "Modelo Relatorio de Teste",
+          "arquivo": "formularios/Modelo-Relatorio-de-Teste.docx"
+        },
+        {
+          "nome": "Modelo Relatorio de Design Review",
+          "arquivo": "formularios/Modelo-Relatorio-de-Design-Review.docx"
+        },
+        {
+          "nome": "Modelo Post Mortem de Projeto",
+          "arquivo": "formularios/Modelo-Post-Mortem-de-Projeto.docx"
+        },
+        {
+          "nome": "Modelo Plano de Experimento Pesquisa",
+          "arquivo": "formularios/Modelo-Plano-de-Experimento-Pesquisa.docx"
+        },
+        {
+          "nome": "Modelo Ficha de Provedor ou Fornecedor",
+          "arquivo": "formularios/Modelo-Ficha-de-Provedor-ou-Fornecedor.docx"
+        }
+      ]
+    },
+    {
+      "id": "38",
+      "titulo": "Processo Eleitoral",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Edital, comissão, votação e apuração, detalhando o que o Regimento prevê.",
+      "quando": "Cerca de 30 dias antes do fim do mandato.",
+      "quem": "Diretoria, comissão eleitoral",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "39",
+      "titulo": "Termo de Doação e Recibo",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Aceite de bens doados por pessoas ou empresas.",
+      "quando": "Ao receber uma doação.",
+      "quem": "Operações e Patrimônio",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "patrimonio",
+        "parcerias"
+      ],
+      "paginas": 3,
+      "docx": [
+        {
+          "nome": "Termo de Doacao e Recibo",
+          "arquivo": "formularios/Termo-de-Doacao-e-Recibo.docx"
+        }
+      ]
+    },
+    {
+      "id": "40",
+      "titulo": "Plano Estratégico e OKRs",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Missão, visão, diagnóstico (SWOT) e metas do primeiro semestre.",
+      "quando": "Na revisão semestral de metas.",
+      "quem": "Diretoria",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 6,
+      "docx": []
+    },
+    {
+      "id": "41",
+      "titulo": "Guia de Governança",
+      "pacote": 6,
+      "pacoteNome": "Gestão, conduta e organização",
+      "resumo": "Organograma, quem decide o quê, alçadas e sistema de documentos.",
+      "quando": "Quando não souber quem decide ou aprova algo.",
+      "quem": "Todos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 7,
+      "docx": []
+    },
+    {
+      "id": "42",
+      "titulo": "Plano de 90 Dias",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Semanas 1 a 12 para tirar o Grupo do papel, com marcos, riscos e critérios de sucesso.",
+      "quando": "Nos primeiros três meses depois da aprovação.",
+      "quem": "Diretoria",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 5,
+      "docx": []
+    },
+    {
+      "id": "43",
+      "titulo": "Guia de Bolso",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Regras essenciais e a tabela \"qual documento usar quando\".",
+      "quando": "Para qualquer membro, a qualquer hora, antes de abrir os outros documentos.",
+      "quem": "Todos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "44",
+      "titulo": "One-Pager Institucional",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Apresentação de duas páginas do Grupo para parceiros.",
+      "quando": "Em conversas com empresas e docentes.",
+      "quem": "Presidente, Marketing",
+      "publico": true,
+      "status": "rascunho",
+      "tags": [
+        "parcerias",
+        "comunicacao"
+      ],
+      "paginas": 2,
+      "docx": []
+    },
+    {
+      "id": "45",
+      "titulo": "Kit de Boas-Vindas",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Carta, primeiros 30 dias, guia do padrinho, glossário e FAQ.",
+      "quando": "Quando um membro novo chega.",
+      "quem": "Administração, padrinhos",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "46",
+      "titulo": "Pesquisa de Clima",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Questionários anônimos e como transformar respostas em plano de ação.",
+      "quando": "A cada semestre e na saída de membros.",
+      "quem": "Administração",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pessoas"
+      ],
+      "paginas": 4,
+      "docx": []
+    },
+    {
+      "id": "47",
+      "titulo": "Guia das Frentes",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Rotina, portões de qualidade, práticas e metas de Pesquisa, Competição e Projetos.",
+      "quando": "Ao planejar o trimestre de uma frente.",
+      "quem": "Líderes de frente",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "pesquisa",
+        "competicao",
+        "projetos"
+      ],
+      "paginas": 15,
+      "docx": [
+        {
+          "nome": "Relato Mensal da Frente ou Area",
+          "arquivo": "formularios/Relato-Mensal-da-Frente-ou-Area.docx"
+        }
+      ]
+    },
+    {
+      "id": "48",
+      "titulo": "Tabela de Parâmetros",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Prazos, quóruns, limites e valores num só lugar.",
+      "quando": "Antes de citar um número em qualquer documento.",
+      "quem": "Documentação, Diretoria",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 7,
+      "docx": []
+    },
+    {
+      "id": "49",
+      "titulo": "Guia das Áreas Administrativas",
+      "pacote": 7,
+      "pacoteNome": "Ativação e crescimento",
+      "resumo": "Rotina, entregas e metas de Administração, Marketing, Documentação e Operações e Patrimônio.",
+      "quando": "Ao planejar o trimestre de uma área.",
+      "quem": "Responsáveis de área",
+      "publico": false,
+      "status": "rascunho",
+      "tags": [
+        "governanca"
+      ],
+      "paginas": 9,
+      "docx": [
+        {
+          "nome": "Relato Mensal da Frente ou Area",
+          "arquivo": "formularios/Relato-Mensal-da-Frente-ou-Area.docx"
+        }
+      ]
+    }
+  ]
+}

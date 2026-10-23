@@ -39,6 +39,12 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Regras puras (navegação, hoje, documentos)
+        run: |
+          npm run test:nav
+          npm run test:hoje
+          npm run test:documentos
+
       # next-env.d.ts (tipos de import de imagem) e os tipos de rota são gerados
       # pelo Next e ficam fora do git. Sem gerar antes, o tsc não reconhece o
       # `import logo from "@/public/….png"` e falha num checkout limpo.
