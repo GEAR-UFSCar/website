@@ -63,6 +63,8 @@ assert.ok(rotulos(true).includes("Atas"))
 const href = (rotulo, comCargo = true) => destinosDaPaleta(comCargo).find((d) => d.rotulo === rotulo)?.href
 assert.equal(href("Nova meta", false), "/membros/metas?nova=1")
 assert.equal(href("Novo aviso"), "/membros/mural?novo=1")
+assert.equal(href("Novo evento"), "/membros/calendario?novo=1")
+assert.ok(!rotulos(false).includes("Novo evento"))
 assert.equal(href("Buscar pessoa", false), "/membros/diretorio?busca=1")
 assert.ok(rotulos(false).includes("Buscar pessoa"))
 // Nenhum destino repetido.

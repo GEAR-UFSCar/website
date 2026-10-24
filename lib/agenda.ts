@@ -11,30 +11,55 @@
  */
 
 import { diaGear } from "@/lib/datas"
+import { MESES, diaPorExtenso as diaPorExtensoGear, type RespostaPresenca } from "@/lib/calendario"
 
-export type OrigemItem = "evento" | "meta"
+export type OrigemItem = "evento" | "meta" | "sprint" | "modulo"
 
+/**
+ * Uma linha do calendário NUM DIA. Evento de três dias vira três itens (um por
+ * dia), e evento recorrente vira um por repetição: a grade desenha itens, e é
+ * a página que decide quantos existem.
+ */
 export type ItemAgenda = {
+  /** Único na tela: evento e dia entram na chave, porque o mesmo evento repete. */
   id: string
   origem: OrigemItem
   titulo: string
-  /** "YYYY-MM-DD" local — a célula em que o item cai. */
+  /** "YYYY-MM-DD" em Brasília — a célula em que o item cai. */
   dia: string
-  /** "14:30" para evento com hora; null para meta, que é prazo do dia. */
+  /** "14:30" para o que tem hora; null para prazo e evento de dia inteiro. */
   hora: string | null
   descricao: string | null
-  /** "Reunião"/"Sprint"/"Prazo"/"Outro" no evento; autor ou "Sua meta" na meta. */
+  /** "Reunião"/"Sprint"/"Prazo"/"Outro" no evento; "Sua meta", "Sprint · Em andamento"… nos demais. */
   rotulo: string
   frente: string | null
   /** Só em meta: prazo vencido e não concluída. */
   atrasada?: boolean
   concluida?: boolean
-}
 
-const MESES = [
-  "janeiro", "fevereiro", "março", "abril", "maio", "junho",
-  "julho", "agosto", "setembro", "outubro", "novembro", "dezembro",
-]
+  /** Para onde o item leva quando não abre o painel (meta, sprint, módulo). */
+  href?: string
+  /** Só em evento: tipo (Reunião, Sprint, Prazo, Outro). */
+  tipo?: string
+  /** Só em evento: id real da linha e dia em que ESTA ocorrência começa — abrem o painel. */
+  eventoId?: string
+  ocorrencia?: string
+  /** "19:00–20:30", "Dia inteiro", "19:00". */
+  horario?: string
+  local?: string | null
+  repete?: boolean
+  /** Minutos desde 00:00 do dia para a grade de horas. Null = dia inteiro (vai na faixa de cima). */
+  inicioMin: number | null
+  fimMin: number | null
+  /** Evento sem hora de fim: o bloco da grade usa 1h só para desenhar. */
+  semFim?: boolean
+  continuaDeOntem?: boolean
+  continuaAmanha?: boolean
+  /** Minha resposta de presença nesta ocorrência. */
+  resposta?: RespostaPresenca | null
+  /** Meta minha ou sprint em que sou responsável. Alimenta o filtro "só o meu". */
+  meu?: boolean
+}
 
 /** Segunda a domingo — a semana como a entidade marca reunião. */
 export const DIAS_DA_SEMANA = ["SEG", "TER", "QUA", "QUI", "SEX", "SÁB", "DOM"] as const
@@ -81,10 +106,7 @@ export function rotuloDoMes(mes: string) {
 }
 
 /** "2026-09-14" → "14 de setembro". */
-export function diaPorExtenso(chave: string) {
-  const d = dataDaChave(chave)
-  return `${d.getDate()} de ${MESES[d.getMonth()]}`
-}
+export const diaPorExtenso = diaPorExtensoGear
 
 /** "2026-09-14" → "segunda-feira". */
 export function diaDaSemanaPorExtenso(chave: string) {
@@ -139,13 +161,14 @@ export function agruparPorDia(itens: ItemAgenda[]) {
 // para decidir em que dia um timestamp cai, que é trabalho de diaGear().
 // -----------------------------------------------------------------------------
 
-export const VISOES = ["semana", "dia", "mes"] as const
+export const VISOES = ["semana", "dia", "mes", "agenda"] as const
 export type Visao = (typeof VISOES)[number]
 
 export const ROTULO_DA_VISAO: Record<Visao, string> = {
   semana: "Semana",
   dia: "Dia",
   mes: "Mês",
+  agenda: "Agenda",
 }
 
 /** Visão válida, ou `alternativa` quando vier lixo pela URL. */
@@ -195,15 +218,69 @@ export function diasEntre(de: string, ate: string) {
   return Math.round((dataDaChave(ate).getTime() - dataDaChave(de).getTime()) / 86_400_000)
 }
 
+/** Camadas que a pessoa pode esconder. Evento do GEAR não está aqui: é o calendário. */
+export const CAMADAS = ["metas", "sprints", "academia"] as const
+export type Camada = (typeof CAMADAS)[number]
+export const ROTULO_DA_CAMADA: Record<Camada, string> = {
+  metas: "Metas",
+  sprints: "Sprints",
+  academia: "Academia",
+}
+
+/** Lista de camadas escondidas vinda da URL ("sem=metas,sprints"), sem lixo e sem repetição. */
+export function camadasEscondidas(bruto: string | undefined): Camada[] {
+  const lista = (bruto ?? "").split(",").map((c) => c.trim())
+  return CAMADAS.filter((c) => lista.includes(c))
+}
+
 /**
- * Endereço do calendário com o estado na URL. Visão e dia moram na URL (e não
- * em useState) pelo mesmo motivo do `?mes=` que já existia: a página busca no
+ * Tudo o que a URL do calendário guarda. Visão e dia moram na URL (e não em
+ * useState) pelo mesmo motivo do `?mes=` que já existia: a página busca no
  * servidor só o intervalo que vai desenhar, e o link pode ser mandado no grupo.
+ *
+ * Os quatro últimos campos (evento, ocorrencia, novo, editar) são o PAINEL
+ * lateral, não o período: navegar para outro dia fecha o painel, e é por isso
+ * que `comEstado()` os zera a cada link.
  */
-export function hrefCalendario(estado: { visao: Visao; dia: string; frente?: string | null }) {
+export type EstadoCalendario = {
+  visao: Visao
+  dia: string
+  frente?: string | null
+  tipo?: string | null
+  q?: string | null
+  /** "Só o meu": o que eu confirmei, minhas metas e meus sprints. */
+  meu?: boolean
+  sem?: Camada[]
+  evento?: string | null
+  ocorrencia?: string | null
+  novo?: boolean
+  editar?: boolean
+}
+
+export function hrefCalendario(estado: EstadoCalendario) {
   const p = new URLSearchParams({ visao: estado.visao })
   if (estado.visao === "mes") p.set("mes", mesDaChave(estado.dia))
   else p.set("dia", estado.dia)
   if (estado.frente) p.set("frente", estado.frente)
+  if (estado.tipo) p.set("tipo", estado.tipo)
+  if (estado.q) p.set("q", estado.q)
+  if (estado.meu) p.set("meu", "1")
+  if (estado.sem?.length) p.set("sem", estado.sem.join(","))
+  if (estado.evento) {
+    p.set("evento", estado.evento)
+    if (estado.ocorrencia) p.set("ocorrencia", estado.ocorrencia)
+    if (estado.editar) p.set("editar", "1")
+  }
+  if (estado.novo) p.set("novo", "1")
   return `/membros/calendario?${p.toString()}`
+}
+
+/**
+ * Gerador de links que parte do estado atual e muda só o que se pede. O painel
+ * sempre começa fechado: quem troca de semana não quer o evento da semana
+ * passada ainda aberto por cima.
+ */
+export function comEstado(atual: EstadoCalendario) {
+  return (mudanca: Partial<EstadoCalendario> = {}) =>
+    hrefCalendario({ ...atual, evento: null, ocorrencia: null, novo: false, editar: false, ...mudanca })
 }

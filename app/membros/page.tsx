@@ -17,11 +17,12 @@ import {
 import { detalheTecnico, mensagemSegura } from "@/lib/erros"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
-import { diaGear, hojeISO, horaGear, inicioDoDiaGear, saudacao } from "@/lib/datas"
+import { hojeISO, saudacao } from "@/lib/datas"
 import { hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
 import { eventoVisivel, maisDias, ordenarSprints, prazosDaSemana, proximaAcao, type ItemPrazo } from "@/lib/hoje"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
 import { COLUNAS_META, type Meta } from "@/lib/metas"
+import { buscarEventos, itensDeEventos } from "@/lib/calendario-dados"
 import { COLUNAS_MODULO, montarEstagios, type Modulo, type Progresso } from "@/lib/academia"
 import { paginaMembros } from "@/lib/ui"
 
@@ -58,18 +59,12 @@ export default async function HojePage() {
 
   const hoje = hojeISO()
   const ate = maisDias(hoje, 7)
-  const inicioJanela = inicioDoDiaGear(hoje)
-  const fimJanela = inicioDoDiaGear(maisDias(ate, 1))
 
   const supabase = await createClient()
   const [sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR] = await Promise.all([
     supabase.from("sprints").select(COLUNAS_SPRINT).eq("responsavel_id", user.id).neq("status", "Concluído"),
-    supabase
-      .from("eventos")
-      .select("id, titulo, tipo, data_inicio, frente_vinculada")
-      .gte("data_inicio", inicioJanela)
-      .lt("data_inicio", fimJanela)
-      .order("data_inicio", { ascending: true }),
+    // Já expande a repetição: a reunião semanal de toda quarta aparece sem estar "na janela" no banco.
+    buscarEventos(supabase, hoje, ate),
     supabase.from("metas").select(COLUNAS_META).eq("usuario_id", user.id).eq("concluida", false).lte("prazo", ate),
     supabase
       .from("avisos")
@@ -91,16 +86,17 @@ export default async function HojePage() {
 
   // Evento da minha frente ou sem frente; as metas já são só minhas.
   const itens: ItemPrazo[] = [
-    ...((eventosR.data ?? []) as { id: string; titulo: string; tipo: string; data_inicio: string; frente_vinculada: string | null }[])
-      .filter((e) => eventoVisivel(e.frente_vinculada, frente))
+    ...itensDeEventos(eventosR.eventos, [], { de: hoje, ate, meuId: user.id })
+      .filter((e) => eventoVisivel(e.frente, frente))
       .map((e) => ({
-        id: `evento-${e.id}`,
+        id: e.id,
         origem: "evento" as const,
         titulo: e.titulo,
-        dia: diaGear(e.data_inicio),
-        hora: horaGear(e.data_inicio),
-        href: "/membros/calendario",
-        detalhe: e.tipo,
+        dia: e.dia,
+        hora: e.hora,
+        // Abre o painel do evento, no dia dele, e não só a tela do calendário.
+        href: `/membros/calendario?visao=dia&dia=${e.dia}&evento=${e.eventoId}&ocorrencia=${e.ocorrencia}`,
+        detalhe: e.tipo ?? e.rotulo,
       })),
     ...((metasR.data ?? []) as Meta[]).map((m) => ({
       id: `meta-${m.id}`,
@@ -115,8 +111,8 @@ export default async function HojePage() {
   const { atrasados, proximos } = prazosDaSemana(itens, hoje, ate)
 
   const errosPrazos = [
-    ...(eventosR.error
-      ? [{ titulo: "EVENTOS INDISPONÍVEIS", erro: eventosR.error, dica: "Rode supabase/008_eventos_avisos_sprints.sql." }]
+    ...(eventosR.erro
+      ? [{ titulo: "EVENTOS INDISPONÍVEIS", erro: eventosR.erro, dica: "Rode supabase/008_eventos_avisos_sprints.sql." }]
       : []),
     ...(metasR.error ? [{ titulo: "METAS INDISPONÍVEIS", erro: metasR.error, dica: "Rode supabase/017_metas.sql." }] : []),
   ]
