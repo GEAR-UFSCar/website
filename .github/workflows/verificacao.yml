@@ -36,6 +36,11 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      # Cookie Secure, CSP presa ao host do Supabase e cabeçalhos do next.config.
+      # Roda cedo: não usa rede, não sobe servidor e leva menos de um segundo.
+      - name: Segurança em código (cookie, CSP, cabeçalhos)
+        run: npm run test:seguranca
+
       - name: Lint
         run: npm run lint
 

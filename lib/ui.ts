@@ -15,6 +15,16 @@ export const botaoPrimario =
 export const botaoSecundario =
   "border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"
 
+/**
+ * Link DENTRO de um parágrafo. Só a cor âmbar o distinguia do texto, e quem
+ * não separa cores não o via como link (WCAG 1.4.1, o axe-core acusa
+ * `link-in-text-block`). O sublinhado é o sinal além da cor; fica mais fraco
+ * em repouso e pleno no hover. Para link solto (botão, "ver mais", cartão), o
+ * contexto já diz que é clicável e não usa isto.
+ */
+export const linkNoTexto =
+  "text-[var(--gear-amber)] underline underline-offset-4 decoration-[var(--gear-amber)]/50 transition-colors hover:decoration-[var(--gear-amber)]"
+
 /** Complemento do botão primário em <button> que pode ficar desabilitado. */
 export const botaoDesabilitavel =
   "disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--gear-amber)]"

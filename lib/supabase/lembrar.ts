@@ -41,20 +41,40 @@ export function querLembrar(valor: string | undefined | null): boolean {
 }
 
 /**
- * Corrige a validade de um cookie de auth que o @supabase/ssr quer gravar.
+ * Corrige a validade de um cookie de auth que o @supabase/ssr quer gravar e
+ * liga `Secure` em produção.
  *
  * Lembrar ligado  → cookie persistente de 30 dias.
  * Lembrar desligado → cookie de sessão (sem Max-Age nem Expires): o navegador
  * o descarta ao fechar.
+ *
+ * `Secure`: o cookie só viaja por HTTPS. O site só é servido assim (HSTS com
+ * preload), então o atributo não custa nada em produção e fecha o caso de uma
+ * requisição http chegar a algum lugar. `HttpOnly` não é possível: o cliente
+ * de navegador do Supabase precisa ler o cookie. Fora de produção o atributo
+ * fica como a lib mandou, para `next dev` em http://localhost continuar
+ * funcionando; um `next start` local em Safari também não grava cookie
+ * `Secure` em http, e para testar o build assim use outro navegador.
+ *
+ * `producao` existe para o teste (scripts/testar-sessao.mjs) poder ligar e
+ * desligar o comportamento sem mexer em NODE_ENV.
  */
-export function validadeDaSessao(options: CookieOptions, lembrar: boolean): CookieOptions {
+export function validadeDaSessao(
+  options: CookieOptions,
+  lembrar: boolean,
+  producao: boolean = process.env.NODE_ENV === "production",
+): CookieOptions {
+  const secure = options.secure || producao
+
   // maxAge 0 é remoção (logout, limpeza de chunk antigo). Mexer aqui
-  // transformaria um "apague este cookie" em "guarde por 30 dias".
-  if (options.maxAge === 0) return options
+  // transformaria um "apague este cookie" em "guarde por 30 dias". Só o
+  // `Secure` entra, para a remoção ter os mesmos atributos da gravação.
+  if (options.maxAge === 0) return { ...options, secure }
 
   return {
     ...options,
     maxAge: lembrar ? MAX_AGE_LEMBRAR : undefined,
     expires: undefined,
+    secure,
   }
 }

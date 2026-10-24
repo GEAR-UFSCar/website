@@ -7,7 +7,7 @@ import logoNta from "@/public/nta-logo.png"
 import { CONTATO_PARCERIA, EMAIL_CONTATO } from "@/lib/site"
 import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
 import { Aviso } from "@/components/aviso"
-import { botaoPrimario } from "@/lib/ui"
+import { botaoPrimario, linkNoTexto } from "@/lib/ui"
 
 
 
@@ -152,7 +152,7 @@ export function Parceiros() {
           <Link
             href="/parceiros/proposta"
             data-cursor-hover
-            className="text-[var(--gear-amber)] hover:underline"
+            className={linkNoTexto}
           >
             proposta de patrocínio
           </Link>

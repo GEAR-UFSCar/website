@@ -1,0 +1,37 @@
+# Atualizações automáticas, uma vez por semana, em PRs pequenas.
+#
+# O CI (verificacao.yml) roda em toda PR, então uma atualização que quebra lint,
+# tipos, testes ou build aparece vermelha antes de alguém clicar em merge.
+#
+# Os "security updates" (alerta de vulnerabilidade -> PR imediata) são um
+# interruptor separado, em Settings -> Advanced Security do repositório; este
+# arquivo cuida só das atualizações de versão.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: America/Sao_Paulo
+    open-pull-requests-limit: 5
+    # Uma PR só para as atualizações de patch e minor das dependências de
+    # desenvolvimento, em vez de cinco PRs de ferramenta por semana.
+    groups:
+      desenvolvimento:
+        dependency-type: development
+        update-types: [minor, patch]
+    # Saltos de versão maior mudam API (o Next, o React, o Three.js...). Esses
+    # entram quando alguém decidir migrar, e não por uma PR automática de segunda.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "08:00"
+      timezone: America/Sao_Paulo

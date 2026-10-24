@@ -5,6 +5,7 @@ import Link from "next/link"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
 
 import { TOTAL_MEMBROS } from "@/lib/site"
+import { linkNoTexto } from "@/lib/ui"
 
 /*
  * Só entra frase que alguém consiga verificar em /projetos, /sobre ou /time.
@@ -42,7 +43,7 @@ export function About() {
         {/* /sobre não recebia nenhum link no corpo do site, só o menu levava lá */}
         <p className="mt-5 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
           O registro na ProEx, a formação completa e as três frentes estão em{" "}
-          <Link href="/sobre" data-cursor-hover className="text-[var(--gear-amber)] hover:underline">
+          <Link href="/sobre" data-cursor-hover className={linkNoTexto}>
             Sobre
           </Link>
           .
