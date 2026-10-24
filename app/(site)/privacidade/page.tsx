@@ -130,13 +130,13 @@ export default function PrivacidadePage() {
         <p className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
           Nesta página
         </p>
-        <ol className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2">
+        <ol className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-x-8">
           {secoes.map((secao, indice) => (
             <li key={secao.titulo}>
               <a
                 href={`#${slug(secao.titulo)}`}
                 data-cursor-hover
-                className="font-mono text-[11px] tracking-wider text-muted-foreground transition-colors duration-300 hover:text-[var(--gear-amber)]"
+                className="inline-flex min-h-11 items-center font-mono text-[11px] tracking-wider text-muted-foreground transition-colors duration-300 hover:text-[var(--gear-amber)]"
               >
                 <span className="text-[var(--gear-amber)] mr-2">0{indice + 1}</span>
                 {secao.titulo}

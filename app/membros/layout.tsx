@@ -6,6 +6,7 @@ import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { CustomCursor } from "@/components/custom-cursor"
 import { SmoothScroll } from "@/components/smooth-scroll"
+import { PularParaConteudo } from "@/components/pular-para-conteudo"
 import { MembrosShell } from "@/components/membros-shell"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
@@ -49,9 +50,10 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
   if (!dentro) {
     return (
       <SmoothScroll>
+        <PularParaConteudo />
         <CustomCursor />
         <Navbar />
-        <main>
+        <main id="conteudo" tabIndex={-1} className="outline-none">
           {children}
           <Footer />
         </main>
@@ -61,13 +63,14 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
 
   return (
     <MotionConfig reducedMotion="always">
+      <PularParaConteudo />
       <MembrosShell
         nome={perfil?.nome_completo?.trim() || user.email || "Membro"}
         cargo={perfil?.cargo ?? null}
         comCargo={temCargo(perfil?.cargo)}
         sair={sair}
       />
-      <main>
+      <main id="conteudo" tabIndex={-1} className="outline-none">
         {children}
       </main>
     </MotionConfig>
