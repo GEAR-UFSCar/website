@@ -8,7 +8,7 @@ import { dataLonga } from "@/lib/datas"
 import { rotuloPublico } from "@/lib/documentos-catalogo"
 
 const DESCRICAO =
-  "Os documentos que organizam a GEAR: Regimento, políticas, manuais e a identidade da entidade. O que já foi aprovado abre em PDF; o que ainda não foi está marcado como em aprovação."
+  "Os documentos que organizam o GEAR: Regimento, políticas, manuais e a identidade da entidade. O que já foi aprovado abre em PDF; o que ainda não foi está marcado como em aprovação."
 
 export const metadata: Metadata = {
   title: "Documentos | GEAR",
@@ -65,7 +65,7 @@ export default async function DocumentosPage() {
     <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
       <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">TRANSPARÊNCIA</p>
       <h1 className="font-sans text-4xl md:text-6xl font-light tracking-tight text-balance">
-        Como a GEAR
+        Como o GEAR
         <br />
         <span className="italic">se organiza</span>
       </h1>

@@ -6,7 +6,7 @@ import { Aviso } from "@/components/aviso"
 import { botaoSecundario } from "@/lib/ui"
 
 const DESCRICAO =
-  "Como a GEAR trata os dados pessoais coletados no site: o que guardamos, por quê, por quanto tempo e como você pede correção ou exclusão."
+  "Como o GEAR trata os dados pessoais coletados no site: o que guardamos, por quê, por quanto tempo e como você pede correção ou exclusão."
 
 export const metadata: Metadata = {
   title: "Privacidade | GEAR",
@@ -34,8 +34,8 @@ const secoes = [
   {
     titulo: "Quem trata os seus dados",
     conteudo: [
-      "A GEAR, Grupo de Extensão em Automação e Robótica, é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, vinculada ao campus Sorocaba, com orientação docente.",
-      "Para efeito da Lei 13.709/2018 (LGPD), o tratamento descrito aqui é realizado pela entidade no exercício dessa atividade de extensão. Dúvidas e solicitações vão para o e-mail no fim desta página.",
+      "O GEAR, Grupo de Extensão em Automação e Robótica, é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, vinculada ao campus Sorocaba, com orientação docente.",
+      "Para efeito da Lei 13.709/2018 (LGPD), o controlador dos dados é, em regra, a UFSCar, e o GEAR opera os dados de seus membros e participantes no exercício dessa atividade de extensão. Dúvidas e solicitações vão para o e-mail no fim desta página.",
     ],
   },
   {

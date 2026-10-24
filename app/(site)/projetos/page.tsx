@@ -9,7 +9,7 @@ import { PROJETOS, type Projeto } from "@/lib/projetos"
 import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 
 const DESCRICAO =
-  "Os robôs e sistemas que a GEAR construiu: problema atacado, decisões técnicas com a alternativa descartada, arquitetura e resultados."
+  "Os robôs e sistemas que o GEAR construiu: problema atacado, decisões técnicas com a alternativa descartada, arquitetura e resultados."
 
 export const metadata: Metadata = {
   title: "Projetos | GEAR",
@@ -96,7 +96,7 @@ function Abertura({ projeto, indice }: { projeto: Projeto; indice: number }) {
           {/* Camada nítida: quadro inteiro, sem corte, em qualquer proporção. */}
           <Image
             src={projeto.foto}
-            alt={`${projeto.nome}, robô construído pela GEAR UFSCar`}
+            alt={`${projeto.nome}, robô construído pelo GEAR UFSCar`}
             fill
             priority={indice === 0}
             sizes="100vw"

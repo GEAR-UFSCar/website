@@ -51,21 +51,21 @@ const FOTOS = [
     evento: UNIVERSIDADE_ABERTA,
     largura: 900,
     altura: 1600,
-    alt: "Grupo de estudantes ouvindo apresentação sobre a GEAR",
+    alt: "Grupo de estudantes ouvindo apresentação sobre o GEAR",
   },
   {
     arquivo: "foto-03.jpg",
     evento: UNIVERSIDADE_ABERTA,
     largura: 900,
     altura: 1600,
-    alt: "Membro da GEAR explicando o funcionamento de um robô a um grupo de visitantes",
+    alt: "Membro do GEAR explicando o funcionamento de um robô a um grupo de visitantes",
   },
   {
     arquivo: "foto-06.jpg",
     evento: UNIVERSIDADE_ABERTA,
     largura: 1600,
     altura: 900, // horizontal, destaque do meio
-    alt: "Equipe da GEAR reunida durante a Universidade Aberta UFSCar 2026",
+    alt: "Equipe do GEAR reunida durante a Universidade Aberta UFSCar 2026",
   },
   {
     arquivo: "foto-04.jpg",
@@ -79,7 +79,7 @@ const FOTOS = [
     evento: UNIVERSIDADE_ABERTA,
     largura: 900,
     altura: 1600,
-    alt: "Membro da GEAR de camiseta da Universidade Aberta falando a um grupo de estudantes do ensino fundamental numa sala de aula, com o Instagram da GEAR escrito no quadro",
+    alt: "Membro do GEAR de camiseta da Universidade Aberta falando a um grupo de estudantes do ensino fundamental numa sala de aula, com o Instagram do GEAR escrito no quadro",
   },
   {
     arquivo: "foto-08.jpg",
@@ -107,7 +107,7 @@ const FOTOS = [
     evento: SECOT,
     largura: 1200,
     altura: 1600,
-    alt: "Membro da GEAR apontando para o robô sobre a pista de linha no chão, cercado por estudantes que acompanham a demonstração",
+    alt: "Membro do GEAR apontando para o robô sobre a pista de linha no chão, cercado por estudantes que acompanham a demonstração",
   },
   {
     arquivo: "foto-10.jpg",
@@ -121,14 +121,14 @@ const FOTOS = [
     evento: SECOT,
     largura: 1200,
     altura: 1600,
-    alt: "Membro da GEAR segurando um robô mecanum e ajustando a placa com uma chave, com a TV do AI Rover ao fundo",
+    alt: "Membro do GEAR segurando um robô mecanum e ajustando a placa com uma chave, com a TV do AI Rover ao fundo",
   },
   {
     arquivo: "foto-14.jpg",
     evento: SECOT,
     largura: 1200,
     altura: 1600,
-    alt: "Vista geral do estande da GEAR na SeCoT: dois membros, dois robôs no chão e a bancada com a TV e o notebook da demonstração",
+    alt: "Vista geral do estande do GEAR na SeCoT: dois membros, dois robôs no chão e a bancada com a TV e o notebook da demonstração",
   },
 ]
 
@@ -147,7 +147,7 @@ export function UniversidadeAberta() {
         transition={{ duration: 0.8 }}
         className="mb-16"
       >
-        <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde a GEAR já esteve</h2>
+        <h2 className="font-sans text-3xl md:text-5xl font-light italic">Onde o GEAR já esteve</h2>
         <p className="mt-4 font-mono text-xs tracking-[0.2em] text-muted-foreground">
           Universidade Aberta UFSCar e SeCoT, 2026
         </p>

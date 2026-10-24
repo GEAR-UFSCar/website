@@ -15,6 +15,7 @@ const registro = [
   { label: "Registro", valor: "ProEx-UFSCar" },
   { label: "Processo nº", valor: "23112.029016/2026-80" },
   { label: "Coordenação", valor: "Prof. Iago Pacheco Gomes" },
+  { label: "Vigência prevista", valor: "01/10/2026 a 31/07/2027" },
   { label: "Campus", valor: "UFSCar Sorocaba" },
 ]
 
@@ -25,7 +26,7 @@ export function Sobre() {
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <Surge delay={0.1}>
           <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-            Sobre a GEAR
+            Sobre o GEAR
           </h1>
         </Surge>
       </section>
@@ -44,7 +45,7 @@ export function Sobre() {
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-12 lg:gap-16">
         <Surge delay={0.1} className="lg:col-span-7 space-y-6 font-sans text-lg md:text-xl font-light leading-relaxed">
           <p>
-            A GEAR é o Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Existimos para que
+            O GEAR é o Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba. Existimos para que
             estudantes de graduação construam sistemas reais, que saem da bancada, falham, são
             consertados e voltam a funcionar.
           </p>
@@ -124,7 +125,7 @@ export function Sobre() {
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            A GEAR é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, sob
+            O GEAR é uma atividade de extensão registrada na Pró-Reitoria de Extensão da UFSCar, sob
             coordenação do <span className="text-foreground">Prof. Iago Pacheco Gomes</span>. Existe
             processo, orientação docente e prestação de contas à universidade.
           </Surge>

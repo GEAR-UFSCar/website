@@ -196,7 +196,7 @@ export default async function CalendarioPage({
       id: `evento-${e.id}`,
       titulo: e.titulo,
       dia: chaveDoTimestamp(e.data_inicio),
-      rotulo: "Prazo da GEAR",
+      rotulo: "Prazo do GEAR",
       frente: e.frente_vinculada,
     })),
     ...((prazosMetasData ?? []) as LinhaPrazoMeta[]).map((m) => ({
@@ -214,7 +214,7 @@ export default async function CalendarioPage({
   return (
     <section className={paginaMembrosLarga}>
       <PageHeader titulo="Calendário">
-        Reuniões, sprints e prazos da GEAR junto com as suas metas e as que a equipe tornou
+        Reuniões, sprints e prazos do GEAR junto com as suas metas e as que a equipe tornou
         públicas, por semana, dia ou mês. Para registrar uma obrigação sua, crie uma meta; criar
         evento da entidade é de quem tem cargo.
       </PageHeader>

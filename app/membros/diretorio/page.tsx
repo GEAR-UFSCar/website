@@ -67,7 +67,7 @@ export default async function DiretorioPage({
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Pessoas">
-        Quem está na GEAR e em que frente. Nome, curso, frente e cargo, sem contato pessoal: e-mail
+        Quem está no GEAR e em que frente. Nome, curso, frente e cargo, sem contato pessoal: e-mail
         não aparece aqui para ninguém. {membros.length} {membros.length === 1 ? "membro" : "membros"}.
       </PageHeader>
 

@@ -4,7 +4,7 @@ import { Entrar } from "@/components/entrar"
 
 export const metadata: Metadata = {
   title: "Entrar | GEAR",
-  description: "Acesso à área de membros da GEAR, UFSCar Sorocaba.",
+  description: "Acesso à área de membros do GEAR, UFSCar Sorocaba.",
   robots: { index: false, follow: true },
 }
 

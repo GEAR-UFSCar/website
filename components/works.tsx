@@ -17,7 +17,7 @@ const entradas: Entrada[] = [
     tema: "Quem somos",
     titulo: "Uma entidade de robótica, três frentes",
     texto:
-      "A GEAR é a entidade estudantil de robótica da UFSCar Sorocaba, registrada como atividade de extensão na ProEx-UFSCar, com orientação do Prof. Iago Pacheco Gomes. Reunimos estudantes de qualquer curso que querem aprender robótica com a mão na massa, sem pré-requisito técnico para entrar.",
+      "O GEAR é a entidade estudantil de robótica da UFSCar Sorocaba, registrada como atividade de extensão na ProEx-UFSCar, com orientação do Prof. Iago Pacheco Gomes. Reunimos estudantes de qualquer curso que querem aprender robótica com a mão na massa, sem pré-requisito técnico para entrar.",
     foto: "/fotos/universidade-aberta/foto-01.jpg",
   },
   {
@@ -75,7 +75,7 @@ export function Works() {
         transition={{ duration: 0.8 }}
         className="mb-24"
       >
-        <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que é a GEAR</h2>
+        <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que é o GEAR</h2>
       </motion.div>
 
       <div className="relative">
