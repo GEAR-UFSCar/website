@@ -7,13 +7,13 @@ import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 import { ETAPAS_FORMACAO } from "@/lib/formacao"
 
 const DESCRICAO =
-  "Como entrar na GEAR UFSCar: sem pré-requisito técnico, aberto a qualquer curso de graduação do campus Sorocaba. O que esperar do processo e da formação."
+  "Como entrar no GEAR UFSCar: sem pré-requisito técnico, aberto a estudantes de graduação da UFSCar, de qualquer curso. O que esperar do processo e da formação."
 
 export const metadata: Metadata = {
   title: "Ingressar | GEAR",
   description: DESCRICAO,
   openGraph: {
-    title: "Ingressar na GEAR",
+    title: "Ingressar no GEAR",
     description: DESCRICAO,
     url: "/ingressar",
     images: [OG_IMAGE],
@@ -34,11 +34,42 @@ export const metadata: Metadata = {
  */
 
 
+const PERGUNTAS = [
+  {
+    pergunta: "Quem pode entrar?",
+    resposta:
+      "Estudantes de graduação regularmente matriculados na UFSCar, de qualquer curso. Não precisa de experiência em robótica nem em programação, e a falta dela não reduz a nota: o que se avalia é o potencial de aprender e de colaborar.",
+  },
+  {
+    pergunta: "Tem mensalidade ou taxa de inscrição?",
+    resposta: "Não. O GEAR não cobra taxa de inscrição nem mensalidade dos membros.",
+  },
+  {
+    pergunta: "Quanto tempo preciso dedicar?",
+    resposta:
+      "A Diretoria define uma carga horária semanal indicativa, pensada para caber na rotina acadêmica: a graduação vem primeiro. Em semana de prova, avise cedo; ninguém é punido por avisar.",
+  },
+  {
+    pergunta: "Ganho certificado ou horas de extensão?",
+    resposta:
+      "A participação pode ser comprovada e contada como horas de extensão, conforme as normas da UFSCar. Os registros do grupo alimentam esse processo.",
+  },
+  {
+    pergunta: "Como as vagas são anunciadas?",
+    resposta:
+      "Por edital público, com vagas, prazos, etapas e critérios, publicado com pelo menos sete dias de antecedência. Ainda não há edital aberto.",
+  },
+  {
+    pergunta: "Posso mudar de frente depois?",
+    resposta: "Sim, depois de conversar com os líderes das frentes.",
+  },
+]
+
 export default function IngressarPage() {
   return (
     <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
       <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
-        Como entrar na GEAR
+        Como entrar no GEAR
       </h1>
 
       <p className="mt-10 max-w-[62ch] font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
@@ -81,13 +112,30 @@ export default function IngressarPage() {
         </ol>
       </section>
 
+      {/* Respostas que já estão nos documentos do grupo (Edital, Manual do Membro, Kit de Boas-Vindas) */}
+      <section className="mt-20">
+        <div className="border-t border-linha pt-8">
+          <h2 className="font-sans text-3xl md:text-5xl font-light italic">O que você precisa saber</h2>
+        </div>
+        <dl className="mt-8">
+          {PERGUNTAS.map((p) => (
+            <div key={p.pergunta} className="border-t border-linha py-6">
+              <dt className="font-sans text-lg md:text-xl font-light leading-snug">{p.pergunta}</dt>
+              <dd className="mt-2 max-w-[62ch] font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
+                {p.resposta}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </section>
+
       {/* Expectativa realista, mesma linguagem de "o que falta, sem enfeitar" */}
       <section className="mt-20 border-l-2 border-l-[var(--gear-amber)] pl-6 md:pl-8">
         <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">
           ANTES DE SE INSCREVER
         </p>
         <p className="mt-3 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground">
-          A GEAR é nova: {TOTAL_MEMBROS} pessoas, primeiro ciclo, nenhum robô em competição ainda. Quem
+          O GEAR é novo: {TOTAL_MEMBROS} pessoas, primeiro ciclo, nenhum robô em competição ainda. Quem
           entra agora constrói a estrutura junto, o que significa mais autonomia e menos trilho
           pronto. Se você procura uma equipe consolidada com histórico de competição, ainda não
           somos isso. Preferimos dizer antes.

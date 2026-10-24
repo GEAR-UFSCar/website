@@ -8,7 +8,7 @@ import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
 
 export const metadata: Metadata = {
   title: "Proposta de patrocínio | GEAR",
-  description: "Versão imprimível da proposta de patrocínio da GEAR UFSCar.",
+  description: "Versão imprimível da proposta de patrocínio do GEAR UFSCar.",
   // documento de trabalho, não página de captação, fora do índice
   robots: { index: false, follow: true },
 }

@@ -310,7 +310,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
       <Camada
         ordem="04"
         nome="Impacto"
-        explicacao="O que mudou na vida de quem passou pela GEAR e no que a entidade deixa fora dela. É a camada que demora a aparecer, e a única que justifica o resto."
+        explicacao="O que mudou na vida de quem passou pelo GEAR e no que a entidade deixa fora dela. É a camada que demora a aparecer, e a única que justifica o resto."
       >
         <Numero rotulo="Membros em estágio, IC ou bolsa" valor={impacto.membros_estagio_ic_bolsa} editavel={podeEditar} aoMudar={campoM("membros_estagio_ic_bolsa")} />
         <Numero rotulo="Projetos que viraram TCC ou pesquisa" valor={impacto.projetos_viraram_tcc_pesquisa} editavel={podeEditar} aoMudar={campoM("projetos_viraram_tcc_pesquisa")} />

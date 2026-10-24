@@ -118,7 +118,7 @@ export function Footer() {
                 target="_blank"
                 rel="noopener noreferrer"
                 data-cursor-hover
-                aria-label={`${social.nome} da GEAR, abre em nova aba`}
+                aria-label={`${social.nome} do GEAR, abre em nova aba`}
                 className="inline-flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-300"
               >
                 <social.Icone className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />

@@ -167,6 +167,45 @@ export function Parceiros() {
         )}
       </section>
 
+      {/* Como o apoio funciona, com transparência (Plano de Patrocínio e Política de Parcerias) */}
+      <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
+        <Surge className="mb-16">
+          <h2 className="font-sans text-3xl md:text-5xl font-light italic">Como o apoio funciona</h2>
+        </Surge>
+
+        <div className="grid grid-cols-1 gap-12 md:grid-cols-2">
+          <Surge delay={0.1}>
+            <ul className="space-y-4">
+              {[
+                "O GEAR não tem CNPJ nem conta própria. O apoio é formalizado por instrumento da UFSCar ou de sua fundação de apoio, e nenhum compromisso vale antes disso.",
+                "Os recursos são aplicados só nos fins do grupo, e nenhuma vantagem é paga a membros.",
+                "Prestamos contas por relatório, com o uso dos recursos e os resultados alcançados.",
+                "Quem apoia não interfere na gestão, na seleção de membros nem na escolha dos projetos.",
+              ].map((texto) => (
+                <li key={texto} className="flex gap-3">
+                  <span aria-hidden="true" className="mt-2.5 h-px w-3 shrink-0 bg-[var(--gear-amber)]" />
+                  <span className="font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
+                    {texto}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </Surge>
+
+          <Surge delay={0.2} className="border border-linha p-7">
+            <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)]">
+              O que não oferecemos
+            </p>
+            <p className="mt-4 font-sans text-sm md:text-base font-light leading-relaxed text-muted-foreground">
+              Exclusividade de mercado, acesso a dados pessoais dos membros, participação na seleção de
+              estudantes, certificação de terceiros em nome da UFSCar e titularidade automática dos
+              resultados dos projetos. Os resultados científicos seguem a política da UFSCar e o acordo
+              firmado, e o direito de publicação acadêmica é preservado.
+            </p>
+          </Surge>
+        </div>
+      </section>
+
       {/* Contato */}
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 py-24 md:py-32">
         <Surge className="mb-16">

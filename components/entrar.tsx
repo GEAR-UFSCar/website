@@ -155,7 +155,7 @@ export function Entrar() {
     <AcessoQuadro
       etiqueta="ÁREA DE MEMBROS"
       titulo={modo === "entrar" ? "ENTRAR" : "CRIAR"}
-      destaque={modo === "entrar" ? "na GEAR" : "sua conta"}
+      destaque={modo === "entrar" ? "no GEAR" : "sua conta"}
       corpo={
         <>
         {/* Alternância */}
@@ -309,7 +309,7 @@ export function Entrar() {
                   className="mt-1 h-4 w-4 shrink-0 accent-[var(--gear-amber)]"
                 />
                 <span className="font-sans text-sm font-light leading-relaxed text-muted-foreground">
-                  Li e aceito o Regimento Interno da GEAR, incluindo o Código de Conduta.
+                  Li e aceito o Regimento Interno do GEAR, incluindo o Código de Conduta.
                 </span>
               </label>
               {/* o que fica gravado em termos_aceitos.versao_documento */}

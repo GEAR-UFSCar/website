@@ -66,6 +66,8 @@ const grupos: Grupo[] = [
   },
 ]
 
+const TOTAL_FUNDADORES = grupos.reduce((soma, g) => soma + g.membros.length, 0)
+
 const orientador = [
   { label: "Nome", valor: "Prof. Iago Pacheco Gomes" },
   { label: "Função", valor: "ORIENTAÇÃO INSTITUCIONAL" },
@@ -99,11 +101,14 @@ export function Time() {
       <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
         <Surge delay={0.1}>
           <p className="font-mono text-xs tracking-[0.3em] text-muted-foreground mb-4">
-            {TOTAL_MEMBROS} MEMBROS FUNDADORES
+            {TOTAL_MEMBROS} MEMBROS
           </p>
           <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
             O time
           </h1>
+          <p className="mt-6 font-sans text-base font-light text-muted-foreground">
+            Abaixo, a equipe fundadora, com {TOTAL_FUNDADORES} pessoas.
+          </p>
         </Surge>
       </section>
 
@@ -130,7 +135,7 @@ export function Time() {
 
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           <Surge as="p" delay={0.1} className="max-w-2xl font-sans text-lg md:text-xl font-light leading-relaxed text-muted-foreground">
-            A atividade de extensão da GEAR é orientada pelo{" "}
+            A atividade de extensão do GEAR é orientada pelo{" "}
             <span className="text-foreground">Prof. Iago Pacheco Gomes</span>, docente da UFSCar
             Sorocaba. A orientação docente separa grupo de extensão registrado de coletivo informal, e
             dá respaldo institucional ao que é produzido aqui.

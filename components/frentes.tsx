@@ -1,27 +1,28 @@
 
 /*
- * Áreas de apoio. Existe uma só, Marketing: o recrutamento não pode ficar
- * restrito a quem programa, e quem faz divulgação precisa de um lugar na
- * página.
- *
- * Cornell Cup e ThundeRatz tratam essas áreas como pares das técnicas —
- * "Business" e "Design & Marketing" ficam ao lado de Mecânica e Software.
- *
- * O nome aqui é o de exibição e diverge de propósito de CARGOS em
- * lib/administracao.ts, que espelha um CHECK do banco e segue como
- * "Comunicação". Tesouraria continua sendo cargo atribuível lá, mas saiu do
- * site público.
- *
- * A descrição é curta de propósito: descreve a função pelo que o cargo já faz
- * na estrutura, sem inventar atribuição que a diretoria não definiu.
+ * Áreas de apoio, como no Regimento (art. 20). A Área Técnica coordena as frentes e a
+ * Academia, por isso não aparece aqui como apoio. Os cargos do sistema
+ * (lib/administracao.ts) ainda não espelham essas áreas: decisão pendente.
  */
 import { Surge } from "@/components/surge"
 
 const apoio = [
   {
+    nome: "Administração",
+    texto: "Cuida das pessoas e dos processos: processo seletivo, calendário e controle de frequência.",
+  },
+  {
     nome: "Marketing",
     texto:
-      "Divulgação do que o grupo produz: redes, material de apresentação e a relação com a universidade. É quem faz o trabalho técnico chegar a quem não está na sala.",
+      "Divulgação do que o grupo produz: site, redes, identidade visual e a relação com parceiros. É quem faz o trabalho técnico chegar a quem não está na sala.",
+  },
+  {
+    nome: "Documentação",
+    texto: "Mantém atas, manuais e arquivo, e elabora os relatórios entregues à ProEx. É o que permite o grupo sobreviver às formaturas.",
+  },
+  {
+    nome: "Operações e Patrimônio",
+    texto: "Mantém o inventário, controla os empréstimos de equipamento e cuida da logística de eventos, viagens e aquisições.",
   },
 ]
 
@@ -34,21 +35,21 @@ type Frente = {
 const frentes: Frente[] = [
   {
     nome: "Competição",
-    resumo: "A frente Competição prepara a equipe para disputar competições nacionais e internacionais de robótica. Ainda não competimos.",
+    resumo: "A frente Competição prepara equipes para competições de robótica. Ainda não competimos.",
     detalhe:
-      "Pretendemos participar de competições ao longo do ano, com squad dedicado a SLAM, exploração autônoma e visão computacional. As competições específicas de cada ciclo serão anunciadas conforme forem confirmadas.",
+      "O primeiro alvo é a RoboCup Rescue Simulation, em que a equipe escreve agentes para um mapa de desastre simulado. A categoria de drones da Competição Brasileira de Robótica (CBR), em 2027, é uma meta que depende de formalizar uma parceria pela UFSCar, então ainda não é compromisso. A frente também vai construir uma plataforma robótica própria, além dos kits que já temos.",
   },
   {
     nome: "Pesquisa",
-    resumo: "A frente Pesquisa trabalha com orientação acadêmica formal e tem como meta publicar em eventos nacionais. Ainda não há publicação.",
+    resumo: "A frente Pesquisa estuda tomada de decisão de robôs móveis autônomos e tem como meta publicar em eventos nacionais. Ainda não há publicação.",
     detalhe:
-      "A linha de pesquisa específica de cada ciclo é definida junto ao professor orientador conforme o interesse e a formação dos membros da frente.",
+      "O foco inicial é aprendizado por reforço e sua versão segura, com orientação do professor orientador ou de docente indicado por ele. Ainda estamos decidindo se a frente terá linhas de pesquisa permanentes ou projetos abertos conforme o interesse dos membros.",
   },
   {
     nome: "Projetos",
-    resumo: "Automação aplicada, com o AI Rover como projeto piloto.",
+    resumo: "Soluções tecnológicas para demandas internas e externas, com o AI Rover como projeto piloto.",
     detalhe:
-      "É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente: um rover autônomo dividido em três unidades que falham de forma independente: o ESP32-S3-CAM cuida da percepção e do rádio, o Arduino UNO dos reflexos, e o raciocínio roda via YOLO. Se uma parte cai, as outras não vão junto. Diferente da competição, aqui o sistema não pode só funcionar uma vez. As decisões, incluindo a odometria em malha aberta que ainda não é confiável, ficam registradas na ficha do projeto.",
+      "Ideias viram projeto oficial depois de um pitch e da aprovação da Área Técnica, e o trabalho acontece em squads e sprints curtos. Pedidos de fora, inclusive de tecnologia assistiva, são registrados por escrito antes de serem aceitos, e entregamos protótipos, não produtos certificados. É a face de extensão mais direta do grupo: sistema especificado, construído e mantido. O AI Rover abre a frente: um rover autônomo dividido em três unidades que falham de forma independente: o ESP32-S3-CAM cuida da percepção e do rádio, o Arduino UNO dos reflexos, e o raciocínio roda via YOLO. Se uma parte cai, as outras não vão junto. Diferente da competição, aqui o sistema não pode só funcionar uma vez. As decisões, incluindo a odometria em malha aberta que ainda não é confiável, ficam registradas na ficha do projeto.",
   },
 ]
 
@@ -99,9 +100,9 @@ export function Frentes() {
         <Surge className="mt-20 border-t border-linha pt-10">
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Fora da bancada</h2>
           <p className="mt-5 max-w-[62ch] font-sans text-base md:text-lg font-light leading-relaxed text-muted-foreground">
-            Robô em pista também depende de ter o trabalho divulgado, dentro e fora da
-            universidade. Quem faz essa parte entra pela mesma formação e escolhe aqui, como em
-            qualquer outra frente.
+            Robô em pista também depende de gente que cuida de pessoas, documentos, equipamento e
+            divulgação. Essas quatro áreas apoiam as três frentes, e a Área Técnica coordena a
+            formação e os projetos.
           </p>
 
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">

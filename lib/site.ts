@@ -17,7 +17,7 @@ export const OG_IMAGE = {
   url: "/fotos/universidade-aberta/foto-06.jpg",
   width: 1600,
   height: 900, // dimensões medidas no arquivo
-  alt: "Equipe da GEAR reunida durante a Universidade Aberta UFSCar 2026",
+  alt: "Equipe do GEAR reunida durante a Universidade Aberta UFSCar 2026",
 }
 
 /**
@@ -32,8 +32,8 @@ export const VERSAO_TERMOS = "1.0"
  * Canal público da entidade. Estava repetido em parceiros.tsx, footer.tsx e
  * privacidade/page.tsx — três lugares para trocar quando o endereço mudar.
  */
-/** Membros fundadores. Conferir com a lista de components/time.tsx ao mudar. */
-export const TOTAL_MEMBROS = 11
+/** Membros do GEAR hoje (informado pela presidência, out/2026). */
+export const TOTAL_MEMBROS = 14
 
 export const EMAIL_CONTATO = "gearufscar@gmail.com"
 
@@ -46,7 +46,7 @@ export const EMAIL_CONTATO = "gearufscar@gmail.com"
  * destino terminal, o candidato circula e sai sem fazer nada.
  */
 export const CONTATO_INGRESSO =
-  `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Quero ser avisado do próximo ciclo da GEAR")}`
+  `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Quero ser avisado do próximo ciclo do GEAR")}`
 
 export const CONTATO_PARCERIA =
   `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Parceria GEAR")}`

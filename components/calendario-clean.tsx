@@ -103,7 +103,7 @@ export function CalendarioClean({ visao, dia, hoje, frente, itens, prazos, sauda
           </Link>
           {podeCriarEvento && (
             <a href="#novo-evento" className={s.botaoSecundario} data-cursor-hover>
-              <Plus size={16} aria-hidden="true" /> Novo evento da GEAR
+              <Plus size={16} aria-hidden="true" /> Novo evento do GEAR
             </a>
           )}
         </div>
@@ -143,7 +143,7 @@ export function CalendarioClean({ visao, dia, hoje, frente, itens, prazos, sauda
 
         <div className={s.legenda}>
           <p className={s.secaoTitulo}>Legenda</p>
-          <span><span className={s.amostraEvento} aria-hidden="true" /> Evento da GEAR</span>
+          <span><span className={s.amostraEvento} aria-hidden="true" /> Evento do GEAR</span>
           <span><span className={s.amostraMeta} aria-hidden="true" /> Meta (sua ou pública)</span>
         </div>
       </aside>

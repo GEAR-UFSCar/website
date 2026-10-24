@@ -21,7 +21,7 @@ export type Nivel = {
 
 export const NIVEIS: Nivel[] = [
   {
-    nome: "Amigos da GEAR",
+    nome: "Amigos do GEAR",
     herda: null,
     beneficios: [
       "Nome na página de Parceiros, na seção de apoiadores",
@@ -47,7 +47,7 @@ export const NIVEIS: Nivel[] = [
     herda: "Tudo do nível Prata",
     beneficios: [
       "Logo em posição de destaque no robô de competição",
-      "Agradecimento especial em apresentações públicas da GEAR (como a Universidade Aberta UFSCar)",
+      "Agradecimento especial em apresentações públicas do GEAR (como a Universidade Aberta UFSCar)",
     ],
     destaque: true,
   },
@@ -67,7 +67,7 @@ export const VALOR = [
   {
     titulo: "Associação institucional",
     texto:
-      "A GEAR é atividade de extensão registrada na ProEx-UFSCar, com orientação docente e prestação de contas à universidade. O apoio entra nessa estrutura.",
+      "O GEAR é atividade de extensão registrada na ProEx-UFSCar, com orientação docente e prestação de contas à universidade. O apoio entra nessa estrutura.",
   },
 ]
 
@@ -82,6 +82,6 @@ export const VALOR = [
  * em vez de inventar alguém, a diretoria precisa designar formalmente.
  */
 export const RESPONSAVEL_PATROCINIO = {
-  cargo: "Tesouraria",
+  cargo: "responsável por parcerias",
   nome: "",
 }
