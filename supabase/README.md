@@ -44,6 +44,7 @@ a anterior não rodou.
 | 026 | `catalogo_inicial.sql` | os 50 documentos do catálogo, todos como rascunho (**gerado**: `npm run catalogo:sql`) | 025 |
 | 027 | `calendario_completo.sql` | `eventos` ganha local, link, dia inteiro e repetição (semanal, quinzenal, mensal); tabela `eventos_presencas` (vou/talvez/não vou por ocorrência); `calendario_assinaturas` e duas funções para o feed `.ics` por link. **Aditiva**: o site roda sem ela, só sem os recursos novos | 008, 014, 016 |
 | 028 | `revisao_de_seguranca.sql` | o cadastro só aceita e-mail `@ufscar.br` ou `@estudante.ufscar.br` **no servidor** (antes só a tela conferia); `EXECUTE` das funções de gatilho `SECURITY DEFINER` fechado para `anon` e `authenticated`; remove três políticas velhas de `sprints` que sobraram em produção. Não apaga dado e não muda o que um membro consegue fazer | 001, 004, 005, 007, 012, 018, 025 |
+| 029 | `inventario.sql` | `patrimonio` ganha as colunas da planilha do grupo: **código** `GEAR-NNN` (único, gerado sozinho, imutável), subcategoria, fabricante, modelo, part-number, descrição, link de datasheet (só http/https), **estado** de conservação e origem; as 7 categorias antigas viram as 9 da planilha (+ "Outros"); corrige `trilha_vinculada` → `frente_vinculada`, que a 013 esqueceu e que fazia a página de Patrimônio dar erro. Não apaga dado e não muda a RLS | 003, 015, 019 |
 
 Duas armadilhas conhecidas:
 
@@ -117,7 +118,48 @@ select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    and p.prorettype in ('trigger'::regtype, 'event_trigger'::regtype)
    and (has_function_privilege('anon', p.oid, 'execute')
      or has_function_privilege('authenticated', p.oid, 'execute'));
+
+-- 029: a coluna se chama frente_vinculada e a antiga sumiu? (esperado: 1 linha, frente_vinculada)
+select column_name from information_schema.columns
+ where table_schema = 'public' and table_name = 'patrimonio'
+   and column_name in ('frente_vinculada', 'trilha_vinculada');
+
+-- 029: o gatilho do código existe? (esperado: 1 linha, tgenabled = 'O')
+select tgname, tgenabled from pg_trigger where tgname = 'guardar_codigo_patrimonio';
+
+-- 029: total do inventário (planilha original: 66 itens, 7.260 unidades)
+select count(*) as itens, sum(quantidade) as unidades from public.patrimonio;
 ```
+
+## Carregar o inventário da planilha
+
+A 029 só prepara a tabela. Os itens entram por um `insert` gerado a partir do
+CSV da aba "Inventário" (Google Planilhas → Arquivo → Fazer download → Valores
+separados por vírgulas):
+
+```
+npm run inventario:sql -- Inventario.csv > importar.sql
+```
+
+O resultado vai para o SQL Editor. Ele é **um comando só** (`insert … on
+conflict (codigo) do nothing`):
+
+- é atômico: entra tudo ou nada, e o gerador nem imprime SQL se alguma linha for
+  recusada;
+- pode ser repetido sem medo: item que já existe não é tocado, então o que a
+  diretoria editou no site (local, responsável, status) sobrevive;
+- só acrescenta. Para **mudar** um item existente, edite-o em
+  `/membros/administracao/patrimonio`.
+
+O CSV **não** fica no repositório, que é público: ele traz o nome de quem cedeu
+cada item. O que fica é o gerador e as regras (`lib/inventario.ts`).
+
+Limitação conhecida: o CSV do Google Planilhas perde o destino dos links
+(células que mostram só "Abrir"). O gerador avisa quais linhas perderam o
+datasheet; o link se cola depois, editando o item no site.
+
+Depois de importar, o site exporta o inventário de volta em CSV (botão "Exportar
+CSV" na mesma página), no formato que o próprio gerador lê.
 
 ## Testar sem tocar em produção
 
@@ -131,7 +173,7 @@ PostgREST faz: `anon`, `authenticated` com um `sub` de JWT e
 `supabase_auth_admin` (quem insere em `auth.users` no cadastro). Cobre o que o
 `test:rls` não alcança por ser anônimo e por ficar em produção:
 
-- as migrações aplicam num banco vazio, e a 027 e a 028 podem ser reexecutadas;
+- as migrações aplicam num banco vazio, e a 027, a 028 e a 029 podem ser reexecutadas;
 - o cadastro recusa e-mail fora da UFSCar (incluindo `x@ufscar.br@gmail.com`);
 - as funções de gatilho não têm `EXECUTE` para a API **e continuam disparando**
   — cadastro, trava de cargo, ordem da Academia, publicação de documento;
@@ -139,6 +181,14 @@ PostgREST faz: `anon`, `authenticated` com um `sub` de JWT e
   autoria não se forja, cargo não troca a própria frente, o último Presidente
   não se tranca para fora;
 - o que o visitante vê dos documentos e do calendário (feed por token).
+- o inventário (029): código gerado em sequência e imutável, categoria, estado e
+  datasheet fora da lista recusados (inclusive `javascript:`), a importação
+  repetida não duplica nem sobrescreve, e a migração sobre uma tabela **com
+  dados antigos** traduz categorias e preserva o que existia.
+
+`npm run test:inventario` cobre as regras puras do inventário (leitura do CSV,
+busca, totais conferidos com a aba "Resumo" da planilha, proteção contra fórmula
+em planilha) e também roda em todo PR.
 
 Roda também no GitHub (`.github/workflows/verificacao.yml`), em todo PR.
 

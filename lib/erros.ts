@@ -58,6 +58,8 @@ const POR_CODIGO: Record<string, string> = {
   // Trava da diretoria (migração 024): a mudança deixaria a entidade sem
   // Presidente nem Vice. A frase diz o que fazer, não só o que deu errado.
   GE001: "Esta é a última pessoa da diretoria. Promova outra pessoa a Presidente ou Vice antes de tirar este cargo ou esta aprovação.",
+  // Código de patrimônio (migração 029): é a etiqueta colada no item.
+  GE003: "O código de um item é a etiqueta dele e não muda. Para corrigir, baixe o item e cadastre outro.",
   // PostgREST.
   PGRST116: "Registro não encontrado.",
   PGRST301: "Sua sessão expirou. Entre novamente.",

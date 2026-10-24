@@ -36,6 +36,8 @@ import path from "node:path"
 import { fileURLToPath } from "node:url"
 import { PGlite } from "@electric-sql/pglite"
 
+import { lerPlanilha, sqlDeImportacao } from "../lib/inventario.ts"
+
 const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "supabase")
 
 const sem = new Set(
@@ -65,7 +67,8 @@ const secao = (titulo) => console.log(`\n${titulo}`)
 const db = new PGlite()
 
 // Substitutos mínimos do que o Supabase fornece e as migrações assumem.
-await db.exec(`
+// Em constante porque a seção 7 sobe um SEGUNDO banco, com dados antigos.
+const PREAMBULO = `
   create role anon nologin;
   create role authenticated nologin;
   create role service_role nologin;
@@ -107,7 +110,8 @@ await db.exec(`
   grant all on storage.objects, storage.buckets to authenticated, anon;
   -- no Supabase quem insere em auth.users no cadastro é o GoTrue, com este papel
   grant select, insert, update on auth.users to supabase_auth_admin, sem_execute;
-`)
+`
+await db.exec(PREAMBULO)
 
 // --- migrações ---------------------------------------------------------------
 secao("0. MIGRAÇÕES — todas aplicam, em ordem, num banco vazio")
@@ -134,8 +138,8 @@ checar(
   errosDeMigracao.join(" | "),
 )
 
-// Reexecutar é prometido nos cabeçalhos; para as duas mais recentes, é testado.
-for (const prefixo of ["027", "028"]) {
+// Reexecutar é prometido nos cabeçalhos; para as três mais recentes, é testado.
+for (const prefixo of ["027", "028", "029"]) {
   const arquivo = arquivos.find((f) => f.startsWith(prefixo))
   if (!arquivo || sem.has(prefixo)) continue
   let erro = ""
@@ -229,7 +233,7 @@ await db.exec(`
   update public.perfis set nome_completo='Membro', aprovado=true where id='${MEMBRO}';
   update public.perfis set nome_completo='Novo' where id='${NOVO}';
   update public.perfis set nome_completo='Dir Pesquisa', aprovado=true, cargo='Diretor de Pesquisa', frente='Pesquisa' where id='${PESQ}';
-  insert into public.patrimonio (item, categoria, quantidade, status, valor_estimado) values ('Osciloscópio','Ferramenta',1,'Disponível', 3500);
+  insert into public.patrimonio (item, categoria, quantidade, status, valor_estimado) values ('Osciloscópio','${sem.has("029") ? "Ferramenta" : "Ferramentas"}',1,'Disponível', 3500);
   insert into public.atas (data_reuniao, tipo, pauta, decisoes, presentes, registrado_por) values (current_date, 'Geral', 'pauta sigilosa', 'decisão', 'todos', '${P}');
   insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','Sprint de teste','x','Planejado');
   insert into public.eventos (titulo, tipo, data_inicio) values ('Reunião geral','Reunião', now());
@@ -596,6 +600,231 @@ const linkRuim = await como(CARGO, `insert into public.eventos (titulo, tipo, da
 checar("evento com link javascript: é recusado pelo banco", !linkRuim.ok && linkRuim.codigo === "23514", linkRuim.erro)
 const linkBom = await como(CARGO, `insert into public.eventos (titulo, tipo, data_inicio, link) values ('Online','Reunião', now(), 'https://meet.exemplo.org/abc') returning 1`)
 checar("…e o https é aceito", passa(linkBom), linkBom.erro)
+
+// --- 6. inventário (029) ------------------------------------------------------
+secao("6. INVENTÁRIO — colunas da planilha, código da etiqueta e listas fechadas (029)")
+
+const lit = (v) => (v === null ? "null" : typeof v === "number" ? String(v) : `'${String(v).replace(/'/g, "''")}'`)
+const BASE = { item: "Item de teste", categoria: "Livro", quantidade: 1, status: "Disponível" }
+const insereItem = (uid, extra = {}) => {
+  const campos = { ...BASE, ...extra }
+  return como(
+    uid,
+    `insert into public.patrimonio (${Object.keys(campos).join(", ")}) values (${Object.values(campos).map(lit).join(", ")}) returning codigo`,
+  )
+}
+const recusado23514 = (r) => !r.ok && r.codigo === "23514"
+
+const colunasPatrimonio = (
+  await db.query(`select column_name from information_schema.columns where table_schema = 'public' and table_name = 'patrimonio'`)
+).rows.map((x) => x.column_name)
+checar(
+  "a coluna de frente se chama frente_vinculada (é o nome que a tela pede)",
+  colunasPatrimonio.includes("frente_vinculada") && !colunasPatrimonio.includes("trilha_vinculada"),
+  colunasPatrimonio.join(", "),
+)
+const NOVAS = ["codigo", "subcategoria", "fabricante", "modelo", "part_number", "descricao", "datasheet_url", "estado", "origem"]
+checar(
+  "as nove colunas da planilha existem",
+  NOVAS.every((c) => colunasPatrimonio.includes(c)),
+  NOVAS.filter((c) => !colunasPatrimonio.includes(c)).join(", "),
+)
+
+const semente = await tenta(`select codigo from public.patrimonio where item = 'Osciloscópio'`)
+checar("item que já estava na tabela ganhou código", semente.rows[0]?.codigo === "GEAR-001", semente.erro ?? semente.rows[0]?.codigo)
+
+const gerado = await insereItem(CARGO)
+checar("cargo cadastra sem informar código e recebe o seguinte", gerado.rows[0]?.codigo === "GEAR-002", gerado.erro ?? gerado.rows[0]?.codigo)
+const explicito = await insereItem(CARGO, { codigo: " gear-010 " })
+checar("código informado é normalizado (maiúsculas, sem espaço)", explicito.rows[0]?.codigo === "GEAR-010", explicito.erro ?? explicito.rows[0]?.codigo)
+const depoisDoSalto = await insereItem(CARGO)
+checar(
+  "o seguinte respeita o maior já gravado (não repete nem volta)",
+  depoisDoSalto.rows[0]?.codigo === "GEAR-011",
+  depoisDoSalto.erro ?? depoisDoSalto.rows[0]?.codigo,
+)
+const duplicado = await insereItem(CARGO, { codigo: "GEAR-010" })
+checar("código repetido é recusado", !duplicado.ok && duplicado.codigo === "23505", duplicado.erro)
+const formatoRuim = await insereItem(CARGO, { codigo: "ABC-1" })
+checar(
+  "código fora do formato GEAR-NNN é recusado",
+  recusado23514(formatoRuim) && formatoRuim.erro.includes("patrimonio_codigo_formato"),
+  formatoRuim.erro,
+)
+
+const mudaCodigo = await como(CARGO, `update public.patrimonio set codigo = 'GEAR-900' where codigo = 'GEAR-010' returning 1`)
+checar("o código de um item não muda depois de gravado", !mudaCodigo.ok && mudaCodigo.codigo === "GE003", mudaCodigo.erro)
+const mesmoCodigo = await como(CARGO, `update public.patrimonio set codigo = codigo, estado = 'Usado' where codigo = 'GEAR-010' returning estado`)
+checar("…mas regravar o mesmo código junto com outra edição passa", passa(mesmoCodigo), mesmoCodigo.erro)
+const emprestar = await como(CARGO, `update public.patrimonio set status = 'Emprestado', responsavel_atual = 'Ana' where codigo = 'GEAR-010' returning status`)
+checar("cargo atualiza status e responsável", passa(emprestar), emprestar.erro)
+
+// listas fechadas -----------------------------------------------------------
+// O nome da restrição entra na conta: recusar por OUTRO motivo (coluna que não
+// existe, tipo errado) não prova que a regra certa está de pé.
+for (const [rotulo, extra, restricao] of [
+  ["categoria da lista antiga ('Ferramenta')", { categoria: "Ferramenta" }, "patrimonio_categoria_check"],
+  ["categoria inventada", { categoria: "Qualquer coisa" }, "patrimonio_categoria_check"],
+  ["estado fora das cinco opções", { estado: "Quebrado" }, "patrimonio_estado_check"],
+  ["frente que não existe", { frente_vinculada: "Física" }, "patrimonio_frente_check"],
+  ["datasheet com javascript:", { datasheet_url: "javascript:alert(1)" }, "patrimonio_datasheet_url_check"],
+  ["datasheet com ftp://", { datasheet_url: "ftp://exemplo.org/a.pdf" }, "patrimonio_datasheet_url_check"],
+  ["datasheet com espaço", { datasheet_url: "https://exemplo.org/um arquivo.pdf" }, "patrimonio_datasheet_url_check"],
+  ["datasheet com data:", { datasheet_url: "data:text/html,<script>1</script>" }, "patrimonio_datasheet_url_check"],
+  ["modelo acima do limite", { modelo: "x".repeat(201) }, "patrimonio_campos_curtos_tam"],
+  ["descrição acima do limite", { descricao: "x".repeat(5001) }, "patrimonio_descricao_tam"],
+  ["quantidade negativa", { quantidade: -1 }, "patrimonio_quantidade_check"],
+  ["status inventado", { status: "Perdido" }, "patrimonio_status_check"],
+]) {
+  const r = await insereItem(CARGO, extra)
+  checar(
+    `recusa ${rotulo}`,
+    recusado23514(r) && r.erro.includes(restricao),
+    r.ok ? "GRAVOU" : `erro ${r.codigo ?? "?"}: ${r.erro}`,
+  )
+}
+
+for (const [rotulo, extra] of [
+  ["categoria 'Outros'", { categoria: "Outros" }],
+  ["estado 'Com defeito'", { estado: "Com defeito" }],
+  ["estado em branco", { estado: null }],
+  ["datasheet https", { datasheet_url: "https://exemplo.org/folha-de-dados.pdf" }],
+  ["datasheet http", { datasheet_url: "http://exemplo.org/a.pdf" }],
+  ["a planilha inteira numa linha", {
+    subcategoria: "Motor DC", fabricante: "CHIP SCE", modelo: "RF-300CA 11440", part_number: "X1",
+    descricao: "Motor DC para robótica", origem: "Fulano", localizacao: "Armário 2", frente_vinculada: "Competição",
+  }],
+]) {
+  const r = await insereItem(CARGO, extra)
+  checar(`aceita ${rotulo}`, passa(r), r.erro)
+}
+
+// quem pode o quê — não mudou ----------------------------------------------
+const membroInsere = await insereItem(MEMBRO)
+checar("membro sem cargo não cadastra item", !membroInsere.ok, "GRAVOU")
+const novoInsere = await insereItem(NOVO)
+checar("conta não aprovada não cadastra item", !novoInsere.ok, "GRAVOU")
+const anonInsere = await anon(`insert into public.patrimonio (item, categoria, quantidade, status) values ('x','Livro',1,'Disponível')`)
+checar("visitante não cadastra item", !anonInsere.ok, "GRAVOU")
+const membroEdita = await como(MEMBRO, `update public.patrimonio set status = 'Baixado' where codigo = 'GEAR-010' returning 1`)
+checar("membro sem cargo não edita item", bloqueado(membroEdita))
+for (const [quem, rotulo] of [[CARGO, "cargo"], [P, "Presidente"]]) {
+  const apaga = await como(quem, `delete from public.patrimonio where codigo = 'GEAR-010' returning 1`)
+  checar(`ninguém apaga item (${rotulo}): baixa-se com status 'Baixado'`, bloqueado(apaga))
+}
+const gatilhoAberto = await tenta(`
+  select has_function_privilege('anon', 'public.guardar_codigo_patrimonio()', 'execute') as a,
+         has_function_privilege('authenticated', 'public.guardar_codigo_patrimonio()', 'execute') as u`)
+checar(
+  "a função do gatilho de código não é chamável pela API (e o gatilho dispara mesmo assim, como acima)",
+  gatilhoAberto.rows[0]?.a === false && gatilhoAberto.rows[0]?.u === false,
+  JSON.stringify(gatilhoAberto.rows[0]),
+)
+
+// --- 7. importação da planilha (lib/inventario.ts → SQL) ------------------------
+secao("7. IMPORTAÇÃO — o SQL gerado a partir da planilha grava e não sobrescreve")
+
+const CSV_FIXTURE = [
+  "ID,Nome,Categoria,Subcategoria,Fabricante,Modelo,Part-number,Descrição,Datasheet,Quantidade,Estado,Observações,Origem,Localização,Responsável",
+  `GEAR-501,Arduino Cookbook,Livro,,O'Reilly Media,Terceira Edição,,"Receitas, com ""aspas""\ne quebra de linha",,1,Seminovo,Amassado,Fulano`,
+  "GEAR-502,Motor DC RF-300CA,Componentes eletromecânicos,Motor DC,CHIP SCE,RF-300CA 11440,,Motor DC para robótica,https://exemplo.org/rf300.pdf,10,Usado,,Fulano",
+  "GEAR-503,LAFVIN 4WD,Robôs e kits robóticos,Carro robô,LAFVIN,V2,,Kit de carro robô,Abrir,1,,,GEAR",
+].join("\n")
+const importacao = lerPlanilha(CSV_FIXTURE)
+checar("a planilha de teste é lida sem erro", importacao.erros.length === 0 && importacao.itens.length === 3, importacao.erros.join(" | "))
+const SQL_IMPORTAR = sqlDeImportacao(importacao.itens)
+
+const importou = await tenta(SQL_IMPORTAR)
+checar("o SQL gerado executa", importou.ok, importou.erro)
+const gravados = await tenta(`select codigo, item, descricao, fabricante, estado, datasheet_url, status, origem from public.patrimonio where codigo like 'GEAR-50_' order by codigo`)
+checar("os três itens entraram", gravados.rows.length === 3, `${gravados.rows.length} linha(s)`)
+checar(
+  "aspa simples, aspas duplas e quebra de linha chegam como estavam",
+  gravados.rows[0]?.fabricante === "O'Reilly Media" && gravados.rows[0]?.descricao === 'Receitas, com "aspas"\ne quebra de linha',
+  JSON.stringify(gravados.rows[0]),
+)
+checar("estado em branco entra como nulo; status entra Disponível", gravados.rows[2]?.estado === null && gravados.rows[2]?.status === "Disponível")
+checar("o datasheet 'Abrir' não virou link", gravados.rows[2]?.datasheet_url === null && gravados.rows[1]?.datasheet_url === "https://exemplo.org/rf300.pdf")
+
+await como(CARGO, `update public.patrimonio set localizacao = 'Armário 9', status = 'Emprestado', responsavel_atual = 'Ana' where codigo = 'GEAR-501'`)
+const denovo = await tenta(SQL_IMPORTAR)
+const aposReimportar = await tenta(`select localizacao, status, responsavel_atual from public.patrimonio where codigo = 'GEAR-501'`)
+const contagem = await tenta(`select count(*)::int as n from public.patrimonio where codigo like 'GEAR-50_'`)
+checar("importar de novo não dá erro nem duplica", denovo.ok && contagem.rows[0]?.n === 3, denovo.erro ?? `${contagem.rows[0]?.n} linhas`)
+checar(
+  "…e não desfaz o que a diretoria editou no site",
+  aposReimportar.rows[0]?.localizacao === "Armário 9" && aposReimportar.rows[0]?.status === "Emprestado" && aposReimportar.rows[0]?.responsavel_atual === "Ana",
+  JSON.stringify(aposReimportar.rows[0]),
+)
+const aposImportacao = await insereItem(CARGO)
+checar(
+  "o primeiro item cadastrado depois da importação continua a numeração (GEAR-504)",
+  aposImportacao.rows[0]?.codigo === "GEAR-504",
+  aposImportacao.erro ?? aposImportacao.rows[0]?.codigo,
+)
+const importacaoDoMembro = await como(MEMBRO, SQL_IMPORTAR)
+checar("quem não tem cargo não consegue importar", !importacaoDoMembro.ok, "IMPORTOU")
+
+// --- 8. a 029 sobre um banco que já tinha itens --------------------------------
+secao("8. MIGRAÇÃO SOBRE DADOS ANTIGOS — a 029 traduz o que já existia, sem perder nada")
+
+const bancoAntigo = new PGlite()
+await bancoAntigo.exec(PREAMBULO)
+for (const arquivo of arquivos.filter((f) => f.slice(0, 3) < "029")) {
+  await bancoAntigo.exec(readFileSync(path.join(DIR, arquivo), "utf8"))
+}
+await bancoAntigo.exec(`
+  insert into public.patrimonio (item, categoria, quantidade, status, trilha_vinculada, localizacao, observacoes, valor_estimado, created_at) values
+    ('Rover bancoAntigo',        'Robô',                       1,   'Disponível', 'Competição', 'Sala 1', 'obs do rover', 1200, '2026-01-01'),
+    ('Osciloscópio bancoAntigo', 'Ferramenta',                 1,   'Emprestado', null, null, null, null, '2026-01-02'),
+    ('Resistores',          'Consumível',                 500, 'Disponível', null, null, null, null, '2026-01-03'),
+    ('Notebook',            'Equipamento de Informática', 1,   'Disponível', null, null, null, null, '2026-01-04'),
+    ('Perfil de alumínio',  'Mecânica/Estrutura',         4,   'Disponível', null, null, null, null, '2026-01-05'),
+    ('Peça solta',          'Outro',                      1,   'Baixado',    null, null, null, null, '2026-01-06'),
+    ('Placa',               'Componente Eletrônico',      2,   'Disponível', null, null, null, null, '2026-01-07');
+`)
+let erroNoAntigo = ""
+try {
+  await bancoAntigo.exec(readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("029"))), "utf8"))
+} catch (e) {
+  erroNoAntigo = String(e.message).split("\n")[0]
+}
+checar("a 029 aplica sobre um banco com sete itens antigos", erroNoAntigo === "", erroNoAntigo)
+
+const depois = await bancoAntigo.query(`select codigo, item, categoria, quantidade, frente_vinculada, localizacao, observacoes, valor_estimado::int as valor from public.patrimonio order by codigo`)
+checar("nenhum item se perdeu", depois.rows.length === 7, `${depois.rows.length} linhas`)
+checar("as quantidades somam o mesmo (510)", depois.rows.reduce((s, x) => s + x.quantidade, 0) === 510)
+checar(
+  "os códigos seguem a ordem de cadastro, de GEAR-001 a GEAR-007",
+  depois.rows.map((x) => x.codigo).join() === "GEAR-001,GEAR-002,GEAR-003,GEAR-004,GEAR-005,GEAR-006,GEAR-007" &&
+    depois.rows[0]?.item === "Rover bancoAntigo" && depois.rows[6]?.item === "Placa",
+  depois.rows.map((x) => `${x.codigo}=${x.item}`).join(" | "),
+)
+checar(
+  "as categorias antigas viram as da planilha",
+  depois.rows.map((x) => x.categoria).join("|") ===
+    "Robôs e kits robóticos|Ferramentas|Materiais|Outros|Outros|Outros|Componentes eletrônicos",
+  depois.rows.map((x) => x.categoria).join("|"),
+)
+checar(
+  "a trilha vinculada sobrevive como frente_vinculada, com localização, observação e valor",
+  depois.rows[0]?.frente_vinculada === "Competição" && depois.rows[0]?.localizacao === "Sala 1" &&
+    depois.rows[0]?.observacoes === "obs do rover" && depois.rows[0]?.valor === 1200,
+  JSON.stringify(depois.rows[0]),
+)
+let erroDeNovo = ""
+try {
+  await bancoAntigo.exec(readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("029"))), "utf8"))
+} catch (e) {
+  erroDeNovo = String(e.message).split("\n")[0]
+}
+const depoisDeNovo = await bancoAntigo.query(`select string_agg(codigo, ',' order by codigo) as c from public.patrimonio`)
+checar(
+  "reexecutar a 029 não muda os códigos",
+  erroDeNovo === "" && depoisDeNovo.rows[0]?.c === "GEAR-001,GEAR-002,GEAR-003,GEAR-004,GEAR-005,GEAR-006,GEAR-007",
+  erroDeNovo || depoisDeNovo.rows[0]?.c,
+)
+await bancoAntigo.close()
 
 // --- placar ------------------------------------------------------------------
 await db.close()

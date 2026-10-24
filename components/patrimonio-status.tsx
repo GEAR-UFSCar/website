@@ -4,12 +4,17 @@ import { useState, useTransition } from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { STATUS } from "@/lib/administracao"
+import { STATUS } from "@/lib/inventario"
 import { selectInline } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 
-/** Select inline que grava assim que o valor muda. */
-export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
+/**
+ * Select inline que grava assim que o valor muda.
+ *
+ * `codigo` entra só no rótulo acessível: com dezenas de linhas, "Status do
+ * item" repetido não diz a quem usa leitor de tela qual item está mudando.
+ */
+export function PatrimonioStatus({ id, valor, codigo }: { id: string; valor: string; codigo?: string }) {
   const router = useRouter()
   const [salvando, iniciar] = useTransition()
   const [erro, setErro] = useState<string | null>(null)
@@ -41,7 +46,7 @@ export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
         value={valor}
         disabled={salvando}
         onChange={(e) => mudar(e.target.value)}
-        aria-label="Status do item"
+        aria-label={codigo ? `Status de ${codigo}` : "Status do item"}
         className={selectInline}
       >
         {STATUS.map((s) => (
@@ -50,7 +55,7 @@ export function PatrimonioStatus({ id, valor }: { id: string; valor: string }) {
           </option>
         ))}
       </select>
-      {erro && <p className="mt-1 font-mono text-[10px] md:text-[9px] text-[var(--gear-amber)]">{erro}</p>}
+      {erro && <p role="alert" className="mt-1 font-mono text-[10px] md:text-[9px] text-[var(--gear-amber)]">{erro}</p>}
     </div>
   )
 }
