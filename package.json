@@ -11,6 +11,7 @@
     "lint": "eslint .",
     "start": "next start",
     "test:rls": "node scripts/testar-rls.mjs",
+    "test:banco": "node scripts/testar-banco.mjs",
     "test:nav": "node --no-warnings --experimental-strip-types scripts/testar-navegacao.mjs",
     "test:hoje": "node --no-warnings --experimental-strip-types scripts/testar-hoje.mjs",
     "test:calendario": "node --no-warnings --experimental-strip-types scripts/testar-calendario.mjs",
@@ -37,6 +38,7 @@
     }
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.11",
     "@tailwindcss/postcss": "^4.1.9",
     "@types/node": "^22",
     "@types/react": "^19",

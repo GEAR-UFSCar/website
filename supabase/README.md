@@ -43,6 +43,7 @@ a anterior não rodou.
 | 025 | `catalogo_de_documentos.sql` | `documentos` ganha resumo, pacote, tags, `publico`, `status` e `anexos`; gatilho que só deixa a diretoria publicar; view `documentos_publicos`; arquivo de documento vigente e público aberto a anônimo | 006, 014, 023, 024 |
 | 026 | `catalogo_inicial.sql` | os 50 documentos do catálogo, todos como rascunho (**gerado**: `npm run catalogo:sql`) | 025 |
 | 027 | `calendario_completo.sql` | `eventos` ganha local, link, dia inteiro e repetição (semanal, quinzenal, mensal); tabela `eventos_presencas` (vou/talvez/não vou por ocorrência); `calendario_assinaturas` e duas funções para o feed `.ics` por link. **Aditiva**: o site roda sem ela, só sem os recursos novos | 008, 014, 016 |
+| 028 | `revisao_de_seguranca.sql` | o cadastro só aceita e-mail `@ufscar.br` ou `@estudante.ufscar.br` **no servidor** (antes só a tela conferia); `EXECUTE` das funções de gatilho `SECURITY DEFINER` fechado para `anon` e `authenticated`; remove três políticas velhas de `sprints` que sobraram em produção. Não apaga dado e não muda o que um membro consegue fazer | 001, 004, 005, 007, 012, 018, 025 |
 
 Duas armadilhas conhecidas:
 
@@ -106,7 +107,54 @@ select pg_get_constraintdef(oid) from pg_constraint where conname = 'sprints_sta
 
 -- 021: o diário existe com RLS e 2 policies (SELECT e INSERT)?
 select cmd, policyname from pg_policies where tablename = 'sprint_atualizacoes' order by cmd;
+
+-- 028: o gatilho de cadastro existe? (esperado: 1 linha, tgenabled = 'O')
+select tgname, tgenabled from pg_trigger where tgname = 'exigir_email_institucional';
+
+-- 028: alguma função de gatilho SECURITY DEFINER ainda executável pela API? (esperado: 0 linhas)
+select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+ where n.nspname = 'public' and p.prosecdef
+   and p.prorettype in ('trigger'::regtype, 'event_trigger'::regtype)
+   and (has_function_privilege('anon', p.oid, 'execute')
+     or has_function_privilege('authenticated', p.oid, 'execute'));
 ```
+
+## Testar sem tocar em produção
+
+```
+npm run test:banco
+```
+
+Sobe um Postgres em memória (PGlite — sem Docker, sem rede, sem segredo),
+aplica `001…NNN` em ordem e ataca o resultado trocando de papel como o
+PostgREST faz: `anon`, `authenticated` com um `sub` de JWT e
+`supabase_auth_admin` (quem insere em `auth.users` no cadastro). Cobre o que o
+`test:rls` não alcança por ser anônimo e por ficar em produção:
+
+- as migrações aplicam num banco vazio, e a 027 e a 028 podem ser reexecutadas;
+- o cadastro recusa e-mail fora da UFSCar (incluindo `x@ufscar.br@gmail.com`);
+- as funções de gatilho não têm `EXECUTE` para a API **e continuam disparando**
+  — cadastro, trava de cargo, ordem da Academia, publicação de documento;
+- conta nova não se aprova, cargo sem aprovação não lê atas nem patrimônio,
+  autoria não se forja, cargo não troca a própria frente, o último Presidente
+  não se tranca para fora;
+- o que o visitante vê dos documentos e do calendário (feed por token).
+
+Roda também no GitHub (`.github/workflows/verificacao.yml`), em todo PR.
+
+Para ver o que uma migração protege, rode **sem** ela:
+
+```
+npm run test:banco -- --sem=028
+```
+
+Cada `✗` é uma regra que deixa de valer. (Pular uma migração no meio da cadeia
+pode quebrar as seguintes; faz sentido principalmente com a última.)
+
+**O que ele não é:** não é o GoTrue nem o Storage — `auth.users`, `auth.uid()` e
+o bucket são substitutos mínimos. Testa o SQL do repositório, não prova que a
+migração foi aplicada em produção; para isso, as consultas de "Conferir o que
+já rodou" acima e `npm run test:rls`.
 
 ## Reaplicar
 

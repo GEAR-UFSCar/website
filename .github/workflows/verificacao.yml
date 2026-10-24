@@ -39,11 +39,19 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Regras puras (navegação, hoje, documentos)
+      - name: Regras puras (navegação, hoje, calendário, documentos)
         run: |
           npm run test:nav
           npm run test:hoje
+          npm run test:calendario
           npm run test:documentos
+
+      # Aplica supabase/001…NNN num Postgres em memória e ataca o resultado com
+      # os papéis reais (anon, authenticated, supabase_auth_admin). É o que pega
+      # uma migração que não aplica, ou que reabre o que outra fechou, ANTES de
+      # alguém rodá-la à mão no SQL Editor de produção. Não usa rede nem segredo.
+      - name: Banco (migrações, RLS e gatilhos)
+        run: npm run test:banco
 
       # next-env.d.ts (tipos de import de imagem) e os tipos de rota são gerados
       # pelo Next e ficam fora do git. Sem gerar antes, o tsc não reconhece o
