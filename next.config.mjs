@@ -21,9 +21,28 @@ const cabecalhosComuns = [
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=()" },
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
+  /*
+   * Isolamento de origem. COOP same-origin corta a ligação entre a aba do site
+   * e qualquer janela aberta por/para outra origem (window.opener), o que
+   * fecha a família de ataques por janela cruzada. O site não usa popup de
+   * login de terceiro (é e-mail e senha), então nada depende disso.
+   * CORP same-site impede que OUTRO site embuta imagens, fontes ou scripts
+   * daqui. Rastreadores de link (WhatsApp, Slack, buscadores) buscam a
+   * og:image do lado do servidor, e CORP só vale para navegador.
+   *
+   * Efeito conhecido: a barra de comentários da Vercel nos deploys de preview
+   * abre uma janela de login e pode perder a ligação com a aba. É só em
+   * preview; em produção ela não existe.
+   */
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Resource-Policy", value: "same-site" },
 ]
 
 const nextConfig = {
+  // O Next responde "X-Powered-By: Next.js" por padrão. Não é falha, mas
+  // entrega o framework de graça a quem varre sites.
+  poweredByHeader: false,
+
   turbopack: {
     root: import.meta.dirname,
   },

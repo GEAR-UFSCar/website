@@ -6,6 +6,7 @@ import { Surge } from "@/components/surge"
 import { createClientePublico } from "@/lib/supabase/publico"
 import { dataLonga } from "@/lib/datas"
 import { rotuloPublico } from "@/lib/documentos-catalogo"
+import { linkNoTexto } from "@/lib/ui"
 
 const DESCRICAO =
   "Os documentos que organizam o GEAR: Regimento, políticas, manuais e a identidade da entidade. O que já foi aprovado abre em PDF; o que ainda não foi está marcado como em aprovação."
@@ -89,7 +90,7 @@ export default async function DocumentosPage() {
           <a
             href={`mailto:${EMAIL_CONTATO}`}
             data-cursor-hover
-            className="text-[var(--gear-amber)] hover:underline"
+            className={linkNoTexto}
           >
             {EMAIL_CONTATO}
           </a>
