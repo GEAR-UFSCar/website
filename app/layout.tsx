@@ -26,6 +26,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "GEAR | UFSCar Sorocaba",
   description: DESCRICAO,
+  /*
+   * "./" resolve para o endereço de CADA página contra o metadataBase, então
+   * /sobre declara /sobre como canônico, e não a home. O repositório alimenta
+   * mais de um projeto na Vercel (domínios .vercel.app diferentes); sem
+   * canonical o Google vê o mesmo site duplicado. Defina NEXT_PUBLIC_SITE_URL
+   * com o domínio oficial em todos os projetos para eles apontarem para o mesmo.
+   */
+  alternates: { canonical: "./" },
   openGraph: {
     title: "GEAR | UFSCar Sorocaba",
     description: DESCRICAO,

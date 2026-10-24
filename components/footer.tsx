@@ -110,7 +110,7 @@ export function Footer() {
       <div className="px-8 md:px-12 py-8 border-t border-linha">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Sociais */}
-          <div className="flex gap-6">
+          <div className="flex gap-1">
             {sociais.map((social) => (
               <a
                 key={social.nome}
@@ -119,7 +119,7 @@ export function Footer() {
                 rel="noopener noreferrer"
                 data-cursor-hover
                 aria-label={`${social.nome} da GEAR, abre em nova aba`}
-                className="text-muted-foreground hover:text-foreground transition-colors duration-300"
+                className="inline-flex h-11 w-11 items-center justify-center text-muted-foreground hover:text-foreground transition-colors duration-300"
               >
                 <social.Icone className="h-5 w-5" strokeWidth={1.5} aria-hidden="true" />
               </a>
@@ -132,28 +132,28 @@ export function Footer() {
             <Link
               href="/ingressar"
               data-cursor-hover
-              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+              className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
               INGRESSAR
             </Link>
             <Link
               href="/entrar"
               data-cursor-hover
-              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+              className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
               ÁREA DE MEMBROS
             </Link>
             <Link
               href="/documentos"
               data-cursor-hover
-              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+              className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
               DOCUMENTOS
             </Link>
             <Link
               href="/privacidade"
               data-cursor-hover
-              className="font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
+              className="inline-flex min-h-11 items-center font-mono text-xs tracking-widest text-muted-foreground hover:text-foreground transition-colors duration-300"
             >
               PRIVACIDADE
             </Link>

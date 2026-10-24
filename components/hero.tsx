@@ -3,8 +3,22 @@
 import { useRef } from "react"
 import Link from "next/link"
 import { motion, useScroll, useTransform } from "framer-motion"
-import { SentientGear } from "./sentient-gear"
+import dynamic from "next/dynamic"
 import { HeroCursor } from "@/components/hero-cursor"
+
+/*
+ * A engrenagem WebGL (Three.js + R3F, ~85 KB comprimidos) saiu do pacote
+ * inicial da home. Antes o import era fixo: o navegador baixava e executava
+ * tudo isso antes de a página responder a um toque, embora o texto da
+ * primeira tela não dependa dela. Agora o texto e a navegação ficam
+ * interativos primeiro, e a engrenagem entra logo depois.
+ *
+ * ssr: false é o certo aqui: WebGL só existe no navegador, e o canvas já era
+ * desenhado só no cliente, então o HTML do servidor não muda.
+ */
+const SentientGear = dynamic(() => import("./sentient-gear").then((m) => m.SentientGear), {
+  ssr: false,
+})
 
 const MotionLink = motion.create(Link)
 
