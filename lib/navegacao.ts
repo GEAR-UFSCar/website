@@ -101,7 +101,12 @@ export function destinosDaPaleta(comCargo: boolean): Destino[] {
      * parâmetro o atalho chegaria a uma tela sem formulário à vista.
      */
     { rotulo: "Nova meta", detalhe: "Ação", href: "/membros/metas?nova=1" },
-    ...(comCargo ? [{ rotulo: "Novo aviso", detalhe: "Ação", href: "/membros/mural?novo=1" }] : []),
+    ...(comCargo
+      ? [
+          { rotulo: "Novo aviso", detalhe: "Ação", href: "/membros/mural?novo=1" },
+          { rotulo: "Novo evento", detalhe: "Ação", href: "/membros/calendario?novo=1" },
+        ]
+      : []),
     { rotulo: "Buscar pessoa", detalhe: "Ação", href: "/membros/diretorio?busca=1" },
     { rotulo: "Editar perfil", detalhe: "Conta", href: "/membros/completar-perfil" },
   ]

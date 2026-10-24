@@ -42,6 +42,7 @@ a anterior não rodou.
 | 024 | `diretoria_minima_e_limites_do_bucket.sql` | ninguém tira o último cargo de diretoria aprovado; bucket `documentos` com 20 MB e lista de tipos (sem SVG) no próprio Storage | 006, 023 |
 | 025 | `catalogo_de_documentos.sql` | `documentos` ganha resumo, pacote, tags, `publico`, `status` e `anexos`; gatilho que só deixa a diretoria publicar; view `documentos_publicos`; arquivo de documento vigente e público aberto a anônimo | 006, 014, 023, 024 |
 | 026 | `catalogo_inicial.sql` | os 50 documentos do catálogo, todos como rascunho (**gerado**: `npm run catalogo:sql`) | 025 |
+| 027 | `calendario_completo.sql` | `eventos` ganha local, link, dia inteiro e repetição (semanal, quinzenal, mensal); tabela `eventos_presencas` (vou/talvez/não vou por ocorrência); `calendario_assinaturas` e duas funções para o feed `.ics` por link. **Aditiva**: o site roda sem ela, só sem os recursos novos | 008, 014, 016 |
 
 Duas armadilhas conhecidas:
 
