@@ -94,8 +94,24 @@ export function Hero() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20 flex flex-col items-center gap-3"
         >
+          {/*
+            Ação principal para quem chega querendo entrar. "Como entrar", e
+            não "Inscreva-se": /ingressar explica o processo e diz quando não
+            há seleção aberta, então o rótulo continua verdadeiro nos dois
+            casos. Era só o contorno apagado abaixo, e quem vinha para entrar
+            não via caminho nenhum na primeira tela.
+          */}
+          <MotionLink
+            href="/ingressar"
+            data-cursor-hover
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="relative inline-block whitespace-nowrap px-6 md:px-8 py-4 rounded-full font-mono text-xs md:text-sm tracking-widest uppercase bg-[var(--gear-amber)] text-[var(--gear-ink)] hover:bg-white transition-colors duration-500 pointer-events-auto"
+          >
+            Como entrar
+          </MotionLink>
           <MotionLink
             href="/sobre#frentes"
             data-cursor-hover
@@ -105,6 +121,10 @@ export function Hero() {
           >
             Conheça as Frentes
           </MotionLink>
+          {/* Mesmo estado que /ingressar declara: sem seleção aberta, sem data. */}
+          <p className="max-w-[28ch] text-center font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
+            Seleção fechada no momento
+          </p>
         </motion.div>
 
         {/* Bottom Right */}

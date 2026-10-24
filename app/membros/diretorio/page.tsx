@@ -6,7 +6,7 @@ import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
-import { Surge } from "@/components/surge"
+import { DiretorioLista } from "@/components/diretorio-lista"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
@@ -43,8 +43,14 @@ function grupoDe(membro: Membro) {
   return temCargo(membro.cargo) ? "Diretoria" : "Em formação"
 }
 
-export default async function DiretorioPage() {
+export default async function DiretorioPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ busca?: string }>
+}) {
   await exigirMembroAprovado()
+  // ?busca=1 vem do atalho "Buscar pessoa" do Ctrl K: abre com a busca em foco.
+  const { busca } = await searchParams
 
   const supabase = await createClient()
   // Sem e-mail na consulta: a coluna não existe em `perfis` e não deve existir.
@@ -55,17 +61,14 @@ export default async function DiretorioPage() {
 
   const membros = (data ?? []) as Membro[]
 
-  const porGrupo = new Map<string, Membro[]>()
-  for (const membro of membros) {
-    const grupo = grupoDe(membro)
-    porGrupo.set(grupo, [...(porGrupo.get(grupo) ?? []), membro])
-  }
+  // O grupo é decidido aqui, uma vez, e a lista só filtra e desenha.
+  const comGrupo = membros.map((m) => ({ ...m, grupo: grupoDe(m) }))
 
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Pessoas">
         Quem está na GEAR e em que frente. Nome, curso, frente e cargo, sem contato pessoal: e-mail
-        não aparece aqui para ninguém. {membros.length} membro(s).
+        não aparece aqui para ninguém. {membros.length} {membros.length === 1 ? "membro" : "membros"}.
       </PageHeader>
 
       {error && (
@@ -84,59 +87,7 @@ export default async function DiretorioPage() {
         </Aviso>
       )}
 
-      {/* Uma seção por grupo */}
-      {GRUPOS.map((grupo) => {
-        const doGrupo = porGrupo.get(grupo.chave)
-        if (!doGrupo?.length) return null
-
-        return (
-          <section key={grupo.chave} className="mt-16">
-            <div className="border-t border-linha pt-8">
-              <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">{grupo.rotulo}</h2>
-            </div>
-
-            <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">
-              {doGrupo.map((membro, i) => (
-                <Surge
-                  as="li"
-                  index={i}
-                  key={membro.id}
-                  className="border border-linha p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]"
-                >
-                  <p className="font-sans text-lg font-light leading-snug break-words">
-                    {membro.nome_completo?.trim() || "Sem nome preenchido"}
-                  </p>
-
-                  <dl className="mt-4 space-y-3">
-                    <div>
-                      <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                        Curso
-                      </dt>
-                      <dd className="font-mono text-[11px] text-foreground mt-0.5 break-words">
-                        {membro.curso?.trim() || "não informado"}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
-                        Frente
-                      </dt>
-                      <dd className="font-mono text-[11px] text-foreground mt-0.5">
-                        {membro.frente?.trim() || "a definir"}
-                      </dd>
-                    </div>
-                  </dl>
-
-                  {temCargo(membro.cargo) && (
-                    <p className="mt-4 inline-block border border-[var(--gear-amber)] px-2 py-1 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-[var(--gear-amber)]">
-                      {membro.cargo}
-                    </p>
-                  )}
-                </Surge>
-              ))}
-            </ul>
-          </section>
-        )
-      })}
+      {!error && <DiretorioLista membros={comGrupo} grupos={GRUPOS} focar={busca === "1"} />}
     </section>
   )
 }

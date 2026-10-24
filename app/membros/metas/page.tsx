@@ -27,8 +27,14 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 }
 
-export default async function MetasPage() {
+export default async function MetasPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ nova?: string }>
+}) {
   const { user } = await exigirMembroAprovado()
+  // ?nova=1 vem do atalho "Nova meta" do Ctrl K: abre o formulário já à vista.
+  const { nova } = await searchParams
 
   const supabase = await createClient()
 
@@ -93,7 +99,7 @@ export default async function MetasPage() {
         o formulário ocupava a primeira tela inteira e empurrava a lista para
         baixo. Aberto de saída só quando ainda não há nenhuma meta.
       */}
-      <Recolhivel rotulo="Nova meta" aberto={minhas.length === 0} className="mt-8 max-w-4xl">
+      <Recolhivel rotulo="Nova meta" aberto={minhas.length === 0 || nova === "1"} className="mt-8 max-w-4xl">
         <MetaForm usuarioId={user.id} />
       </Recolhivel>
 

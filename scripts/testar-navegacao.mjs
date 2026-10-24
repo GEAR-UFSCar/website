@@ -58,6 +58,13 @@ assert.ok(!rotulos(false).includes("Atas"))
 assert.ok(!rotulos(false).includes("Patrimônio"))
 assert.ok(rotulos(true).includes("Novo aviso"))
 assert.ok(rotulos(true).includes("Atas"))
+// Ações abrem o formulário/busca pelo parâmetro: sem ele o atalho cairia numa
+// tela com o formulário recolhido.
+const href = (rotulo, comCargo = true) => destinosDaPaleta(comCargo).find((d) => d.rotulo === rotulo)?.href
+assert.equal(href("Nova meta", false), "/membros/metas?nova=1")
+assert.equal(href("Novo aviso"), "/membros/mural?novo=1")
+assert.equal(href("Buscar pessoa", false), "/membros/diretorio?busca=1")
+assert.ok(rotulos(false).includes("Buscar pessoa"))
 // Nenhum destino repetido.
 const hrefs = destinosDaPaleta(true).map((d) => `${d.rotulo}|${d.href}`)
 assert.equal(new Set(hrefs).size, hrefs.length)

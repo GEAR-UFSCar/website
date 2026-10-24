@@ -9,6 +9,7 @@ import { dataHora } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { Surge } from "@/components/surge"
+import { Recolhivel } from "@/components/membros/recolhivel"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
@@ -26,8 +27,14 @@ type AvisoMural = {
 }
 
 
-export default async function MuralPage() {
+export default async function MuralPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ novo?: string }>
+}) {
   const { user, perfil } = await exigirMembroAprovado()
+  // ?novo=1 vem do atalho "Novo aviso" do Ctrl K: abre o formulário à vista.
+  const { novo } = await searchParams
   // Portão só da tela; a RLS de 008 é quem barra de fato.
   const podeEscrever = temCargo(perfil?.cargo)
 
@@ -62,9 +69,26 @@ export default async function MuralPage() {
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Mural">
-        Comunicados da diretoria. Qualquer membro lê; publicar e fixar é de quem tem cargo.{" "}
-        {avisos.length} aviso(s), {fixados} fixado(s).
+        Comunicados da diretoria. Qualquer membro lê; publicar e fixar é de quem tem cargo.
+        {avisos.length > 0 && (
+          <>
+            {" "}
+            {avisos.length} {avisos.length === 1 ? "aviso" : "avisos"}
+            {fixados > 0 ? `, ${fixados} ${fixados === 1 ? "fixado" : "fixados"}` : ""}.
+          </>
+        )}
       </PageHeader>
+
+      {/*
+        Quem tem cargo publica daqui, mas o formulário não toma a tela: o que
+        a maioria vem fazer é ler. Estava no fim da página, depois de todos os
+        avisos, e ninguém o achava sem rolar até o rodapé.
+      */}
+      {podeEscrever && (
+        <Recolhivel rotulo="Novo aviso" aberto={novo === "1"} className="mt-8 max-w-4xl">
+          <MuralForm usuarioId={user.id} />
+        </Recolhivel>
+      )}
 
       {error && (
         <ErroDados titulo="MURAL INDISPONÍVEL" erro={error} className="mt-10 max-w-2xl">
@@ -120,12 +144,6 @@ export default async function MuralPage() {
           )
         })}
       </div>
-
-      {podeEscrever && (
-        <div className="mt-14 max-w-4xl">
-          <MuralForm usuarioId={user.id} />
-        </div>
-      )}
     </section>
   )
 }

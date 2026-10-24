@@ -95,8 +95,14 @@ export function destinosDaPaleta(comCargo: boolean): Destino[] {
   )
   return [
     ...telas,
-    { rotulo: "Nova meta", detalhe: "Atalho", href: "/membros/metas" },
-    ...(comCargo ? [{ rotulo: "Novo aviso", detalhe: "Atalho", href: "/membros/mural" }] : []),
+    /*
+     * Ações levam um parâmetro que a página de destino lê para abrir o
+     * formulário (que nasce recolhido) e, no diretório, focar a busca. Sem o
+     * parâmetro o atalho chegaria a uma tela sem formulário à vista.
+     */
+    { rotulo: "Nova meta", detalhe: "Ação", href: "/membros/metas?nova=1" },
+    ...(comCargo ? [{ rotulo: "Novo aviso", detalhe: "Ação", href: "/membros/mural?novo=1" }] : []),
+    { rotulo: "Buscar pessoa", detalhe: "Ação", href: "/membros/diretorio?busca=1" },
     { rotulo: "Editar perfil", detalhe: "Conta", href: "/membros/completar-perfil" },
   ]
 }
