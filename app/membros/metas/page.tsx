@@ -12,6 +12,8 @@ import { agruparMetas } from "@/lib/hoje"
 import { hojeISO } from "@/lib/datas"
 import { Secao } from "@/components/membros/secao"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
+import { Recolhivel } from "@/components/membros/recolhivel"
+import { paginaMembros } from "@/lib/ui"
 
 const SECOES_METAS = [
   { chave: "atrasadas", titulo: "Atrasadas" },
@@ -71,11 +73,12 @@ export default async function MetasPage() {
   const grupos = agruparMetas(minhas, hojeISO())
 
   return (
-    <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Metas">
-        O calendário é da entidade; isto aqui é seu. Cada meta nasce privada, e o formulário abaixo
-        explica o que muda ao torná-la pública. {abertas} em aberto, {vencidas} vencida(s),{" "}
-        {minhas.length} no total.
+        O calendário é da entidade; isto aqui é seu. Cada meta nasce privada.{" "}
+        {minhas.length === 0
+          ? "Você ainda não criou nenhuma."
+          : `${abertas} em aberto${vencidas > 0 ? `, ${vencidas} atrasada${vencidas > 1 ? "s" : ""}` : ""}.`}
       </PageHeader>
 
       {error && (
@@ -85,16 +88,14 @@ export default async function MetasPage() {
         </ErroDados>
       )}
 
-      {/* 01, NOVA META */}
-      <Surge as="section" className="mt-16 max-w-4xl">
-        <div className="border-t border-linha pt-8">
-          <h2 className="font-sans text-2xl md:text-4xl font-normal">Nova meta</h2>
-        </div>
-
-        <div className="mt-8">
-          <MetaForm usuarioId={user.id} />
-        </div>
-      </Surge>
+      {/*
+        NOVA META, recolhida. Quem vem a esta página quer ver as próprias metas;
+        o formulário ocupava a primeira tela inteira e empurrava a lista para
+        baixo. Aberto de saída só quando ainda não há nenhuma meta.
+      */}
+      <Recolhivel rotulo="Nova meta" aberto={minhas.length === 0} className="mt-8 max-w-4xl">
+        <MetaForm usuarioId={user.id} />
+      </Recolhivel>
 
       {/* Minhas metas, agrupadas por prazo */}
       {SECOES_METAS.map(({ chave, titulo }) =>
@@ -111,15 +112,15 @@ export default async function MetasPage() {
       {minhas.length === 0 && (
         <Secao titulo="Minhas metas" className="mt-12 max-w-4xl">
           <EstadoVazio>
-            {error ? "Não foi possível carregar suas metas." : "Você ainda não criou nenhuma meta. Use o formulário acima."}
+            {error ? "Não foi possível carregar suas metas." : "Nenhuma meta por aqui. Crie a primeira no formulário acima."}
           </EstadoVazio>
         </Secao>
       )}
 
       {/* 03, PÚBLICAS DA EQUIPE */}
-      <section className="mt-16 max-w-4xl">
+      <section className="mt-12">
         <div className="border-t border-linha pt-8">
-          <h2 className="font-sans text-2xl md:text-4xl font-normal">Metas públicas</h2>
+          <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Metas públicas</h2>
         </div>
 
         {erroPublicas ? (

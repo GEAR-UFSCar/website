@@ -51,46 +51,58 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
 
   return (
     <>
-      <div role="group" aria-label="Quais sprints mostrar" className="flex gap-2">
-        {[
-          { rotulo: "Meus", valor: true },
-          { rotulo: "Todos", valor: false },
-        ].map((o) => (
-          <button
-            key={o.rotulo}
-            type="button"
-            onClick={() => setMeus(o.valor)}
-            aria-pressed={meus === o.valor}
-            className={`min-h-11 border px-4 font-mono text-[11px] tracking-[0.15em] uppercase transition-colors ${
-              meus === o.valor
-                ? "border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
-                : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
-            }`}
-          >
-            {o.rotulo}
-          </button>
-        ))}
+      {/*
+        Uma barra de ferramentas só: escopo e busca lado a lado. Eram quatro
+        linhas de controle antes do primeiro sprint; agora são duas (esta e os
+        chips de status), e a lista começa mais perto do topo.
+      */}
+      <div className="flex flex-col gap-3 md:flex-row md:items-stretch">
+        <div role="group" aria-label="Quais sprints mostrar" className="flex shrink-0">
+          {[
+            { rotulo: "Meus", valor: true },
+            { rotulo: "Todos", valor: false },
+          ].map((o, i) => (
+            <button
+              key={o.rotulo}
+              type="button"
+              onClick={() => setMeus(o.valor)}
+              aria-pressed={meus === o.valor}
+              className={`min-h-11 flex-1 border px-5 font-mono text-[11px] tracking-[0.15em] uppercase transition-colors md:flex-none ${
+                i > 0 ? "-ml-px" : ""
+              } ${
+                meus === o.valor
+                  ? "relative z-10 border-[var(--gear-amber)] bg-[var(--gear-amber)] text-[var(--gear-ink)]"
+                  : "border-linha-forte text-muted-foreground hover:border-foreground hover:text-foreground"
+              }`}
+            >
+              {o.rotulo}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex-1">
+          <label htmlFor="busca-sprints" className="sr-only">
+            Buscar sprint por título ou responsável
+          </label>
+          <input
+            id="busca-sprints"
+            type="search"
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
+            placeholder="Buscar por título ou responsável…"
+            className={`${campoBase} min-h-11 placeholder:text-muted-foreground/50`}
+          />
+        </div>
       </div>
 
-      <div className="mt-6">
-        <label htmlFor="busca-sprints" className="sr-only">
-          Buscar sprint por título ou responsável
-        </label>
-        <input
-          id="busca-sprints"
-          type="search"
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          placeholder="Buscar por título ou responsável…"
-          className={`${campoBase} min-h-11 placeholder:text-muted-foreground/50`}
-        />
+      <div className="mt-4">
 
         {/*
           Os chips são <button>, não links: o estado não é uma rota. Filtrar
           não é navegar, e pôr isto na URL encheria o histórico do navegador de
           passos que ninguém quer desfazer um a um.
         */}
-        <div role="group" aria-label="Filtrar por status" className="mt-4 flex flex-wrap gap-2">
+        <div role="group" aria-label="Filtrar por status" className="flex flex-wrap gap-2">
           {FILTROS_STATUS.map((filtro) => {
             const ativo = filtro.valor === status
             const quantos = filtro.valor === null ? porBusca.length : (contagens.get(filtro.valor) ?? 0)
@@ -121,7 +133,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
         quem usa leitor de tela clica num chip e não recebe notícia nenhuma.
       */}
       <p aria-live="polite" className="mt-6 font-mono text-xs tracking-[0.2em] text-muted-foreground">
-        {visiveis.length} SPRINT(S)
+        {visiveis.length} {visiveis.length === 1 ? "SPRINT" : "SPRINTS"}
         {status ? ` · ${status.toUpperCase()}` : ""}
       </p>
 
@@ -144,6 +156,12 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
                   <span className="tabular-nums">{doStatus.length}</span>
                 </h2>
                 <div className="flex flex-col gap-4">
+                  {/* Coluna vazia diz que está vazia, em vez de parecer quebrada. */}
+                  {doStatus.length === 0 && (
+                    <p className="border border-dashed border-linha px-3 py-4 text-center font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground/60">
+                      Nenhum
+                    </p>
+                  )}
                   {doStatus.map((sprint) => (
                     <SprintCartao
                       key={sprint.id}

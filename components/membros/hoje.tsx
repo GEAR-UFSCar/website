@@ -6,7 +6,7 @@ import { Secao } from "@/components/membros/secao"
 import { ErroDados } from "@/components/erro-dados"
 import type { ErroDeDados } from "@/lib/erros"
 import { hrefDoSprint } from "@/lib/administracao"
-import type { ItemPrazo } from "@/lib/hoje"
+import type { ItemPrazo, ProximaAcao } from "@/lib/hoje"
 import { aparenciaDoStatus, type Sprint } from "@/lib/sprints"
 import { prazoRelativo } from "@/lib/metas"
 import { formatarDuracao } from "@/lib/academia"
@@ -16,7 +16,7 @@ const verMais = "font-mono text-[11px] text-[var(--gear-amber)] hover:underline"
 
 export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; erro: ErroDeDados | null; rotaFrente: string }) {
   return (
-    <Secao titulo="Agora" className="mt-0">
+    <Secao titulo="Agora" className="mt-10">
       {erro ? (
         <ErroDados titulo="SPRINTS INDISPONÍVEIS" erro={erro}>
           Rode <code>supabase/020_sprints_responsavel_e_proximo_passo.sql</code> e{" "}
@@ -38,18 +38,20 @@ export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; e
                     {s.proximo_passo?.trim() || "Próximo passo ainda não declarado."}
                   </span>
                 </Link>
-                <Pilula tom={s.status === "Bloqueado" ? "alerta" : "ativo"}>{s.status}</Pilula>
-                <div
-                  role="progressbar"
-                  aria-valuenow={s.progresso}
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-label={`Progresso de ${s.titulo}`}
-                  className="h-1.5 w-28 bg-linha"
-                >
-                  <div style={{ width: `${s.progresso}%` }} className={`h-full ${aparencia.barra}`} />
+                <div className="flex shrink-0 items-center gap-3">
+                  <Pilula tom={s.status === "Bloqueado" ? "alerta" : "ativo"}>{s.status}</Pilula>
+                  <div
+                    role="progressbar"
+                    aria-valuenow={s.progresso}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={`Progresso de ${s.titulo}`}
+                    className="h-1.5 w-20 bg-linha"
+                  >
+                    <div style={{ width: `${s.progresso}%` }} className={`h-full ${aparencia.barra}`} />
+                  </div>
+                  <span className="w-9 text-right font-mono text-xs tabular-nums">{s.progresso}%</span>
                 </div>
-                <span className="w-10 text-right font-mono text-xs tabular-nums">{s.progresso}%</span>
               </li>
             )
           })}
@@ -180,5 +182,146 @@ export function BlocoPendencias({ aprovacoes, bloqueados }: { aprovacoes: number
         </li>
       </ul>
     </Secao>
+  )
+}
+
+
+/* ----------------------------------------------------------------------------
+ * Destaque e números: o que a tela Hoje mostra ANTES das listas.
+ * -------------------------------------------------------------------------- */
+
+type Texto = { eyebrow: string; titulo: string; porque: string; href: string; cta: string; urgente: boolean }
+
+/** Traduz a escolha de lib/hoje.ts em texto. A decisão é de lá; aqui é só redação. */
+function redigir(acao: ProximaAcao, hoje: string, hrefSprint: (id: string) => string, rotaFrente: string): Texto {
+  switch (acao.tipo) {
+    case "bloqueado":
+      return {
+        eyebrow: "Destrave primeiro",
+        titulo: acao.sprint.titulo,
+        porque: "O seu sprint está bloqueado. Registre o que trava e chame a diretoria da frente: bloqueio que fica calado atrasa quem depende dele.",
+        href: hrefSprint(acao.sprint.id),
+        cta: "Abrir o sprint",
+        urgente: true,
+      }
+    case "atrasada":
+      return {
+        eyebrow: "Atrasada",
+        titulo: acao.item.titulo,
+        porque: `Passou do prazo (${prazoRelativo(acao.item.dia)}). Conclua, reagende ou apague: meta vencida no quadro só ensina a ignorar o quadro.`,
+        href: acao.item.href,
+        cta: "Abrir metas",
+        urgente: true,
+      }
+    case "hoje":
+      return {
+        eyebrow: "É hoje",
+        titulo: acao.item.titulo,
+        porque: `${acao.item.detalhe}${acao.item.hora ? `, às ${acao.item.hora}` : ""}.`,
+        href: acao.item.href,
+        cta: acao.item.origem === "evento" ? "Ver no calendário" : "Abrir metas",
+        urgente: false,
+      }
+    case "andamento":
+      return {
+        eyebrow: "Em andamento",
+        titulo: acao.sprint.titulo,
+        porque: acao.sprint.proximo_passo?.trim()
+          ? `Próximo passo: ${acao.sprint.proximo_passo.trim()}`
+          : "Você ainda não declarou o próximo passo deste sprint. Escrever uma linha já destrava a semana.",
+        href: hrefSprint(acao.sprint.id),
+        cta: "Atualizar o sprint",
+        urgente: false,
+      }
+    case "proximo":
+      return {
+        eyebrow: "Próximo da fila",
+        titulo: acao.item.titulo,
+        porque: `${acao.item.detalhe}, ${prazoRelativo(acao.item.dia)}${acao.item.hora ? `, às ${acao.item.hora}` : ""}.`,
+        href: acao.item.href,
+        cta: "Abrir",
+        urgente: false,
+      }
+    case "modulo":
+      return {
+        eyebrow: "Sua formação",
+        titulo: acao.titulo,
+        porque: "Nada urgente hoje. É um bom momento para avançar na Academia.",
+        href: "/membros/aprendizagem",
+        cta: "Continuar o módulo",
+        urgente: false,
+      }
+    default:
+      return {
+        eyebrow: "Tudo em dia",
+        titulo: "Nada pede você agora.",
+        porque: "Sem sprint em aberto, sem prazo na semana e sem atraso. Se há trabalho a fazer, ele ainda não está no quadro da frente.",
+        href: rotaFrente,
+        cta: "Ver o quadro da frente",
+        urgente: false,
+      }
+  }
+}
+
+export function ProximaAcaoCard({
+  acao,
+  hoje,
+  hrefSprint,
+  rotaFrente,
+}: {
+  acao: ProximaAcao
+  hoje: string
+  hrefSprint: (id: string) => string
+  rotaFrente: string
+}) {
+  const t = redigir(acao, hoje, hrefSprint, rotaFrente)
+  return (
+    <section
+      aria-labelledby="proxima-acao"
+      className={`border border-linha-forte bg-[var(--gear-navy)]/50 p-5 md:p-7 ${
+        t.urgente ? "border-l-4 border-l-[var(--gear-amber)]" : "border-l-4 border-l-linha-forte"
+      }`}
+    >
+      <p
+        className={`font-mono text-[10px] tracking-[0.25em] uppercase ${
+          t.urgente ? "text-[var(--gear-amber)]" : "text-muted-foreground"
+        }`}
+      >
+        {t.eyebrow}
+      </p>
+      <h2 id="proxima-acao" className="mt-2 font-sans text-2xl font-normal leading-snug tracking-tight text-balance md:text-3xl">
+        {t.titulo}
+      </h2>
+      <p className="mt-3 max-w-[60ch] font-sans text-sm font-light leading-relaxed text-muted-foreground md:text-base">{t.porque}</p>
+      <Link
+        href={t.href}
+        className="mt-5 inline-flex min-h-11 items-center border border-[var(--gear-amber)] bg-[var(--gear-amber)] px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-[var(--gear-ink)] transition-colors duration-200 hover:bg-transparent hover:text-[var(--gear-amber)]"
+      >
+        {t.cta} →
+      </Link>
+    </section>
+  )
+}
+
+export type Numero = { rotulo: string; valor: string; href: string; alerta?: boolean }
+
+export function FaixaNumeros({ itens }: { itens: Numero[] }) {
+  return (
+    <ul className="mt-4 grid grid-cols-2 gap-px border border-linha bg-linha md:grid-cols-4">
+      {itens.map((n) => (
+        <li key={n.rotulo} className="bg-[var(--gear-ink)]">
+          <Link href={n.href} className="block min-h-11 p-4 transition-colors duration-200 hover:bg-[var(--gear-navy)]/60">
+            <span
+              className={`block font-sans text-3xl font-light tabular-nums ${
+                n.alerta ? "text-[var(--gear-amber)]" : ""
+              }`}
+            >
+              {n.valor}
+            </span>
+            <span className="mt-1 block font-mono text-[10px] tracking-[0.18em] uppercase text-muted-foreground">{n.rotulo}</span>
+          </Link>
+        </li>
+      ))}
+    </ul>
   )
 }

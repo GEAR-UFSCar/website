@@ -6,7 +6,7 @@ export function Secao({
   id,
   acoes,
   children,
-  className = "mt-12",
+  className = "mt-10",
 }: {
   titulo: string
   id?: string

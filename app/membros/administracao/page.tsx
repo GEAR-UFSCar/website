@@ -5,6 +5,7 @@ import { BlocoPendencias } from "@/components/membros/hoje"
 import { PageHeader } from "@/components/membros/page-header"
 import { Secao } from "@/components/membros/secao"
 import { createClient } from "@/lib/supabase/server"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Gestão | GEAR",
@@ -25,7 +26,7 @@ export default async function GestaoPage() {
   ])
 
   return (
-    <section className="mx-auto max-w-4xl px-4 pt-10 pb-24 md:px-8">
+    <section className={paginaMembros}>
       <PageHeader titulo="Gestão">
         Patrimônio, atas e cargos da entidade. Cargo e aprovação de membro são só de Presidente e Vice-Presidente.
       </PageHeader>

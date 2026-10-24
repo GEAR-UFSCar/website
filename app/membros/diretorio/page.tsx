@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { temCargo } from "@/lib/administracao"
 import { Surge } from "@/components/surge"
+import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
   title: "Diretório | GEAR",
@@ -61,7 +62,7 @@ export default async function DiretorioPage() {
   }
 
   return (
-    <section className="relative mx-auto max-w-6xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
+    <section className={paginaMembros}>
       <PageHeader titulo="Pessoas">
         Quem está na GEAR e em que frente. Nome, curso, frente e cargo, sem contato pessoal: e-mail
         não aparece aqui para ninguém. {membros.length} membro(s).
@@ -91,7 +92,7 @@ export default async function DiretorioPage() {
         return (
           <section key={grupo.chave} className="mt-16">
             <div className="border-t border-linha pt-8">
-              <h2 className="font-sans text-2xl md:text-4xl font-normal">{grupo.rotulo}</h2>
+              <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">{grupo.rotulo}</h2>
             </div>
 
             <ul className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px">

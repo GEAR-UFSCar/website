@@ -12,7 +12,7 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 
 - Entidade: GEAR (Grupo de Extensão em Automação e Robótica), UFSCar Sorocaba
 - Paleta: navy #0B2138, âmbar #FF7A2F, ink #081726, slate #5A6B7A, mist #AEBAC4, fog #EDF1F4
-- Tipografia: Chakra Petch (títulos e texto, com itálico nas chamadas editoriais) + Space Mono (labels/dados técnicos) — carregadas em `app/layout.tsx`. O calendário de membros usa também IBM Plex Sans no corpo de texto.
+- Tipografia: Chakra Petch (títulos e texto, com itálico nas chamadas editoriais) + Space Mono (labels/dados técnicos) — carregadas em `app/layout.tsx`.
 - Direção estética: brutalista dark + editorial cinematográfico, baseado no template "Brutalist Void Portfolio" (Next.js + Framer Motion + Three.js)
 - Stack: Next.js, Tailwind, Supabase (auth/DB), Vercel (deploy)
 - 3 trilhas: Competição, Pesquisa, Projetos
