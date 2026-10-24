@@ -131,7 +131,7 @@ export default async function AprendizagemPage() {
                 <p className="mt-3 font-mono text-[11px] tracking-[0.15em] uppercase text-[var(--gear-amber)]">
                   {prazoDoNivel < hojeISO()
                     ? `Venceu ${prazoRelativo(prazoDoNivel)}`
-                    : `Faltam: ${prazoRelativo(prazoDoNivel)}`}
+                    : `Vence ${prazoRelativo(prazoDoNivel)}`}
                 </p>
               </>
             ) : (
@@ -217,7 +217,7 @@ export default async function AprendizagemPage() {
             ) : (
               <p className="mt-5 font-sans text-base font-light leading-relaxed text-muted-foreground">
                 {total > 0
-                  ? "Formação concluída. Os nove módulos estão fechados."
+                  ? `Formação concluída. ${total === 1 ? "O único módulo está fechado" : `Os ${total} módulos estão fechados`}.`
                   : "Nenhum módulo cadastrado ainda."}
               </p>
             )}
@@ -276,8 +276,8 @@ export default async function AprendizagemPage() {
         <div className="border-t border-linha pt-8">
           <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Sua trilha</h2>
           <p className="mt-3 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
-            Os nove módulos na ordem da formação. Cada nível abre quando o anterior fecha, cada
-            um assume o vocabulário do anterior, não é burocracia.
+            {total === 1 ? "O módulo" : `Os ${total} módulos`} na ordem da formação. Cada nível abre
+            quando o anterior fecha, cada um assume o vocabulário do anterior, não é burocracia.
           </p>
         </div>
 
