@@ -1,21 +1,7 @@
-/** Valores espelhados dos CHECKs em supabase/003_administracao.sql. */
-export const CATEGORIAS = [
-  "Robô",
-  "Componente Eletrônico",
-  "Ferramenta",
-  "Consumível",
-  "Equipamento de Informática",
-  "Mecânica/Estrutura",
-  "Outro",
-] as const
-
-export const STATUS = [
-  "Disponível",
-  "Emprestado",
-  "Em manutenção",
-  "Danificado",
-  "Baixado",
-] as const
+/*
+ * Categorias, estados e status do inventário moram em lib/inventario.ts, junto
+ * da busca e da importação que dependem das mesmas listas (CHECKs da 029).
+ */
 
 export const TIPOS_ATA = ["Geral", "Frente", "Diretoria"] as const
 

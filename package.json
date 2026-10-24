@@ -11,12 +11,14 @@
     "lint": "eslint .",
     "start": "next start",
     "test:rls": "node scripts/testar-rls.mjs",
-    "test:banco": "node scripts/testar-banco.mjs",
+    "test:banco": "node --no-warnings --experimental-strip-types scripts/testar-banco.mjs",
     "test:nav": "node --no-warnings --experimental-strip-types scripts/testar-navegacao.mjs",
     "test:hoje": "node --no-warnings --experimental-strip-types scripts/testar-hoje.mjs",
     "test:calendario": "node --no-warnings --experimental-strip-types scripts/testar-calendario.mjs",
     "test:documentos": "node --no-warnings --experimental-strip-types scripts/testar-documentos.mjs",
     "test:seguranca": "node --no-warnings --experimental-strip-types scripts/testar-seguranca.mjs",
+    "test:inventario": "node --no-warnings --experimental-strip-types scripts/testar-inventario.mjs",
+    "inventario:sql": "node --no-warnings --experimental-strip-types scripts/gerar-sql-inventario.mjs",
     "catalogo:sql": "node --no-warnings --experimental-strip-types scripts/gerar-sql-catalogo.mjs"
   },
   "dependencies": {
