@@ -6,7 +6,7 @@ import { ErroDados } from "@/components/erro-dados"
 import { MetricasForm } from "@/components/metricas-form"
 import { MetricasProex } from "@/components/metricas-proex"
 import { MetricasPublico } from "@/components/metricas-publico"
-import { MetricasNovoPeriodo } from "@/components/metricas-novo-periodo"
+import { MetricasNovoPeriodo, MetricasPrimeiroPeriodo } from "@/components/metricas-novo-periodo"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { eDiretoria } from "@/lib/administracao"
@@ -97,10 +97,14 @@ export default async function MetricasPage({
       )}
 
       {!error && metricas.length === 0 && (
-        <p className="mt-10 max-w-2xl font-sans text-sm font-light text-muted-foreground">
-          Nenhum período cadastrado. O primeiro registro é criado no SQL Editor, o rodapé de{" "}
-          <code className="font-mono">supabase/019_metricas.sql</code> tem o insert pronto.
-        </p>
+        <div className="mt-10 max-w-2xl">
+          <p className="font-sans text-sm font-light text-muted-foreground">
+            {souDiretoria
+              ? "Nenhum período aberto ainda. Abra o semestre atual para começar a registrar; os números da entidade e das frentes entram depois, pelo formulário que aparece aqui."
+              : "Nenhum período aberto ainda. A diretoria abre o semestre, e a partir daí os números aparecem aqui."}
+          </p>
+          {souDiretoria && <MetricasPrimeiroPeriodo />}
+        </div>
       )}
 
       {emFoco && (

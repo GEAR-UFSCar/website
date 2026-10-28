@@ -7,12 +7,18 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
+import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
 
-export function MuralForm({ usuarioId }: { usuarioId: string }) {
+type Aviso = { id: string; titulo: string; conteudo: string; fixado: boolean }
+
+/** Sem `aviso` cria; com `aviso` edita aquele registro. */
+export function MuralForm({ usuarioId, aviso }: { usuarioId: string; aviso?: Aviso }) {
   const router = useRouter()
-  const [titulo, setTitulo] = useState("")
-  const [conteudo, setConteudo] = useState("")
-  const [fixado, setFixado] = useState(false)
+  const encerrar = useEncerrarEdicao()
+  const sufixo = aviso?.id ?? "novo"
+  const [titulo, setTitulo] = useState(aviso?.titulo ?? "")
+  const [conteudo, setConteudo] = useState(aviso?.conteudo ?? "")
+  const [fixado, setFixado] = useState(aviso?.fixado ?? false)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -22,6 +28,21 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
     setSalvando(true)
 
     const supabase = createClient()
+
+    if (aviso) {
+      const { data, error } = await supabase
+        .from("avisos")
+        .update({ titulo: titulo.trim(), conteudo: conteudo.trim(), fixado })
+        .eq("id", aviso.id)
+        .select("id")
+      setSalvando(false)
+      if (error) return setErro(mensagemSegura(error))
+      if (!data?.length) return setErro("Nada foi salvo, a política de acesso recusou.")
+      encerrar?.()
+      router.refresh()
+      return
+    }
+
     const { error } = await supabase.from("avisos").insert({
       titulo: titulo.trim(),
       conteudo: conteudo.trim(),
@@ -51,14 +72,14 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
 
   return (
     <form onSubmit={enviar} className="border border-linha p-6 space-y-5">
-      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">NOVO AVISO</p>
+      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">{aviso ? "EDITANDO AVISO" : "NOVO AVISO"}</p>
 
       <div>
-        <label htmlFor="titulo" className={rotuloBase}>
+        <label htmlFor={`titulo-${sufixo}`} className={rotuloBase}>
           Título
         </label>
         <input
-          id="titulo"
+          id={`titulo-${sufixo}`}
           required
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
@@ -68,11 +89,11 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
       </div>
 
       <div>
-        <label htmlFor="conteudo" className={rotuloBase}>
+        <label htmlFor={`conteudo-${sufixo}`} className={rotuloBase}>
           Conteúdo
         </label>
         <textarea
-          id="conteudo"
+          id={`conteudo-${sufixo}`}
           rows={5}
           required
           value={conteudo}
@@ -82,9 +103,9 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
         />
       </div>
 
-      <label htmlFor="fixado" className="flex items-center gap-3 cursor-pointer" data-cursor-hover>
+      <label htmlFor={`fixado-${sufixo}`} className="flex items-center gap-3 cursor-pointer" data-cursor-hover>
         <input
-          id="fixado"
+          id={`fixado-${sufixo}`}
           type="checkbox"
           checked={fixado}
           onChange={(e) => setFixado(e.target.checked)}
@@ -108,7 +129,7 @@ export function MuralForm({ usuarioId }: { usuarioId: string }) {
         data-cursor-hover
         className="border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50"
       >
-        {salvando ? "Publicando…" : "Publicar aviso"}
+        {salvando ? "Salvando…" : aviso ? "Salvar" : "Publicar aviso"}
       </button>
     </form>
   )

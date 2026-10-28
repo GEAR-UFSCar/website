@@ -5,7 +5,7 @@ import { useMemo, useState } from "react"
 import { SprintCartao } from "@/components/sprint-cartao"
 import { campoBase } from "@/lib/ui"
 import { STATUS_SPRINT, type StatusSprint } from "@/lib/administracao"
-import { FILTROS_STATUS, corresponde, type Atualizacao, type Sprint } from "@/lib/sprints"
+import { FILTROS_STATUS, corresponde, type Atualizacao, type PessoaResumo, type Sprint } from "@/lib/sprints"
 
 type Props = {
   sprints: Sprint[]
@@ -13,6 +13,7 @@ type Props = {
   atualizacoes: Record<string, Atualizacao[]>
   podeEscrever: boolean
   usuarioId: string
+  pessoas: NonNullable<PessoaResumo>[]
 }
 
 /**
@@ -28,10 +29,11 @@ type Props = {
  * "Concluído · 0" é a resposta certa, e um "Concluído · 7" que não leva a nada
  * seria só um chip mentindo.
  */
-export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }: Props) {
+export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId, pessoas }: Props) {
   const [busca, setBusca] = useState("")
   const [status, setStatus] = useState<StatusSprint | null>(null)
-  const [meus, setMeus] = useState(true)
+  // Abre em "Meus" só se a pessoa tem sprint aqui: senão a frente parece vazia.
+  const [meus, setMeus] = useState(() => sprints.some((s) => s.responsavel?.id === usuarioId))
 
   const base = useMemo(
     () => (meus ? sprints.filter((s) => s.responsavel?.id === usuarioId) : sprints),
@@ -169,6 +171,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId }
                       atualizacoes={atualizacoes[sprint.id] ?? []}
                       podeEscrever={podeEscrever}
                       usuarioId={usuarioId}
+                      pessoas={pessoas}
                     />
                   ))}
                 </div>

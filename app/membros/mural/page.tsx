@@ -4,6 +4,7 @@ import { PageHeader } from "@/components/membros/page-header"
 import { ErroDados } from "@/components/erro-dados"
 import { MuralForm } from "@/components/mural-form"
 import { MuralFixar } from "@/components/mural-fixar"
+import { RegistroEditavel } from "@/components/membros/registro-editavel"
 import { createClient } from "@/lib/supabase/server"
 import { dataHora } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
@@ -140,6 +141,15 @@ export default async function MuralPage({
               <p className="mt-5 max-w-[62ch] font-sans text-base font-light leading-relaxed text-muted-foreground whitespace-pre-line">
                 {aviso.conteudo}
               </p>
+
+              {podeEscrever && (
+                <RegistroEditavel
+                  tabela="avisos"
+                  id={aviso.id}
+                  className="mt-6"
+                  formulario={<MuralForm usuarioId={user.id} aviso={aviso} />}
+                />
+              )}
             </Surge>
           )
         })}

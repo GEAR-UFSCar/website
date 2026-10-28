@@ -2,6 +2,7 @@
 import { ErroDados } from "@/components/erro-dados"
 import { FrenteAbas } from "@/components/frente-abas"
 import { SprintsQuadro } from "@/components/sprints-quadro"
+import { SprintForm } from "@/components/sprint-form"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { eDiretoria, temCargo, type FrenteNome } from "@/lib/administracao"
@@ -74,6 +75,13 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
     ;(atualizacoes[item.sprint_id] ??= []).push(item)
   }
 
+  // Só quem cria sprint precisa da lista de responsáveis possíveis.
+  const pessoas = podeEscrever
+    ? (((
+        await supabase.from("perfis").select("id, nome_completo").eq("aprovado", true).order("nome_completo")
+      ).data ?? []) as NonNullable<Sprint["responsavel"]>[])
+    : []
+
   const eMinhaFrente = perfil?.frente?.trim() === frente
 
   return (
@@ -109,12 +117,15 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
         </ErroDados>
       )}
 
+      {!error && podeEscrever && <SprintForm frente={frente} usuarioId={user.id} pessoas={pessoas} />}
+
       {!error && (
         <SprintsQuadro
           sprints={sprints}
           atualizacoes={atualizacoes}
           podeEscrever={podeEscrever}
           usuarioId={user.id}
+          pessoas={pessoas}
         />
       )}
 

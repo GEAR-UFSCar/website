@@ -61,6 +61,22 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
     )
   }
 
+  /*
+   * Mesma régua do bloco de pendências do Hoje: conta cadastros com nome
+   * preenchido e ainda não aprovados. Erro vira zero, porque o contador é
+   * aviso, não dado: falhar aqui não pode derrubar a casca.
+   */
+  let pendentes = 0
+  if (temCargo(perfil?.cargo)) {
+    const supabase = await createClient()
+    const { count } = await supabase
+      .from("perfis")
+      .select("id", { count: "exact", head: true })
+      .eq("aprovado", false)
+      .not("nome_completo", "is", null)
+    pendentes = count ?? 0
+  }
+
   return (
     <MotionConfig reducedMotion="always">
       <PularParaConteudo />
@@ -68,6 +84,7 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
         nome={perfil?.nome_completo?.trim() || user.email || "Membro"}
         cargo={perfil?.cargo ?? null}
         comCargo={temCargo(perfil?.cargo)}
+        pendentes={pendentes}
         sair={sair}
       />
       <main id="conteudo" tabIndex={-1} className="outline-none">

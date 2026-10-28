@@ -93,10 +93,11 @@ export function primeiroNome(nome: string | null | undefined, reserva = "Membro"
  * Sem nome, devolve "?" — o mesmo reserva de components/membros-shell.tsx.
  */
 export function iniciais(nome: string | null | undefined) {
-  const partes = nome?.trim().split(/\s+/).filter(Boolean) ?? []
+  // primeira LETRA de cada palavra: "[Teste] Ana" vira "TA", não "[A"
+  const partes = (nome?.trim().split(/\s+/) ?? []).map((p) => p.match(/\p{L}/u)?.[0]).filter(Boolean) as string[]
   if (partes.length === 0) return "?"
-  const primeira = partes[0][0]
-  const ultima = partes.length > 1 ? partes[partes.length - 1][0] : ""
+  const primeira = partes[0]
+  const ultima = partes.length > 1 ? partes[partes.length - 1] : ""
   return `${primeira}${ultima}`.toUpperCase()
 }
 

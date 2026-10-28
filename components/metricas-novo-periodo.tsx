@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { mensagemSegura } from "@/lib/erros"
-import { proximoPeriodo, type MetricaPeriodo } from "@/lib/metricas"
+import { periodoAtual, proximoPeriodo, type MetricaPeriodo } from "@/lib/metricas"
 
 /**
  * Fecha o período corrente e abre o seguinte.
@@ -121,6 +121,46 @@ export function MetricasNovoPeriodo({ metrica }: { metrica: MetricaPeriodo }) {
           Cancelar
         </button>
       </div>
+    </div>
+  )
+}
+
+/**
+ * Abre o primeiro registro quando a tabela está vazia: o período corrente,
+ * geral da entidade (frente null), que pela RLS de 019 só a diretoria cria.
+ * Sem isto o único caminho era o SQL Editor.
+ */
+export function MetricasPrimeiroPeriodo() {
+  const router = useRouter()
+  const [salvando, setSalvando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+  const periodo = periodoAtual()
+
+  const abrir = async () => {
+    setErro(null)
+    setSalvando(true)
+    const { error } = await createClient().from("metricas_periodo").insert({ periodo, frente: null })
+    setSalvando(false)
+    if (error) return setErro(mensagemSegura(error))
+    router.refresh()
+  }
+
+  return (
+    <div className="mt-6">
+      <button
+        type="button"
+        onClick={abrir}
+        disabled={salvando}
+        data-cursor-hover
+        className="min-h-11 border border-[var(--gear-amber)] bg-[var(--gear-amber)] px-6 font-mono text-[11px] tracking-[0.2em] uppercase text-[var(--gear-ink)] disabled:opacity-50"
+      >
+        {salvando ? "Abrindo…" : `Abrir período ${periodo}`}
+      </button>
+      {erro && (
+        <p role="alert" className="mt-3 font-mono text-[11px] leading-snug text-[var(--gear-amber)]">
+          {erro}
+        </p>
+      )}
     </div>
   )
 }
