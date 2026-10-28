@@ -5,9 +5,10 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { CATEGORIAS, TIPOS_ACEITOS, enviarArquivo, validarArquivo } from "@/lib/documentos"
+import { CATEGORIAS, TIPOS_ACEITOS, eExterno, enviarArquivo, validarArquivo, type Documento } from "@/lib/documentos"
 import { campoBase, rotuloBase, botaoDesabilitavel } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
+import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
 
 type Origem = "arquivo" | "link" | "nenhum"
 
@@ -18,11 +19,23 @@ const vazio = {
   link: "",
 }
 
-/** Cadastra um documento novo. Só renderizado para quem tem cargo. */
-export function DocumentoForm() {
+/**
+ * Cadastra um documento novo, ou, com `documento`, corrige o cadastro dele.
+ * Na edição o arquivo do bucket não passa por aqui (quem troca é
+ * documento-anexo.tsx); só o link externo, que é o próprio cadastro.
+ * Só renderizado para quem tem cargo.
+ */
+export function DocumentoForm({ documento }: { documento?: Documento } = {}) {
   const router = useRouter()
-  const [campos, setCampos] = useState(vazio)
-  const [origem, setOrigem] = useState<Origem>("arquivo")
+  const encerrar = useEncerrarEdicao()
+  const sufixo = documento?.id ?? "novo"
+  const linkExterno = documento?.arquivo_url && eExterno(documento.arquivo_url) ? documento.arquivo_url : null
+  const [campos, setCampos] = useState(
+    documento
+      ? { titulo: documento.titulo, categoria: documento.categoria, versao: documento.versao ?? "", link: linkExterno ?? "" }
+      : vazio,
+  )
+  const [origem, setOrigem] = useState<Origem>(documento ? (linkExterno ? "link" : "nenhum") : "arquivo")
   const [arquivo, setArquivo] = useState<File | null>(null)
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -45,6 +58,26 @@ export function DocumentoForm() {
       setErro("O link externo precisa começar com http:// ou https://.")
       return
     }
+    if (documento) {
+      setSalvando(true)
+      const { data, error } = await createClient()
+        .from("documentos")
+        .update({
+          titulo,
+          categoria: campos.categoria,
+          versao: campos.versao.trim() || null,
+          ...(linkExterno ? { arquivo_url: campos.link.trim() } : {}),
+        })
+        .eq("id", documento.id)
+        .select("id")
+      setSalvando(false)
+      if (error) return setErro(mensagemSegura(error))
+      if (!data?.length) return setErro("Nada foi salvo, a política de acesso recusou.")
+      encerrar?.()
+      router.refresh()
+      return
+    }
+
     if (arquivo) {
       const recusa = validarArquivo(arquivo)
       if (recusa) {
@@ -98,16 +131,16 @@ export function DocumentoForm() {
   return (
     <form onSubmit={enviar} className="border border-linha p-6 space-y-5">
       <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">
-        NOVO DOCUMENTO
+        {documento ? "EDITANDO DOCUMENTO" : "NOVO DOCUMENTO"}
       </p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div className="md:col-span-2">
-          <label htmlFor="doc-titulo" className={rotuloBase}>
+          <label htmlFor={`doc-titulo-${sufixo}`} className={rotuloBase}>
             Título
           </label>
           <input
-            id="doc-titulo"
+            id={`doc-titulo-${sufixo}`}
             required
             maxLength={200}
             value={campos.titulo}
@@ -121,11 +154,11 @@ export function DocumentoForm() {
         </div>
 
         <div>
-          <label htmlFor="doc-categoria" className={rotuloBase}>
+          <label htmlFor={`doc-categoria-${sufixo}`} className={rotuloBase}>
             Categoria
           </label>
           <select
-            id="doc-categoria"
+            id={`doc-categoria-${sufixo}`}
             value={campos.categoria}
             onChange={set("categoria")}
             disabled={salvando}
@@ -140,11 +173,11 @@ export function DocumentoForm() {
         </div>
 
         <div>
-          <label htmlFor="doc-versao" className={rotuloBase}>
+          <label htmlFor={`doc-versao-${sufixo}`} className={rotuloBase}>
             Versão (opcional)
           </label>
           <input
-            id="doc-versao"
+            id={`doc-versao-${sufixo}`}
             maxLength={40}
             placeholder="1.0"
             value={campos.versao}
@@ -154,6 +187,24 @@ export function DocumentoForm() {
           />
         </div>
 
+        {documento && linkExterno && (
+          <div className="md:col-span-2">
+            <label htmlFor={`doc-link-${sufixo}`} className={rotuloBase}>
+              Link externo
+            </label>
+            <input
+              id={`doc-link-${sufixo}`}
+              type="url"
+              required
+              value={campos.link}
+              onChange={set("link")}
+              disabled={salvando}
+              className={campoBase}
+            />
+          </div>
+        )}
+
+        {!documento && (
         <fieldset className="md:col-span-2">
           <legend className={rotuloBase}>Arquivo</legend>
           <div className="flex flex-wrap gap-3">
@@ -208,11 +259,11 @@ export function DocumentoForm() {
 
           {origem === "link" && (
             <div className="mt-4">
-              <label htmlFor="doc-link" className="sr-only">
+              <label htmlFor={`doc-link-${sufixo}`} className="sr-only">
                 Link externo
               </label>
               <input
-                id="doc-link"
+                id={`doc-link-${sufixo}`}
                 type="url"
                 placeholder="https://…"
                 value={campos.link}
@@ -233,6 +284,7 @@ export function DocumentoForm() {
             </p>
           )}
         </fieldset>
+        )}
       </div>
 
       {erro && (
@@ -247,7 +299,7 @@ export function DocumentoForm() {
         data-cursor-hover
         className={`border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] ${botaoDesabilitavel}`}
       >
-        {salvando ? "Salvando…" : "Cadastrar documento"}
+        {salvando ? "Salvando…" : documento ? "Salvar" : "Cadastrar documento"}
       </button>
     </form>
   )

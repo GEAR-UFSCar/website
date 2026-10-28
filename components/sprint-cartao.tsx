@@ -3,9 +3,12 @@
 import { SprintStatus } from "@/components/sprint-status"
 import { SprintProgresso } from "@/components/sprint-progresso"
 import { SprintDiario } from "@/components/sprint-diario"
+import { SprintForm } from "@/components/sprint-form"
+import { RegistroEditavel } from "@/components/membros/registro-editavel"
+import type { FrenteNome } from "@/lib/administracao"
 import { iniciais } from "@/lib/administracao"
 import { dataLonga } from "@/lib/datas"
-import { aparenciaDoStatus, type Atualizacao, type Sprint } from "@/lib/sprints"
+import { aparenciaDoStatus, type Atualizacao, type PessoaResumo, type Sprint } from "@/lib/sprints"
 
 type Props = {
   sprint: Sprint
@@ -13,6 +16,8 @@ type Props = {
   /** Espelha pode_editar_sprint() (021): diretoria, ou cargo na mesma frente. */
   podeEscrever: boolean
   usuarioId: string
+  /** Responsáveis possíveis, para o formulário de edição. */
+  pessoas: NonNullable<PessoaResumo>[]
 }
 
 /** data_inicio/data_fim são DATE puro: parsear como local evita cair um dia. */
@@ -33,7 +38,7 @@ const dataSimples = (iso: string) => {
  * navegador, então os cartões que ele monta e desmonta também. Os dados já
  * vieram prontos do servidor; aqui não há consulta nenhuma até alguém editar.
  */
-export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId }: Props) {
+export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId, pessoas }: Props) {
   const aparencia = aparenciaDoStatus(sprint.status)
   const responsavel = sprint.responsavel?.nome_completo?.trim()
 
@@ -138,6 +143,16 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId }: 
             <SprintProgresso id={sprint.id} valor={sprint.progresso} />
           </div>
         </div>
+      )}
+
+      {podeEscrever && (
+        <RegistroEditavel
+          tabela="sprints"
+          id={sprint.id}
+          formulario={
+            <SprintForm frente={sprint.frente as FrenteNome} usuarioId={usuarioId} pessoas={pessoas} sprint={sprint} />
+          }
+        />
       )}
 
       <SprintDiario

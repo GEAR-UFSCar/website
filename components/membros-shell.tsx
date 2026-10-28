@@ -8,6 +8,7 @@ import { ChevronDown, GraduationCap, Home, LogOut, Search, Settings, Target, Use
 
 import { Paleta } from "@/components/membros/paleta"
 import { abaAtual, grupoAtual, gruposVisiveis, titulo as tituloDaRota } from "@/lib/navegacao"
+import { iniciais } from "@/lib/administracao"
 
 /** Ícone de cada grupo na barra inferior do celular. */
 const ICONES: Record<string, LucideIcon> = {
@@ -23,6 +24,8 @@ type Props = {
   /** Cargo do perfil; vazio vira "Membro" na etiqueta. */
   cargo: string | null
   comCargo: boolean
+  /** Cadastros esperando aprovação; vira contador na aba Gestão. */
+  pendentes: number
   /** Server Action de logout, definida no layout. */
   sair: () => Promise<void>
 }
@@ -42,7 +45,7 @@ type Props = {
  * página precisa compensar com padding-top. `nao-imprimir` porque a aba ProEx
  * de Métricas é feita para virar papel.
  */
-export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
+export function MembrosShell({ nome, cargo, comCargo, pendentes, sair }: Props) {
   const pathname = usePathname()
   const [aberto, setAberto] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
@@ -85,7 +88,7 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
     setAberto(false)
   }
 
-  const inicial = nome.trim().charAt(0).toUpperCase() || "?"
+  const inicial = iniciais(nome).charAt(0)
   const etiquetaCargo = cargo?.trim() || "Membro"
 
   return (
@@ -118,6 +121,14 @@ export function MembrosShell({ nome, cargo, comCargo, sair }: Props) {
                     }`}
                   >
                     {g.rotulo}
+                    {g.id === "gestao" && pendentes > 0 && (
+                      <span
+                        aria-label={`${pendentes} cadastro(s) aguardando aprovação`}
+                        className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-[var(--gear-amber)] px-1.5 font-mono text-[10px] text-[var(--gear-ink)]"
+                      >
+                        {pendentes}
+                      </span>
+                    )}
                   </Link>
                 </li>
               )

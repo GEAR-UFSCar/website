@@ -6,6 +6,7 @@ import { ErroDados } from "@/components/erro-dados"
 import { DocumentoForm } from "@/components/documento-form"
 import { DocumentoAnexo } from "@/components/documento-anexo"
 import { DocumentoPublicacao } from "@/components/documento-publicacao"
+import { RegistroEditavel } from "@/components/membros/registro-editavel"
 import { createClient } from "@/lib/supabase/server"
 import { dataLonga } from "@/lib/datas"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
@@ -346,6 +347,16 @@ export default async function DocumentacaoPage({
                         status={documento.status}
                         publico={documento.publico}
                         temArquivo={Boolean(documento.link)}
+                      />
+                    )}
+                    {/* Sem apagar: documentos não têm policy de DELETE. */}
+                    {podeEscrever && (
+                      <RegistroEditavel
+                        tabela="documentos"
+                        id={documento.id}
+                        apagavel={false}
+                        className=""
+                        formulario={<DocumentoForm documento={documento} />}
                       />
                     )}
                   </Surge>

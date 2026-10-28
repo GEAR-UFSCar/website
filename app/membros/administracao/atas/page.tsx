@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { AtaForm } from "@/components/ata-form"
+import { RegistroEditavel } from "@/components/membros/registro-editavel"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario } from "@/lib/supabase/sessao"
@@ -84,6 +85,15 @@ export default async function AtasPage() {
                 </div>
               ))}
             </dl>
+
+            {/* Sem apagar: ata é registro oficial, e a 003 não tem policy de DELETE. */}
+            <RegistroEditavel
+              tabela="atas"
+              id={ata.id}
+              apagavel={false}
+              className="mt-6"
+              formulario={<AtaForm usuarioId={user.id} ata={ata} />}
+            />
           </Surge>
         ))}
       </div>
