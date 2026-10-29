@@ -60,6 +60,8 @@ const POR_CODIGO: Record<string, string> = {
   GE001: "Esta é a última pessoa da diretoria. Promova outra pessoa a Presidente ou Vice antes de tirar este cargo ou esta aprovação.",
   // Código de patrimônio (migração 029): é a etiqueta colada no item.
   GE003: "O código de um item é a etiqueta dele e não muda. Para corrigir, baixe o item e cadastre outro.",
+  // 032: retirar item que não está Disponível, ou devolver o que não está com você
+  GE004: "Este item mudou de situação: alguém já retirou ou ele não está com você. Recarregue a página.",
   // PostgREST.
   PGRST116: "Registro não encontrado.",
   PGRST301: "Sua sessão expirou. Entre novamente.",

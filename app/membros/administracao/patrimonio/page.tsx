@@ -7,6 +7,7 @@ import { Recolhivel } from "@/components/membros/recolhivel"
 import { PatrimonioForm } from "@/components/patrimonio-form"
 import { COLUNAS_ITEM, compararCodigo, resumir, type ItemInventario } from "@/lib/inventario"
 import { createClient } from "@/lib/supabase/server"
+import { exigirUsuario } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
@@ -17,6 +18,8 @@ export const metadata: Metadata = {
 const numero = new Intl.NumberFormat("pt-BR")
 
 export default async function PatrimonioPage() {
+  // o layout de Gestão já garantiu sessão e cargo; aqui só reaproveitamos o usuário
+  const user = await exigirUsuario()
   const supabase = await createClient()
   const { data, error } = await supabase.from("patrimonio").select(COLUNAS_ITEM)
 
@@ -55,7 +58,7 @@ export default async function PatrimonioPage() {
             <PatrimonioForm origens={origens} />
           </Recolhivel>
 
-          <InventarioLista itens={itens} origens={origens} />
+          <InventarioLista itens={itens} origens={origens} usuarioId={user.id} />
         </>
       )}
     </section>

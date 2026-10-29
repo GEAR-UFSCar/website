@@ -19,13 +19,36 @@ type Props = {
   frenteInicial: string
   /** Quem tem cargo não troca a própria frente — o banco recusa (023). */
   frenteTravada?: boolean
+  /** Contato opcional (032), visível só para membros aprovados. */
+  contatoInicial?: { whatsapp: string; github: string; linkedin: string }
+  /** Texto curto que aparece no perfil público (033). */
+  bioInicial?: string
+  /** Só para quem ainda não foi aprovado: vai para a banca do processo seletivo (033). */
+  motivacaoInicial?: string | null
 }
 
-export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInicial, frenteTravada = false }: Props) {
+/** "(15) 99999-0000" → "15999990000": o banco guarda só dígitos (032). */
+const soDigitos = (t: string) => t.replace(/\D/g, "")
+/** Aceita "@fulano" ou o link inteiro e guarda só o usuário. */
+const usuarioGithub = (t: string) => t.trim().replace(/^https?:\/\/(www\.)?github\.com\//i, "").replace(/^@/, "").replace(/\/.*$/, "")
+
+export function CompletarPerfil({
+  userId,
+  nomeInicial,
+  cursoInicial,
+  frenteInicial,
+  frenteTravada = false,
+  contatoInicial = { whatsapp: "", github: "", linkedin: "" },
+  bioInicial = "",
+  motivacaoInicial = null,
+}: Props) {
   const router = useRouter()
   const [nome, setNome] = useState(nomeInicial)
   const [curso, setCurso] = useState(cursoInicial)
   const [frente, setFrente] = useState(frenteInicial)
+  const [contato, setContato] = useState(contatoInicial)
+  const [bio, setBio] = useState(bioInicial)
+  const [motivacao, setMotivacao] = useState(motivacaoInicial ?? "")
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -55,6 +78,10 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
           curso: curso.trim(),
           // "Ainda não decidido" grava null: é o que o CHECK da coluna aceita
           frente: frente === "" ? null : frente,
+          whatsapp: soDigitos(contato.whatsapp) || null,
+          github: usuarioGithub(contato.github) || null,
+          linkedin: contato.linkedin.trim() || null,
+          bio: bio.trim() || null,
         },
         { onConflict: "id" },
       )
@@ -64,6 +91,19 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
       setErro(mensagemSegura(error))
       setCarregando(false)
       return
+    }
+
+    // Motivação do candidato vai para `candidaturas` (033), que só o dono e
+    // quem tem cargo leem — `perfis` é lido por todos os membros.
+    if (motivacaoInicial !== null && motivacao.trim()) {
+      const { error: erroMotivacao } = await supabase
+        .from("candidaturas")
+        .upsert({ perfil_id: userId, motivacao: motivacao.trim(), atualizado_em: new Date().toISOString() })
+      if (erroMotivacao) {
+        setErro(mensagemSegura(erroMotivacao))
+        setCarregando(false)
+        return
+      }
     }
 
     // Com upsert isto é quase inalcançável, mas "quase" não é "nunca": a RLS
@@ -166,6 +206,72 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
               </p>
             )}
           </div>
+
+          {motivacaoInicial !== null && (
+            <div>
+              <label htmlFor="motivacao" className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+                Por que você quer entrar no GEAR?
+              </label>
+              <textarea
+                id="motivacao"
+                rows={4}
+                maxLength={2000}
+                value={motivacao}
+                onChange={(e) => setMotivacao(e.target.value)}
+                disabled={carregando}
+                className={`${campoGrande} resize-y`}
+              />
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="bio" className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+              Sobre você (opcional)
+            </label>
+            <textarea
+              id="bio"
+              rows={3}
+              maxLength={500}
+              placeholder="O que você estuda, o que gosta de construir"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              disabled={carregando}
+              className={`${campoGrande} resize-y placeholder:text-muted-foreground/40`}
+            />
+          </div>
+
+          <fieldset className="space-y-6">
+            <legend className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)] mb-3">
+              Contato (opcional, só membros veem)
+            </legend>
+            {(
+              [
+                { chave: "whatsapp", rotulo: "WhatsApp com DDD", tipo: "tel", dica: "15 99999-0000", auto: "tel" },
+                { chave: "github", rotulo: "Usuário do GitHub", tipo: "text", dica: "fulano", auto: "off" },
+                { chave: "linkedin", rotulo: "Link do LinkedIn", tipo: "url", dica: "https://linkedin.com/in/fulano", auto: "url" },
+              ] as const
+            ).map((c) => (
+              <div key={c.chave}>
+                <label
+                  htmlFor={c.chave}
+                  className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3"
+                >
+                  {c.rotulo}
+                </label>
+                <input
+                  id={c.chave}
+                  name={c.chave}
+                  type={c.tipo}
+                  autoComplete={c.auto}
+                  placeholder={c.dica}
+                  value={contato[c.chave]}
+                  onChange={(e) => setContato((a) => ({ ...a, [c.chave]: e.target.value }))}
+                  disabled={carregando}
+                  className={`${campoGrande} placeholder:text-muted-foreground/40`}
+                />
+              </div>
+            ))}
+          </fieldset>
 
           {erro && <Aviso titulo="ERRO" role="alert">{erro}</Aviso>}
 

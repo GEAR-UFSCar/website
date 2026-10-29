@@ -118,3 +118,11 @@ export const DIRETORIA = ["Presidente", "Vice-Presidente"] as const
 export function eDiretoria(cargo: string | null | undefined) {
   return DIRETORIA.includes((cargo ?? "").trim() as (typeof DIRETORIA)[number])
 }
+
+/** Quem lança no caixa e decide pedido de compra — espelha e_financeiro() (033). */
+export function eFinanceiro(cargo: string | null | undefined) {
+  return eDiretoria(cargo) || (cargo ?? "").trim() === "Tesouraria"
+}
+
+/** Etapas do processo seletivo — espelha o CHECK de selecao.etapa (033). */
+export const ETAPAS = ["Inscrito", "Entrevista", "Desafio", "Aprovado", "Recusado"] as const

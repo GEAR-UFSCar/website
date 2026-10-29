@@ -10,7 +10,8 @@ import { PularParaConteudo } from "@/components/pular-para-conteudo"
 import { MembrosShell } from "@/components/membros-shell"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
-import { temCargo } from "@/lib/administracao"
+import { eFinanceiro, temCargo } from "@/lib/administracao"
+import { buscarNovidades, desdeDe } from "@/lib/novidades"
 
 /** Sai pelo servidor: limpa o cookie de sessão de verdade, não só no browser. */
 async function sair() {
@@ -77,6 +78,21 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
     pendentes = count ?? 0
   }
 
+  /*
+   * Contador do sino. Como o de pendentes, erro vira zero: a coluna
+   * novidades_vistas_em só existe depois da 033, e a casca não pode cair por ela.
+   */
+  const supabase = await createClient()
+  const { data: visto } = await supabase.from("perfis").select("novidades_vistas_em").eq("id", user.id).maybeSingle()
+  const novidades = (
+    await buscarNovidades(supabase, {
+      usuarioId: user.id,
+      desde: desdeDe(visto?.novidades_vistas_em ?? null),
+      comCargo: temCargo(perfil?.cargo),
+      financeiro: eFinanceiro(perfil?.cargo),
+    })
+  ).length
+
   return (
     <MotionConfig reducedMotion="always">
       <PularParaConteudo />
@@ -85,6 +101,7 @@ export default async function MembrosLayout({ children }: { children: ReactNode 
         cargo={perfil?.cargo ?? null}
         comCargo={temCargo(perfil?.cargo)}
         pendentes={pendentes}
+        novidades={novidades}
         sair={sair}
       />
       <main id="conteudo" tabIndex={-1} className="outline-none">
