@@ -2,6 +2,7 @@ import { PedidoDecisao } from "@/components/compras"
 import { BotaoApagar } from "@/components/membros/botao-apagar"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
 import { Pilula } from "@/components/membros/pilula"
+import { alcada } from "@/lib/administracao"
 import { dataDoDia, diaGear } from "@/lib/datas"
 
 /** Real com centavos: o caixa não arredonda (o reais() de métricas corta os centavos). */
@@ -43,6 +44,11 @@ export function ListaPedidos({ pedidos, decide, usuarioId }: { pedidos: Pedido[]
             {p.valor_estimado !== null && ` · ${moeda.format(Number(p.valor_estimado))}`}
           </p>
           <p className="mt-3 max-w-[70ch] whitespace-pre-line font-sans text-sm font-light leading-relaxed">{p.justificativa}</p>
+          {p.status === "Pendente" && (
+            <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              Alçada: {alcada(p.valor_estimado === null ? null : Number(p.valor_estimado))}
+            </p>
+          )}
           {p.link?.match(/^https?:\/\//) && (
             <a href={p.link} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-[var(--gear-amber)] hover:underline">
               Ver produto ↗

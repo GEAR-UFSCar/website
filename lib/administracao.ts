@@ -110,7 +110,22 @@ export const CARGOS = [
   "Diretor de Projetos",
   "Tesouraria",
   "Comunicação",
+  // áreas da Diretoria no Regimento (art. 20), somadas às que já existiam (035)
+  "Coordenação Técnica",
+  "Administração",
+  "Marketing",
+  "Documentação",
+  "Operações e Patrimônio",
 ] as const
+
+/** Categorias de membro (Regimento art. 11); fundador e efetivo votam. Espelha o CHECK da 035. */
+export const CATEGORIAS = {
+  fundador: "Fundador",
+  efetivo: "Efetivo",
+  em_formacao: "Em formação",
+  colaborador: "Colaborador",
+  conselheiro: "Conselheiro",
+} as const
 
 /** Cargos que podem alterar o cargo de outras pessoas — espelha e_diretoria(). */
 export const DIRETORIA = ["Presidente", "Vice-Presidente"] as const
@@ -121,8 +136,19 @@ export function eDiretoria(cargo: string | null | undefined) {
 
 /** Quem lança no caixa e decide pedido de compra — espelha e_financeiro() (033). */
 export function eFinanceiro(cargo: string | null | undefined) {
-  return eDiretoria(cargo) || (cargo ?? "").trim() === "Tesouraria"
+  return eDiretoria(cargo) || ["Tesouraria", "Operações e Patrimônio"].includes((cargo ?? "").trim())
 }
 
 /** Etapas do processo seletivo — espelha o CHECK de selecao.etapa (033). */
 export const ETAPAS = ["Inscrito", "Entrevista", "Desafio", "Aprovado", "Recusado"] as const
+
+/**
+ * Quem aprova uma compra pelo valor (Guia de Governança, doc. 31, e Tabela de
+ * Parâmetros, doc. 35). Os limites são propostas a confirmar em ata.
+ */
+export function alcada(valor: number | null | undefined) {
+  if (valor === null || valor === undefined) return "Valor não estimado: Operações e Patrimônio avalia"
+  if (valor <= 200) return "Até R$ 200: Operações e Patrimônio"
+  if (valor <= 1000) return "De R$ 200 a R$ 1.000: Diretoria, por maioria"
+  return "Acima de R$ 1.000: Assembleia, com ciência do orientador"
+}

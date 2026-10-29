@@ -72,6 +72,17 @@ export const GRUPOS: Grupo[] = [
     ],
   },
   {
+    id: "processos",
+    rotulo: "Processos",
+    href: "/membros/formularios",
+    prefixos: ["/membros/formularios", "/membros/assembleia", "/membros/pesquisas"],
+    abas: [
+      { href: "/membros/formularios", rotulo: "Formulários", prefixos: ["/membros/formularios"] },
+      { href: "/membros/assembleia", rotulo: "Assembleia", prefixos: ["/membros/assembleia"] },
+      { href: "/membros/pesquisas", rotulo: "Pesquisas", prefixos: ["/membros/pesquisas"] },
+    ],
+  },
+  {
     id: "gestao",
     rotulo: "Gestão",
     href: "/membros/administracao",
@@ -112,6 +123,9 @@ export function destinosDaPaleta(comCargo: boolean): Destino[] {
      */
     { rotulo: "Nova meta", detalhe: "Ação", href: "/membros/metas?nova=1" },
     { rotulo: "Pedir compra", detalhe: "Ação", href: "/membros/compras" },
+    { rotulo: "Relatar incidente", detalhe: "Ação", href: "/membros/formularios/novo?modelo=incidente" },
+    { rotulo: "Fazer denúncia", detalhe: "Ação", href: "/membros/formularios/novo?modelo=denuncia" },
+    { rotulo: "Termo de compromisso", detalhe: "Ação", href: "/membros/formularios/novo?modelo=termo_compromisso" },
     { rotulo: "Novidades", detalhe: "Tela", href: "/membros/novidades" },
     ...(comCargo
       ? [
@@ -167,6 +181,10 @@ const TITULOS: Record<string, string> = {
   "/membros/documentacao": "Documentos",
   "/membros/inventario": "Inventário",
   "/membros/compras": "Compras",
+  "/membros/formularios": "Formulários",
+  "/membros/formularios/novo": "Novo registro",
+  "/membros/assembleia": "Assembleia",
+  "/membros/pesquisas": "Pesquisas",
   "/membros/novidades": "Novidades",
   "/membros/horas": "Minhas horas",
   "/membros/administracao/horas": "Horas e presença",

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { CargoSelect } from "@/components/cargo-select"
+import { CategoriaSelect } from "@/components/categoria-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { AprovacaoPendentes, type Pendente } from "@/components/aprovacao-pendentes"
 import { Aviso } from "@/components/aviso"
@@ -27,6 +28,7 @@ type Perfil = {
   frente: string | null
   cargo: string | null
   aprovado: boolean
+  categoria: string
   cargo_atualizado_em: string | null
   created_at: string
 }
@@ -55,7 +57,7 @@ export default async function CargosPage() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, frente, cargo, aprovado, cargo_atualizado_em, created_at")
+    .select("id, nome_completo, curso, frente, cargo, aprovado, categoria, cargo_atualizado_em, created_at")
     // pendentes primeiro: é o que a diretoria vem resolver nesta tela
     .order("aprovado", { ascending: true })
     .order("nome_completo", { nullsFirst: false })
@@ -111,10 +113,10 @@ export default async function CargosPage() {
       </div>
 
       <div className="mt-8 overflow-x-auto">
-        <table className="w-full min-w-[46rem] border-collapse">
+        <table className="w-full min-w-[54rem] border-collapse">
           <thead>
             <tr className="border-b border-linha-forte text-left">
-              {["Membro", "Curso", "Frente", "Aprovação", "Cargo", "Alterado em"].map((h) => (
+              {["Membro", "Curso", "Frente", "Aprovação", "Categoria", "Cargo", "Alterado em"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
                 </th>
@@ -123,7 +125,7 @@ export default async function CargosPage() {
           </thead>
           <tbody>
             {perfis.length === 0 && !error && (
-              <tr><td colSpan={6} className="py-8 font-sans text-sm font-light text-muted-foreground">
+              <tr><td colSpan={7} className="py-8 font-sans text-sm font-light text-muted-foreground">
                 Nenhum perfil cadastrado.
               </td></tr>
             )}
@@ -140,6 +142,7 @@ export default async function CargosPage() {
                 <td className="py-4 pr-4 w-44">
                   <AprovacaoToggle perfilId={p.id} aprovado={p.aprovado} ehVoce={p.id === user.id} nome={p.nome_completo} />
                 </td>
+                <td className="py-4 pr-4 w-40"><CategoriaSelect perfilId={p.id} valor={p.categoria} nome={p.nome_completo} /></td>
                 <td className="py-4 pr-4 w-52"><CargoSelect perfilId={p.id} valor={p.cargo} /></td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">
                   {p.cargo_atualizado_em

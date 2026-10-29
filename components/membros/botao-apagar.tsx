@@ -20,7 +20,7 @@ export function BotaoApagar({
   rotulo = "Apagar",
   descricao,
 }: {
-  tabela: "eventos_chamada" | "horas_lancadas" | "caixa_lancamentos" | "pedidos_compra"
+  tabela: "eventos_chamada" | "horas_lancadas" | "caixa_lancamentos" | "pedidos_compra" | "registros"
   id: string
   rotulo?: string
   /** Para o leitor de tela saber O QUE vai ser apagado. */
