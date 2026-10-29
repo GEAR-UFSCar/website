@@ -95,10 +95,19 @@ const TABELAS = [
   "termos_aceitos",
   "metas",
   "metricas_periodo",
+  // 031–034
+  "sprint_tarefas",
+  "emprestimos",
+  "eventos_chamada",
+  "horas_lancadas",
+  "selecao",
+  "candidaturas",
+  "caixa_lancamentos",
+  "pedidos_compra",
 ]
 
 /** Predicados de autorização — não deveriam ser chamáveis sem sessão (SEC-07). */
-const PREDICADOS = ["e_membro", "e_diretoria", "tem_cargo"]
+const PREDICADOS = ["e_membro", "e_diretoria", "tem_cargo", "e_financeiro"]
 
 // --- 1. leitura anônima ------------------------------------------------------
 console.log("\n1. LEITURA ANÔNIMA — nenhuma tabela interna pode devolver linha")

@@ -9,9 +9,10 @@ assert.equal(duracaoSugerida("2026-10-01T19:00:00Z", "2026-10-01T21:10:00Z"), 2)
 assert.equal(duracaoSugerida("2026-10-01T19:00:00Z", null), 2)
 assert.equal(duracaoSugerida("2026-10-01T19:00:00Z", "2026-10-01T19:10:00Z"), 0.5)
 const linhas = linhasDeHoras(
-  [{ evento_id: "e", dia: "2026-10-01", horas: "1.5", evento: { titulo: "Geral", tipo: "Reunião" } }],
+  [{ id: "e", dia: "2026-10-01", horas: "1.5", atividade: "Reunião: Geral" }],
   [{ id: "l", data: "2026-10-05", horas: "3", descricao: "Viagem" }],
 )
 assert.equal(linhas[0].chave, "l")
 assert.equal(somarHoras(linhas), 4.5)
+assert.equal(linhas[1].descricao, "Reunião: Geral")
 console.log("horas: ok")

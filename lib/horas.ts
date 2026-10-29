@@ -3,7 +3,8 @@
  * Dado puro, sem React, para o mesmo cálculo valer nas duas.
  */
 
-export type Chamada = { evento_id: string; dia: string; horas: number; evento: { titulo: string; tipo: string } | null }
+/** `atividade` é o nome do evento congelado no registro (034): sobrevive ao evento apagado. */
+export type Chamada = { id: string; dia: string; horas: number; atividade: string }
 export type HoraLancada = { id: string; data: string; horas: number; descricao: string }
 
 export type LinhaHoras = { chave: string; data: string; descricao: string; horas: number; origem: "Evento" | "Lançamento" }
@@ -12,9 +13,9 @@ export type LinhaHoras = { chave: string; data: string; descricao: string; horas
 export function linhasDeHoras(chamadas: Chamada[], lancadas: HoraLancada[]): LinhaHoras[] {
   return [
     ...chamadas.map((c) => ({
-      chave: `${c.evento_id}-${c.dia}`,
+      chave: c.id,
       data: c.dia,
-      descricao: c.evento ? `${c.evento.tipo}: ${c.evento.titulo}` : "Evento apagado",
+      descricao: c.atividade,
       horas: Number(c.horas),
       origem: "Evento" as const,
     })),

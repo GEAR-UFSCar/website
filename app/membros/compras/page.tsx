@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 }
 
 export default async function ComprasPage() {
-  const { perfil } = await exigirMembroAprovado()
+  const { user, perfil } = await exigirMembroAprovado()
   const supabase = await createClient()
 
   // RLS: sem cargo volta só o que é seu; com cargo, todos (033)
@@ -42,7 +42,7 @@ export default async function ComprasPage() {
             <PedidoForm />
           </Recolhivel>
           <Secao titulo={temCargo(perfil?.cargo) ? "Todos os pedidos" : "Meus pedidos"}>
-            <ListaPedidos pedidos={pedidos} decide={decide} />
+            <ListaPedidos pedidos={pedidos} decide={decide} usuarioId={user.id} />
           </Secao>
         </>
       )}
