@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { ChevronDown, GraduationCap, Home, LogOut, Search, Settings, Target, Users, type LucideIcon } from "lucide-react"
+import { Bell, ChevronDown, GraduationCap, Home, LogOut, Search, Settings, Target, Users, type LucideIcon } from "lucide-react"
 
 import { Paleta } from "@/components/membros/paleta"
 import { abaAtual, grupoAtual, gruposVisiveis, titulo as tituloDaRota } from "@/lib/navegacao"
@@ -26,6 +26,8 @@ type Props = {
   comCargo: boolean
   /** Cadastros esperando aprovação; vira contador na aba Gestão. */
   pendentes: number
+  /** Novidades desde a última visita a /membros/novidades (033); vira número no sino. */
+  novidades: number
   /** Server Action de logout, definida no layout. */
   sair: () => Promise<void>
 }
@@ -45,7 +47,7 @@ type Props = {
  * página precisa compensar com padding-top. `nao-imprimir` porque a aba ProEx
  * de Métricas é feita para virar papel.
  */
-export function MembrosShell({ nome, cargo, comCargo, pendentes, sair }: Props) {
+export function MembrosShell({ nome, cargo, comCargo, pendentes, novidades, sair }: Props) {
   const pathname = usePathname()
   const [aberto, setAberto] = useState(false)
   const menu = useRef<HTMLDivElement>(null)
@@ -135,6 +137,22 @@ export function MembrosShell({ nome, cargo, comCargo, pendentes, sair }: Props) 
             })}
           </ul>
         </nav>
+
+        <Link
+          href="/membros/novidades"
+          className="relative flex h-11 w-11 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground"
+          aria-label={novidades > 0 ? `Novidades: ${novidades} ${novidades === 1 ? "nova" : "novas"}` : "Novidades"}
+        >
+          <Bell aria-hidden="true" className="h-5 w-5" />
+          {novidades > 0 && (
+            <span
+              aria-hidden="true"
+              className="absolute right-1 top-1 min-w-4 bg-[var(--gear-amber)] px-1 text-center font-mono text-[9px] leading-4 text-[var(--gear-ink)]"
+            >
+              {novidades > 9 ? "9+" : novidades}
+            </span>
+          )}
+        </Link>
 
         <button
           type="button"

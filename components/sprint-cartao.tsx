@@ -3,6 +3,7 @@
 import { SprintStatus } from "@/components/sprint-status"
 import { SprintProgresso } from "@/components/sprint-progresso"
 import { SprintDiario } from "@/components/sprint-diario"
+import { SprintTarefas } from "@/components/sprint-tarefas"
 import { SprintForm } from "@/components/sprint-form"
 import { RegistroEditavel } from "@/components/membros/registro-editavel"
 import type { FrenteNome } from "@/lib/administracao"
@@ -154,6 +155,8 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId, pe
           }
         />
       )}
+
+      <SprintTarefas sprintId={sprint.id} podeEscrever={podeEscrever} usuarioId={usuarioId} pessoas={pessoas} />
 
       <SprintDiario
         sprintId={sprint.id}

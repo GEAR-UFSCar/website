@@ -48,6 +48,7 @@ a anterior não rodou.
 | 030 | `apagar_atas_e_documentos.sql` | a **diretoria** pode apagar atas e documentos (os outros cargos continuam só criando e corrigindo). O arquivo no bucket não é apagado junto | 003, 006, 013 |
 | 031 | `academia_gerenciavel.sql` | quem tem cargo cria e corrige **módulos** da Academia pelo site (a diretoria apaga, o que leva junto o progresso de todos naquele módulo); quem tem cargo lê o **progresso** de todos, para o painel de Gestão; CHECKs de tamanho e link http/https em `modulos` | 002, 014, 022 |
 | 032 | `emprestimos_e_contato.sql` | todo membro aprovado **lê o inventário**; `retirar_item()` e `devolver_item()` (SECURITY DEFINER) fazem o empréstimo do item inteiro, gravando `patrimonio.emprestado_para`; perfil ganha `whatsapp`, `github` e `linkedin` opcionais, com CHECK de formato e gatilho que impede outra pessoa (inclusive a diretoria) de mudá-los | 014, 029, 031 |
+| 033 | `tarefas_horas_caixa_selecao.sql` | `sprint_tarefas` (o responsável sem cargo só marca feita); `emprestimos` com prazo e `retirar_item(uuid, date)` no lugar da versão da 032; `eventos_chamada` e `horas_lancadas` para as horas de extensão; `selecao` (etapa e notas da banca, só cargo lê); `e_financeiro()`, `caixa_lancamentos` e `pedidos_compra` com decisão carimbada pelo banco; `perfis` ganha `bio`, `motivacao` e `novidades_vistas_em`, protegidos pelo `guardar_contato()`. Só cria, não apaga dado | 021, 027, 032 |
 
 Duas armadilhas conhecidas:
 

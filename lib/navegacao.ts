@@ -33,10 +33,11 @@ export const GRUPOS: Grupo[] = [
     id: "frente",
     rotulo: "Minha frente",
     href: "/membros/frente",
-    prefixos: ["/membros/frente", "/membros/sprints", "/membros/metas"],
+    prefixos: ["/membros/frente", "/membros/sprints", "/membros/metas", "/membros/horas"],
     abas: [
       { href: "/membros/frente", rotulo: "Sprints", prefixos: ["/membros/frente", "/membros/sprints"] },
       { href: "/membros/metas", rotulo: "Metas", prefixos: ["/membros/metas"] },
+      { href: "/membros/horas", rotulo: "Horas", prefixos: ["/membros/horas"] },
     ],
   },
   {
@@ -56,6 +57,8 @@ export const GRUPOS: Grupo[] = [
       "/membros/diretorio",
       "/membros/documentacao",
       "/membros/inventario",
+      "/membros/compras",
+      "/membros/novidades",
       "/membros/metricas",
     ],
     abas: [
@@ -64,6 +67,7 @@ export const GRUPOS: Grupo[] = [
       { href: "/membros/diretorio", rotulo: "Pessoas", prefixos: ["/membros/diretorio"] },
       { href: "/membros/documentacao", rotulo: "Documentos", prefixos: ["/membros/documentacao"] },
       { href: "/membros/inventario", rotulo: "Inventário", prefixos: ["/membros/inventario"] },
+      { href: "/membros/compras", rotulo: "Compras", prefixos: ["/membros/compras"] },
       { href: "/membros/metricas", rotulo: "Métricas", prefixos: ["/membros/metricas"] },
     ],
   },
@@ -78,6 +82,10 @@ export const GRUPOS: Grupo[] = [
       { href: "/membros/administracao/atas", rotulo: "Atas", prefixos: ["/membros/administracao/atas"] },
       { href: "/membros/administracao/cargos", rotulo: "Cargos", prefixos: ["/membros/administracao/cargos"] },
       { href: "/membros/administracao/patrimonio", rotulo: "Patrimônio", prefixos: ["/membros/administracao/patrimonio"] },
+      { href: "/membros/administracao/horas", rotulo: "Horas", prefixos: ["/membros/administracao/horas"] },
+      { href: "/membros/administracao/selecao", rotulo: "Seleção", prefixos: ["/membros/administracao/selecao"] },
+      { href: "/membros/administracao/caixa", rotulo: "Caixa", prefixos: ["/membros/administracao/caixa"] },
+      { href: "/membros/administracao/atividade", rotulo: "Atividade", prefixos: ["/membros/administracao/atividade"] },
     ],
   },
 ]
@@ -103,6 +111,8 @@ export function destinosDaPaleta(comCargo: boolean): Destino[] {
      * parâmetro o atalho chegaria a uma tela sem formulário à vista.
      */
     { rotulo: "Nova meta", detalhe: "Ação", href: "/membros/metas?nova=1" },
+    { rotulo: "Pedir compra", detalhe: "Ação", href: "/membros/compras" },
+    { rotulo: "Novidades", detalhe: "Tela", href: "/membros/novidades" },
     ...(comCargo
       ? [
           { rotulo: "Novo aviso", detalhe: "Ação", href: "/membros/mural?novo=1" },
@@ -156,6 +166,13 @@ const TITULOS: Record<string, string> = {
   "/membros/diretorio": "Pessoas",
   "/membros/documentacao": "Documentos",
   "/membros/inventario": "Inventário",
+  "/membros/compras": "Compras",
+  "/membros/novidades": "Novidades",
+  "/membros/horas": "Minhas horas",
+  "/membros/administracao/horas": "Horas e presença",
+  "/membros/administracao/selecao": "Processo seletivo",
+  "/membros/administracao/caixa": "Caixa",
+  "/membros/administracao/atividade": "Atividade",
   "/membros/metricas": "Métricas",
   "/membros/administracao": "Gestão",
   "/membros/administracao/atas": "Atas",

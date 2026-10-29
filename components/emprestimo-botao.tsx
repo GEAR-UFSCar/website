@@ -30,6 +30,7 @@ export function EmprestimoBotao({
   const [ocupado, setOcupado] = useState(false)
   const [atualizando, iniciar] = useTransition()
   const [erro, setErro] = useState<string | null>(null)
+  const [prazo, setPrazo] = useState("")
 
   const acao =
     status === "Disponível" ? "retirar_item" : status === "Emprestado" && (comigo || gerencia) ? "devolver_item" : null
@@ -38,14 +39,32 @@ export function EmprestimoBotao({
   const executar = async () => {
     setErro(null)
     setOcupado(true)
-    const { error } = await createClient().rpc(acao, { p_id: id })
+    // prazo é opcional e só existe na retirada (033); sem ele o item não entra como atrasado
+    const { error } = await createClient().rpc(
+      acao,
+      acao === "retirar_item" ? { p_id: id, p_prazo: prazo || null } : { p_id: id },
+    )
     setOcupado(false)
     if (error) return setErro(mensagemSegura(error))
     iniciar(() => router.refresh())
   }
 
   return (
-    <div>
+    <div className="flex flex-wrap items-end gap-3">
+      {acao === "retirar_item" && (
+        <div>
+          <label htmlFor={`prazo-${id}`} className="block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+            Devolvo até (opcional)
+          </label>
+          <input
+            id={`prazo-${id}`}
+            type="date"
+            value={prazo}
+            onChange={(e) => setPrazo(e.target.value)}
+            className="mt-1 min-h-11 border border-linha-forte bg-transparent px-3 font-mono text-[11px]"
+          />
+        </div>
+      )}
       <button
         type="button"
         onClick={executar}
@@ -56,7 +75,7 @@ export function EmprestimoBotao({
         {ocupado || atualizando ? "Salvando…" : acao === "retirar_item" ? "Retirar" : comigo ? "Devolver" : "Marcar devolvido"}
       </button>
       {erro && (
-        <p role="alert" className="mt-2 font-mono text-[10px] leading-snug text-[var(--gear-amber)]">
+        <p role="alert" className="basis-full font-mono text-[10px] leading-snug text-[var(--gear-amber)]">
           {erro}
         </p>
       )}

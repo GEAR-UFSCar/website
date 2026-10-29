@@ -79,7 +79,7 @@ export default async function AguardandoPage() {
           data-cursor-hover
           className={`text-center ${botaoSecundario}`}
         >
-          Corrigir meus dados
+          Corrigir dados e dizer por que quer entrar
         </Link>
         <form action={sair}>
           <button type="submit" data-cursor-hover className={`w-full ${botaoSecundario}`}>

@@ -21,6 +21,10 @@ type Props = {
   frenteTravada?: boolean
   /** Contato opcional (032), visível só para membros aprovados. */
   contatoInicial?: { whatsapp: string; github: string; linkedin: string }
+  /** Texto curto que aparece no perfil público (033). */
+  bioInicial?: string
+  /** Só para quem ainda não foi aprovado: vai para a banca do processo seletivo (033). */
+  motivacaoInicial?: string | null
 }
 
 /** "(15) 99999-0000" → "15999990000": o banco guarda só dígitos (032). */
@@ -35,12 +39,16 @@ export function CompletarPerfil({
   frenteInicial,
   frenteTravada = false,
   contatoInicial = { whatsapp: "", github: "", linkedin: "" },
+  bioInicial = "",
+  motivacaoInicial = null,
 }: Props) {
   const router = useRouter()
   const [nome, setNome] = useState(nomeInicial)
   const [curso, setCurso] = useState(cursoInicial)
   const [frente, setFrente] = useState(frenteInicial)
   const [contato, setContato] = useState(contatoInicial)
+  const [bio, setBio] = useState(bioInicial)
+  const [motivacao, setMotivacao] = useState(motivacaoInicial ?? "")
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -73,6 +81,9 @@ export function CompletarPerfil({
           whatsapp: soDigitos(contato.whatsapp) || null,
           github: usuarioGithub(contato.github) || null,
           linkedin: contato.linkedin.trim() || null,
+          bio: bio.trim() || null,
+          // null = não é candidato: não mexe na coluna
+          ...(motivacaoInicial !== null && { motivacao: motivacao.trim() || null }),
         },
         { onConflict: "id" },
       )
@@ -183,6 +194,39 @@ export function CompletarPerfil({
                 COM CARGO, A FRENTE É DEFINIDA PELA DIRETORIA
               </p>
             )}
+          </div>
+
+          {motivacaoInicial !== null && (
+            <div>
+              <label htmlFor="motivacao" className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+                Por que você quer entrar no GEAR?
+              </label>
+              <textarea
+                id="motivacao"
+                rows={4}
+                maxLength={2000}
+                value={motivacao}
+                onChange={(e) => setMotivacao(e.target.value)}
+                disabled={carregando}
+                className={`${campoGrande} resize-y`}
+              />
+            </div>
+          )}
+
+          <div>
+            <label htmlFor="bio" className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3">
+              Sobre você (opcional)
+            </label>
+            <textarea
+              id="bio"
+              rows={3}
+              maxLength={500}
+              placeholder="O que você estuda, o que gosta de construir"
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              disabled={carregando}
+              className={`${campoGrande} resize-y placeholder:text-muted-foreground/40`}
+            />
           </div>
 
           <fieldset className="space-y-6">

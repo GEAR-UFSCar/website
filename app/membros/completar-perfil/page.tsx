@@ -21,7 +21,7 @@ export default async function CompletarPerfilPage() {
   // Pré-preenche com o que o cadastro já mandou, para não digitar de novo.
   const { data: perfil } = await supabase
     .from("perfis")
-    .select("nome_completo, curso, frente, cargo, whatsapp, github, linkedin")
+    .select("nome_completo, curso, frente, cargo, aprovado, whatsapp, github, linkedin, bio, motivacao")
     .eq("id", user.id)
     .maybeSingle<{
       nome_completo: string | null
@@ -31,6 +31,9 @@ export default async function CompletarPerfilPage() {
       whatsapp: string | null
       github: string | null
       linkedin: string | null
+      aprovado: boolean
+      bio: string | null
+      motivacao: string | null
     }>()
 
   return (
@@ -39,6 +42,8 @@ export default async function CompletarPerfilPage() {
       nomeInicial={perfil?.nome_completo ?? ""}
       cursoInicial={perfil?.curso ?? ""}
       frenteInicial={perfil?.frente ?? ""}
+      bioInicial={perfil?.bio ?? ""}
+      motivacaoInicial={perfil?.aprovado ? null : (perfil?.motivacao ?? "")}
       contatoInicial={{
         whatsapp: perfil?.whatsapp ?? "",
         github: perfil?.github ?? "",

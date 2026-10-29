@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 
+import Link from "next/link"
+
 import { Surge } from "@/components/surge"
 import { temCargo } from "@/lib/administracao"
 import { normalizar } from "@/lib/documentos-catalogo"
@@ -142,7 +144,9 @@ export function DiretorioLista({
                   className="border border-linha p-6 transition-colors duration-300 hover:border-[var(--gear-amber)]"
                 >
                   <p className="break-words font-sans text-lg font-light leading-snug">
-                    {membro.nome_completo?.trim() || "Sem nome preenchido"}
+                    <Link href={`/membros/diretorio/${membro.id}`} className="hover:text-[var(--gear-amber)] hover:underline">
+                      {membro.nome_completo?.trim() || "Sem nome preenchido"}
+                    </Link>
                   </p>
 
                   <dl className="mt-4 space-y-3">

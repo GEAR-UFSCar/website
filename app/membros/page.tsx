@@ -17,7 +17,10 @@ import {
 import { detalheTecnico, mensagemSegura } from "@/lib/erros"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
-import { hojeISO, saudacao } from "@/lib/datas"
+import Link from "next/link"
+
+import { Secao } from "@/components/membros/secao"
+import { dataDoDia, hojeISO, saudacao } from "@/lib/datas"
 import { hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
 import { eventoVisivel, maisDias, ordenarSprints, prazosDaSemana, proximaAcao, type ItemPrazo } from "@/lib/hoje"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
@@ -61,7 +64,7 @@ export default async function HojePage() {
   const ate = maisDias(hoje, 7)
 
   const supabase = await createClient()
-  const [sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR] = await Promise.all([
+  const [sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR, tarefasR] = await Promise.all([
     supabase.from("sprints").select(COLUNAS_SPRINT).eq("responsavel_id", user.id).neq("status", "Concluído"),
     // Já expande a repetição: a reunião semanal de toda quarta aparece sem estar "na janela" no banco.
     buscarEventos(supabase, hoje, ate),
@@ -80,7 +83,21 @@ export default async function HojePage() {
     comCargo
       ? supabase.from("sprints").select("id", { count: "exact", head: true }).eq("status", "Bloqueado")
       : Promise.resolve({ count: null, error: null }),
+    // 033: tarefas de sprint atribuídas a mim e ainda abertas
+    supabase
+      .from("sprint_tarefas")
+      .select("id, titulo, prazo, sprint:sprints(id, titulo, frente)")
+      .eq("responsavel_id", user.id)
+      .eq("feita", false)
+      .order("prazo", { nullsFirst: false })
+      .limit(8),
   ])
+  const minhasTarefas = (tarefasR.data ?? []) as unknown as {
+    id: string
+    titulo: string
+    prazo: string | null
+    sprint: { id: string; titulo: string; frente: string } | null
+  }[]
 
   const sprints = ordenarSprints((sprintsR.data ?? []) as unknown as Sprint[])
 
@@ -175,6 +192,30 @@ export default async function HojePage() {
       <div className="mt-2 grid grid-cols-1 gap-x-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div>
           <BlocoAgora sprints={sprints} erro={sprintsR.error} rotaFrente={rotaFrente} />
+          {minhasTarefas.length > 0 && (
+            <Secao titulo="Minhas tarefas">
+              <ul className="border border-linha">
+                {minhasTarefas.map((t) => (
+                  <li key={t.id} className="border-b border-linha last:border-b-0">
+                    <Link
+                      href={t.sprint ? hrefDoSprint(t.sprint.frente, t.sprint.id) : rotaFrente}
+                      className="flex flex-wrap items-baseline gap-x-3 px-5 py-3 hover:bg-[var(--gear-navy)]"
+                    >
+                      <span className="flex-1 font-sans text-sm">{t.titulo}</span>
+                      <span
+                        className={`font-mono text-[10px] uppercase tracking-[0.15em] ${
+                          t.prazo && t.prazo < hoje ? "text-[var(--gear-amber)]" : "text-muted-foreground"
+                        }`}
+                      >
+                        {t.sprint?.titulo}
+                        {t.prazo && ` · ${dataDoDia(t.prazo)}`}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </Secao>
+          )}
           <BlocoPrazos atrasados={atrasados} proximos={proximos} hoje={hoje} erros={errosPrazos} />
         </div>
         <div>

@@ -104,6 +104,11 @@ export function agoraISO() {
   return new Date().toISOString()
 }
 
+/** Instante de `dias` atrás em ISO, para janelas como "últimos 90 dias". */
+export function diasAtrasISO(dias: number) {
+  return new Date(Date.now() - dias * 86_400_000).toISOString()
+}
+
 /*
  * As duas abaixo são para colunas `date` (sem hora), como metas.prazo. Elas
  * NÃO podem passar por `new Date(iso)`: "2026-09-20" é interpretado como
