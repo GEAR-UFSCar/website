@@ -122,3 +122,42 @@ export function proximaAcao(entrada: {
   if (moduloAtual) return { tipo: "modulo", titulo: moduloAtual }
   return { tipo: "nada" }
 }
+
+export type PedidoDeResposta = { id: string; texto: string; href: string; quantos: number; alerta: boolean }
+
+type Janela = { id: string; abre_em: string; fecha_em: string }
+const aberta = (j: Janela, agora: number) => Date.parse(j.abre_em) <= agora && Date.parse(j.fecha_em) > agora
+
+/**
+ * O que espera uma resposta minha fora dos sprints (035 e 033): votar, responder
+ * pesquisa, corrigir registro devolvido, devolver item. Só entra o que tem
+ * quantidade; lista indisponível (null) some em vez de virar "0".
+ */
+export function pedidosDeResposta(e: {
+  agora: number
+  hoje: string
+  comVoto: boolean
+  votacoes: Janela[] | null
+  votei: string[]
+  pesquisas: Janela[] | null
+  respondi: string[]
+  devolvidos: number | null
+  emprestimos: { prazo: string | null }[] | null
+}): PedidoDeResposta[] {
+  const votar = e.comVoto && e.votacoes ? e.votacoes.filter((v) => aberta(v, e.agora) && !e.votei.includes(v.id)).length : 0
+  const responder = e.pesquisas ? e.pesquisas.filter((p) => aberta(p, e.agora) && !e.respondi.includes(p.id)).length : 0
+  const atrasados = (e.emprestimos ?? []).filter((x) => x.prazo && x.prazo < e.hoje).length
+  const comigo = e.emprestimos?.length ?? 0
+  return [
+    { id: "votar", texto: votar === 1 ? "Votação aberta sem o seu voto" : "Votações abertas sem o seu voto", href: "/membros/assembleia", quantos: votar, alerta: true },
+    { id: "pesquisa", texto: responder === 1 ? "Pesquisa anônima para responder" : "Pesquisas anônimas para responder", href: "/membros/pesquisas", quantos: responder, alerta: false },
+    { id: "devolvido", texto: "Registros devolvidos para você corrigir", href: "/membros/formularios", quantos: e.devolvidos ?? 0, alerta: true },
+    {
+      id: "emprestimo",
+      texto: atrasados ? `Itens do inventário com você (${atrasados} com prazo vencido)` : "Itens do inventário com você",
+      href: "/membros/inventario",
+      quantos: comigo,
+      alerta: atrasados > 0,
+    },
+  ].filter((p) => p.quantos > 0)
+}

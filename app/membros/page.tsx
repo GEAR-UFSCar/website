@@ -7,6 +7,7 @@ import {
   BlocoAcademia,
   BlocoAgora,
   BlocoAvisos,
+  BlocoPedeResposta,
   BlocoPendencias,
   BlocoPrazos,
   FaixaNumeros,
@@ -21,8 +22,9 @@ import Link from "next/link"
 
 import { Secao } from "@/components/membros/secao"
 import { dataDoDia, hojeISO, saudacao } from "@/lib/datas"
-import { hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
-import { eventoVisivel, maisDias, ordenarSprints, prazosDaSemana, proximaAcao, type ItemPrazo } from "@/lib/hoje"
+import { eFinanceiro, hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
+import { eventoVisivel, maisDias, ordenarSprints, pedidosDeResposta, prazosDaSemana, proximaAcao, type ItemPrazo } from "@/lib/hoje"
+import { MODELOS } from "@/lib/formularios"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
 import { COLUNAS_META, type Meta } from "@/lib/metas"
 import { buscarEventos, itensDeEventos } from "@/lib/calendario-dados"
@@ -64,7 +66,12 @@ export default async function HojePage() {
   const ate = maisDias(hoje, 7)
 
   const supabase = await createClient()
-  const [sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR, tarefasR] = await Promise.all([
+  const agora = new Date().toISOString()
+  const decideCompras = eFinanceiro(perfil?.cargo)
+  const [
+    sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR, tarefasR,
+    categoriaR, votacoesR, voteiR, pesquisasR, respondiR, devolvidosR, emprestimosR, registrosR, comprasR,
+  ] = await Promise.all([
     supabase.from("sprints").select(COLUNAS_SPRINT).eq("responsavel_id", user.id).neq("status", "Concluído"),
     // Já expande a repetição: a reunião semanal de toda quarta aparece sem estar "na janela" no banco.
     buscarEventos(supabase, hoje, ate),
@@ -91,7 +98,39 @@ export default async function HojePage() {
       .eq("feita", false)
       .order("prazo", { nullsFirst: false })
       .limit(8),
+    // 035: o que espera uma resposta minha. Sem a migração, cada consulta erra e o item some.
+    supabase.from("perfis").select("categoria").eq("id", user.id).maybeSingle(),
+    supabase.from("votacoes").select("id, abre_em, fecha_em").gt("fecha_em", agora),
+    supabase.from("votacao_participacao").select("votacao_id").eq("usuario_id", user.id),
+    supabase.from("pesquisas").select("id, abre_em, fecha_em").gt("fecha_em", agora),
+    supabase.from("pesquisa_participacao").select("pesquisa_id").eq("usuario_id", user.id),
+    supabase.from("registros").select("id", { count: "exact", head: true }).eq("autor_id", user.id).eq("status", "devolvido"),
+    supabase.from("emprestimos").select("prazo").eq("usuario_id", user.id).is("devolvido_em", null),
+    // aprovar é de outra pessoa: o que eu enviei não conta na minha fila (mesma régua de /membros/formularios)
+    comCargo
+      ? supabase
+          .from("registros")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "enviado")
+          .neq("autor_id", user.id)
+          .in("modelo", MODELOS.filter((m) => m.aprovacao).map((m) => m.id))
+      : Promise.resolve({ count: null, error: null }),
+    decideCompras
+      ? supabase.from("pedidos_compra").select("id", { count: "exact", head: true }).eq("status", "Pendente")
+      : Promise.resolve({ count: null, error: null }),
   ])
+  const categoria = (categoriaR.data as { categoria?: string } | null)?.categoria
+  const pedidos = pedidosDeResposta({
+    agora: Date.parse(agora),
+    hoje,
+    comVoto: categoria === "fundador" || categoria === "efetivo",
+    votacoes: votacoesR.error ? null : (votacoesR.data ?? []),
+    votei: (voteiR.data ?? []).map((v) => v.votacao_id),
+    pesquisas: pesquisasR.error ? null : (pesquisasR.data ?? []),
+    respondi: (respondiR.data ?? []).map((p) => p.pesquisa_id),
+    devolvidos: devolvidosR.error ? null : devolvidosR.count,
+    emprestimos: emprestimosR.error ? null : (emprestimosR.data ?? []),
+  })
   const minhasTarefas = (tarefasR.data ?? []) as unknown as {
     id: string
     titulo: string
@@ -219,12 +258,15 @@ export default async function HojePage() {
           <BlocoPrazos atrasados={atrasados} proximos={proximos} hoje={hoje} erros={errosPrazos} />
         </div>
         <div>
+          <BlocoPedeResposta pedidos={pedidos} />
           <BlocoAvisos avisos={(avisosR.data ?? []) as unknown as AvisoResumo[]} erro={avisosR.error} />
           {moduloAtual && <BlocoAcademia atual={moduloAtual} />}
           {comCargo && (
             <BlocoPendencias
               aprovacoes={aprovacoesR.error ? null : (aprovacoesR.count ?? 0)}
               bloqueados={bloqueadosR.error ? null : (bloqueadosR.count ?? 0)}
+              registros={registrosR.error ? null : (registrosR.count ?? 0)}
+              compras={decideCompras ? (comprasR.error ? null : (comprasR.count ?? 0)) : undefined}
             />
           )}
         </div>
