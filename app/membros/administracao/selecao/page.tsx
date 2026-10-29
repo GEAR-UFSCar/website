@@ -27,19 +27,21 @@ export default async function SelecaoPage() {
   const ehDiretoria = eDiretoria((await getPerfil()).perfil?.cargo)
   const supabase = await createClient()
 
-  const [candR, fichasR] = await Promise.all([
+  const [candR, fichasR, motivR] = await Promise.all([
     supabase
       .from("perfis")
-      .select("id, nome_completo, curso, frente, motivacao, created_at")
+      .select("id, nome_completo, curso, frente, created_at")
       .eq("aprovado", false)
       .not("nome_completo", "is", null)
       .order("created_at"),
     supabase.from("selecao").select("perfil_id, etapa, notas"),
+    supabase.from("candidaturas").select("perfil_id, motivacao"),
   ])
-  const erro = candR.error ?? fichasR.error
+  const motivacoes = new Map((motivR.data ?? []).map((m) => [m.perfil_id, m.motivacao as string]))
+  const erro = candR.error ?? fichasR.error ?? motivR.error
   const fichas = new Map((fichasR.data ?? []).map((f) => [f.perfil_id, f]))
   const candidatos = (candR.data ?? [])
-    .map((c) => ({ ...c, etapa: fichas.get(c.id)?.etapa ?? "Inscrito", notas: fichas.get(c.id)?.notas ?? "" }))
+    .map((c) => ({ ...c, motivacao: motivacoes.get(c.id) ?? null, etapa: fichas.get(c.id)?.etapa ?? "Inscrito", notas: fichas.get(c.id)?.notas ?? "" }))
     .sort((a, b) => ETAPAS.indexOf(a.etapa as (typeof ETAPAS)[number]) - ETAPAS.indexOf(b.etapa as (typeof ETAPAS)[number]))
   const porEtapa = ETAPAS.map((e) => [e, candidatos.filter((c) => c.etapa === e).length] as const)
 

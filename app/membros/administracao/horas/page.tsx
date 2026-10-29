@@ -8,6 +8,7 @@ import { Secao } from "@/components/membros/secao"
 import { agoraISO, diaGear, diasAtrasISO, hojeISO } from "@/lib/datas"
 import { duracaoSugerida, formatarHoras } from "@/lib/horas"
 import { createClient } from "@/lib/supabase/server"
+import { exigirUsuario } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
@@ -16,6 +17,7 @@ export const metadata: Metadata = {
 }
 
 export default async function HorasGestaoPage() {
+  const user = await exigirUsuario()
   const supabase = await createClient()
   const desde = diasAtrasISO(120)
 
@@ -43,6 +45,8 @@ export default async function HorasGestaoPage() {
     horas: duracaoSugerida(e.data_inicio, e.data_fim),
   }))
   const pessoas = pessoasR.data ?? []
+  // a 033 proíbe dar horas a si mesmo; quem faz a chamada não aparece nos formulários
+  const outros = pessoas.filter((p) => p.id !== user.id)
 
   const totais = new Map<string, number>()
   for (const r of [...(chamadasR.data ?? []), ...(lancadasR.data ?? [])]) {
@@ -63,11 +67,14 @@ export default async function HorasGestaoPage() {
       ) : (
         <>
           <Secao titulo="Chamada">
-            <ChamadaForm eventos={eventos} pessoas={pessoas} />
+            <ChamadaForm eventos={eventos} pessoas={outros} />
+            <p className="mt-3 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+              Você não aparece na lista: as suas horas são registradas por outra pessoa com cargo.
+            </p>
           </Secao>
 
           <Recolhivel rotulo="Lançar horas avulsas" className="mt-10">
-            <LancamentoForm pessoas={pessoas} />
+            <LancamentoForm pessoas={outros} />
           </Recolhivel>
 
           <Secao titulo="Total por membro">

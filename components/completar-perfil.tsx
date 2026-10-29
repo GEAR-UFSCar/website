@@ -82,8 +82,6 @@ export function CompletarPerfil({
           github: usuarioGithub(contato.github) || null,
           linkedin: contato.linkedin.trim() || null,
           bio: bio.trim() || null,
-          // null = não é candidato: não mexe na coluna
-          ...(motivacaoInicial !== null && { motivacao: motivacao.trim() || null }),
         },
         { onConflict: "id" },
       )
@@ -93,6 +91,19 @@ export function CompletarPerfil({
       setErro(mensagemSegura(error))
       setCarregando(false)
       return
+    }
+
+    // Motivação do candidato vai para `candidaturas` (033), que só o dono e
+    // quem tem cargo leem — `perfis` é lido por todos os membros.
+    if (motivacaoInicial !== null && motivacao.trim()) {
+      const { error: erroMotivacao } = await supabase
+        .from("candidaturas")
+        .upsert({ perfil_id: userId, motivacao: motivacao.trim(), atualizado_em: new Date().toISOString() })
+      if (erroMotivacao) {
+        setErro(mensagemSegura(erroMotivacao))
+        setCarregando(false)
+        return
+      }
     }
 
     // Com upsert isto é quase inalcançável, mas "quase" não é "nunca": a RLS

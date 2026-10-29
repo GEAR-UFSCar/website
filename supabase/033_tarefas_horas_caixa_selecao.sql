@@ -24,6 +24,23 @@ $$;
 revoke execute on function public.e_financeiro() from public, anon;
 grant execute on function public.e_financeiro() to authenticated, service_role;
 
+-- Autoria carimbada pelo banco: a coluna nomeada em TG_ARGV[0] recebe auth.uid()
+-- em todo INSERT/UPDATE vindo de sessão. Um default só valeria se o cliente
+-- não mandasse a coluna; isto vale sempre (mesma ideia da 016).
+create or replace function public.carimbar_autor()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if (select auth.uid()) is not null then
+    new := jsonb_populate_record(new, jsonb_build_object(tg_argv[0], (select auth.uid())));
+  end if;
+  return new;
+end;
+$$;
+revoke execute on function public.carimbar_autor() from public, anon, authenticated;
+
 -- 1. TAREFAS DO SPRINT ---------------------------------------------------------
 create table if not exists public.sprint_tarefas (
   id             uuid primary key default gen_random_uuid(),
@@ -52,8 +69,8 @@ create policy "sprint_tarefas: quem edita o sprint apaga" on public.sprint_taref
   for delete to authenticated using (public.pode_editar_sprint(sprint_id));
 
 -- O responsável, mesmo sem cargo, marca a própria tarefa como feita.
--- ponytail: a policy libera a linha inteira para o responsável; o gatilho abaixo
--- trava tudo menos `feita` para quem não edita o sprint.
+-- A policy libera a linha inteira para o responsável; o gatilho abaixo
+-- recusa qualquer mudança além de `feita` para quem não edita o sprint.
 drop policy if exists "sprint_tarefas: editar" on public.sprint_tarefas;
 create policy "sprint_tarefas: editar" on public.sprint_tarefas
   for update to authenticated
@@ -66,10 +83,10 @@ language plpgsql
 set search_path = ''
 as $$
 begin
+  -- compara a linha inteira menos `feita`: coluna nova nasce protegida
   if (select auth.uid()) is not null
      and not public.pode_editar_sprint(old.sprint_id)
-     and (new.sprint_id, new.titulo, new.responsavel_id, new.prazo)
-         is distinct from (old.sprint_id, old.titulo, old.responsavel_id, old.prazo) then
+     and (to_jsonb(new) - 'feita') is distinct from (to_jsonb(old) - 'feita') then
     raise exception 'Você só pode marcar a tarefa como feita.' using errcode = '42501';
   end if;
   return new;
@@ -79,6 +96,10 @@ revoke execute on function public.guardar_tarefa() from public, anon, authentica
 drop trigger if exists guardar_tarefa on public.sprint_tarefas;
 create trigger guardar_tarefa before update on public.sprint_tarefas
   for each row execute function public.guardar_tarefa();
+
+drop trigger if exists carimbar_autor on public.sprint_tarefas;
+create trigger carimbar_autor before insert on public.sprint_tarefas
+  for each row execute function public.carimbar_autor('criado_por');
 
 -- 2. HISTÓRICO DE EMPRÉSTIMOS --------------------------------------------------
 create table if not exists public.emprestimos (
@@ -189,37 +210,47 @@ alter table public.horas_lancadas enable row level security;
 drop policy if exists "eventos_chamada: dono ou cargo lê" on public.eventos_chamada;
 create policy "eventos_chamada: dono ou cargo lê" on public.eventos_chamada
   for select to authenticated using (usuario_id = (select auth.uid()) or public.tem_cargo());
+-- Ninguém registra nem corrige as próprias horas: quem tem cargo também é
+-- membro, e a declaração sai do que está aqui. A chamada de quem fez a
+-- chamada fica para outra pessoa com cargo.
 drop policy if exists "eventos_chamada: cargo registra" on public.eventos_chamada;
 create policy "eventos_chamada: cargo registra" on public.eventos_chamada
-  for insert to authenticated with check (public.tem_cargo());
+  for insert to authenticated with check (public.tem_cargo() and usuario_id <> (select auth.uid()));
 drop policy if exists "eventos_chamada: cargo corrige" on public.eventos_chamada;
 create policy "eventos_chamada: cargo corrige" on public.eventos_chamada
-  for update to authenticated using (public.tem_cargo()) with check (public.tem_cargo());
+  for update to authenticated
+  using (public.tem_cargo() and usuario_id <> (select auth.uid()))
+  with check (public.tem_cargo() and usuario_id <> (select auth.uid()));
 drop policy if exists "eventos_chamada: cargo apaga" on public.eventos_chamada;
 create policy "eventos_chamada: cargo apaga" on public.eventos_chamada
   for delete to authenticated using (public.tem_cargo());
+
+drop trigger if exists carimbar_autor on public.eventos_chamada;
+create trigger carimbar_autor before insert or update on public.eventos_chamada
+  for each row execute function public.carimbar_autor('registrado_por');
 
 drop policy if exists "horas_lancadas: dono ou cargo lê" on public.horas_lancadas;
 create policy "horas_lancadas: dono ou cargo lê" on public.horas_lancadas
   for select to authenticated using (usuario_id = (select auth.uid()) or public.tem_cargo());
 drop policy if exists "horas_lancadas: cargo lança" on public.horas_lancadas;
 create policy "horas_lancadas: cargo lança" on public.horas_lancadas
-  for insert to authenticated with check (public.tem_cargo());
+  for insert to authenticated with check (public.tem_cargo() and usuario_id <> (select auth.uid()));
 drop policy if exists "horas_lancadas: cargo apaga" on public.horas_lancadas;
 create policy "horas_lancadas: cargo apaga" on public.horas_lancadas
   for delete to authenticated using (public.tem_cargo());
 
--- 4. PERFIL: BIO, MOTIVAÇÃO E NOVIDADES -----------------------------------------
+drop trigger if exists carimbar_autor on public.horas_lancadas;
+create trigger carimbar_autor before insert on public.horas_lancadas
+  for each row execute function public.carimbar_autor('lancado_por');
+
+-- 4. PERFIL: BIO E NOVIDADES -------------------------------------------------
 alter table public.perfis add column if not exists bio text;
-alter table public.perfis add column if not exists motivacao text;
 alter table public.perfis add column if not exists novidades_vistas_em timestamptz;
 
 alter table public.perfis drop constraint if exists perfis_bio_tamanho;
 alter table public.perfis add constraint perfis_bio_tamanho check (bio is null or char_length(bio) <= 500);
-alter table public.perfis drop constraint if exists perfis_motivacao_tamanho;
-alter table public.perfis add constraint perfis_motivacao_tamanho check (motivacao is null or char_length(motivacao) <= 2000);
 
--- guardar_contato (032) passa a proteger também bio, motivação e o marcador de novidades.
+-- guardar_contato (032) passa a proteger também a bio e o marcador de novidades.
 create or replace function public.guardar_contato()
 returns trigger
 language plpgsql
@@ -228,8 +259,8 @@ as $$
 begin
   if (select auth.uid()) is not null
      and (select auth.uid()) is distinct from old.id
-     and (new.whatsapp, new.github, new.linkedin, new.bio, new.motivacao, new.novidades_vistas_em)
-         is distinct from (old.whatsapp, old.github, old.linkedin, old.bio, old.motivacao, old.novidades_vistas_em) then
+     and (new.whatsapp, new.github, new.linkedin, new.bio, new.novidades_vistas_em)
+         is distinct from (old.whatsapp, old.github, old.linkedin, old.bio, old.novidades_vistas_em) then
     raise exception 'Estes campos só o próprio dono altera.' using errcode = '42501';
   end if;
   return new;
@@ -257,6 +288,29 @@ drop policy if exists "selecao: cargo edita" on public.selecao;
 create policy "selecao: cargo edita" on public.selecao for update to authenticated
   using (public.tem_cargo()) with check (public.tem_cargo());
 
+drop trigger if exists carimbar_autor on public.selecao;
+create trigger carimbar_autor before insert or update on public.selecao
+  for each row execute function public.carimbar_autor('atualizado_por');
+
+-- Motivação do candidato: fora de `perfis`, que todo membro aprovado lê (009).
+-- O candidato escreve e lê a própria; quem tem cargo lê todas.
+create table if not exists public.candidaturas (
+  perfil_id     uuid primary key default auth.uid() references public.perfis (id) on delete cascade,
+  motivacao     text not null check (char_length(motivacao) between 1 and 2000),
+  atualizado_em timestamptz not null default now()
+);
+alter table public.candidaturas enable row level security;
+
+drop policy if exists "candidaturas: dono ou cargo lê" on public.candidaturas;
+create policy "candidaturas: dono ou cargo lê" on public.candidaturas for select to authenticated
+  using (perfil_id = (select auth.uid()) or public.tem_cargo());
+drop policy if exists "candidaturas: dono escreve" on public.candidaturas;
+create policy "candidaturas: dono escreve" on public.candidaturas for insert to authenticated
+  with check (perfil_id = (select auth.uid()));
+drop policy if exists "candidaturas: dono corrige" on public.candidaturas;
+create policy "candidaturas: dono corrige" on public.candidaturas for update to authenticated
+  using (perfil_id = (select auth.uid())) with check (perfil_id = (select auth.uid()));
+
 -- 6. CAIXA ---------------------------------------------------------------------
 create table if not exists public.caixa_lancamentos (
   id              uuid primary key default gen_random_uuid(),
@@ -282,6 +336,10 @@ create policy "caixa: financeiro corrige" on public.caixa_lancamentos for update
 drop policy if exists "caixa: diretoria apaga" on public.caixa_lancamentos;
 create policy "caixa: diretoria apaga" on public.caixa_lancamentos for delete to authenticated using (public.e_diretoria());
 
+drop trigger if exists carimbar_autor on public.caixa_lancamentos;
+create trigger carimbar_autor before insert on public.caixa_lancamentos
+  for each row execute function public.carimbar_autor('registrado_por');
+
 -- 7. PEDIDOS DE COMPRA ---------------------------------------------------------
 create table if not exists public.pedidos_compra (
   id             uuid primary key default gen_random_uuid(),
@@ -305,7 +363,10 @@ create policy "pedidos: dono ou cargo lê" on public.pedidos_compra for select t
   using (solicitante_id = (select auth.uid()) or public.tem_cargo());
 drop policy if exists "pedidos: membro pede" on public.pedidos_compra;
 create policy "pedidos: membro pede" on public.pedidos_compra for insert to authenticated
-  with check (public.e_membro() and solicitante_id = (select auth.uid()) and status = 'Pendente' and decidido_por is null);
+  with check (
+    public.e_membro() and solicitante_id = (select auth.uid()) and status = 'Pendente'
+    and decidido_por is null and decidido_em is null and resposta is null
+  );
 drop policy if exists "pedidos: financeiro decide" on public.pedidos_compra;
 create policy "pedidos: financeiro decide" on public.pedidos_compra for update to authenticated
   using (public.e_financeiro()) with check (public.e_financeiro());
