@@ -168,19 +168,21 @@ begin
     new.decisao_nota := old.decisao_nota;
   end if;
 
-  if old.status = 'aprovado' and new.status = 'aprovado'
-     and (new.dados, new.titulo) is distinct from (old.dados, old.titulo) then
-    -- registro aprovado só muda por quem tem cargo, e mudar desfaz a aprovação:
-    -- a assinatura de quem aprovou não pode ficar sob um conteúdo que ela não viu
+  if old.status = 'aprovado'
+     and (new.status is distinct from old.status or (new.dados, new.titulo) is distinct from (old.dados, old.titulo)) then
+    -- registro aprovado só muda por quem tem cargo, e qualquer saída do
+    -- "aprovado" desfaz a aprovação: a assinatura de quem aprovou não pode ficar
+    -- sob um conteúdo que ela não viu. "Devolvido" por outra pessoa já é uma
+    -- decisão nova, carimbada acima.
     if not public.tem_cargo() then
       raise exception 'Registro aprovado não pode ser alterado.' using errcode = '42501';
     end if;
-    new.status := 'enviado';
-    new.decisao_por := null;
-    new.decisao_em := null;
-    new.decisao_nota := null;
-  elsif old.status = 'aprovado' and not public.tem_cargo() then
-    raise exception 'Registro aprovado não pode ser alterado.' using errcode = '42501';
+    if new.status is distinct from 'devolvido' then
+      new.status := 'enviado';
+      new.decisao_por := null;
+      new.decisao_em := null;
+      new.decisao_nota := null;
+    end if;
   end if;
   return new;
 end;
