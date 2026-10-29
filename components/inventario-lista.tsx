@@ -5,6 +5,7 @@ import { ChevronRight, Download } from "lucide-react"
 
 import { PatrimonioForm } from "@/components/patrimonio-form"
 import { PatrimonioStatus } from "@/components/patrimonio-status"
+import { EmprestimoBotao } from "@/components/emprestimo-botao"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
 import { Pilula } from "@/components/membros/pilula"
 import { hojeISO } from "@/lib/datas"
@@ -35,10 +36,16 @@ const COLUNAS = ["Código", "Item", "Categoria", "Qtd", "Estado", "Status", "Loc
 export function InventarioLista({
   itens,
   origens,
+  usuarioId,
+  gerencia = true,
 }: {
   itens: ItemInventario[]
   /** Origens já usadas, para o formulário de edição sugerir. */
   origens: string[]
+  /** Quem vê, para saber o que está "com você". */
+  usuarioId: string
+  /** Quem tem cargo edita o item e troca o status à mão; os outros só retiram e devolvem (032). */
+  gerencia?: boolean
 }) {
   const [filtros, setFiltros] = useState<Filtros>(SEM_FILTROS)
   const [abertos, setAbertos] = useState<ReadonlySet<string>>(new Set())
@@ -92,7 +99,11 @@ export function InventarioLista({
   if (itens.length === 0) {
     return (
       <div className="mt-10">
-        <EstadoVazio>Nenhum item cadastrado ainda. Use “Novo item” para cadastrar o primeiro.</EstadoVazio>
+        <EstadoVazio>
+          {gerencia
+            ? "Nenhum item cadastrado ainda. Use “Novo item” para cadastrar o primeiro."
+            : "Nenhum item cadastrado ainda. Quem tem cargo cadastra em Gestão › Patrimônio."}
+        </EstadoVazio>
       </div>
     )
   }
@@ -290,7 +301,13 @@ export function InventarioLista({
                         <EstadoPilula estado={i.estado} />
                       </td>
                       <td role="cell" className="py-1.5 pr-4 lg:w-44 max-lg:order-6 max-lg:col-span-2 max-lg:p-0">
-                        <PatrimonioStatus id={i.id} valor={i.status} codigo={i.codigo} />
+                        {gerencia ? (
+                          <PatrimonioStatus id={i.id} valor={i.status} codigo={i.codigo} />
+                        ) : (
+                          <Pilula tom={i.status === "Disponível" ? "neutro" : "ativo"}>
+                            {i.emprestado_para === usuarioId ? "Com você" : i.status}
+                          </Pilula>
+                        )}
                       </td>
                       <td
                         role="cell"
@@ -315,7 +332,18 @@ export function InventarioLista({
                               <PatrimonioForm item={i} origens={origens} aoConcluir={() => setEditando(null)} />
                             </div>
                           ) : (
-                            <Detalhe item={i} aoEditar={() => setEditando(i.id)} />
+                            <Detalhe
+                              item={i}
+                              aoEditar={gerencia ? () => setEditando(i.id) : undefined}
+                              acoes={
+                                <EmprestimoBotao
+                                  id={i.id}
+                                  status={i.status}
+                                  comigo={i.emprestado_para === usuarioId}
+                                  gerencia={gerencia}
+                                />
+                              }
+                            />
                           )}
                         </td>
                       </tr>
@@ -353,7 +381,7 @@ function Campo({ rotulo, children, largo = false }: { rotulo: string; children: 
   )
 }
 
-function Detalhe({ item: i, aoEditar }: { item: ItemInventario; aoEditar: () => void }) {
+function Detalhe({ item: i, aoEditar, acoes }: { item: ItemInventario; aoEditar?: () => void; acoes?: ReactNode }) {
   // Só vira link se for http(s); o banco já recusa o resto, e esta é a segunda trava.
   const link = urlSegura(i.datasheet_url)
   let hospedeiro = ""
@@ -396,13 +424,18 @@ function Detalhe({ item: i, aoEditar }: { item: ItemInventario; aoEditar: () => 
         {i.observacoes && <Campo rotulo="Observações" largo>{i.observacoes}</Campo>}
       </dl>
 
-      <button
-        type="button"
-        onClick={aoEditar}
-        className={`${botaoSecundario} mt-6 min-h-11 !px-5 !py-2 text-[11px]`}
-      >
-        Editar {i.codigo}
-      </button>
+      <div className="mt-6 flex flex-wrap items-start gap-3">
+        {acoes}
+        {aoEditar && (
+          <button
+            type="button"
+            onClick={aoEditar}
+            className={`${botaoSecundario} min-h-11 !px-5 !py-2 text-[11px]`}
+          >
+            Editar {i.codigo}
+          </button>
+        )}
+      </div>
     </div>
   )
 }

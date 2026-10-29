@@ -55,6 +55,7 @@ export const GRUPOS: Grupo[] = [
       "/membros/calendario",
       "/membros/diretorio",
       "/membros/documentacao",
+      "/membros/inventario",
       "/membros/metricas",
     ],
     abas: [
@@ -62,6 +63,7 @@ export const GRUPOS: Grupo[] = [
       { href: "/membros/calendario", rotulo: "Calendário", prefixos: ["/membros/calendario"] },
       { href: "/membros/diretorio", rotulo: "Pessoas", prefixos: ["/membros/diretorio"] },
       { href: "/membros/documentacao", rotulo: "Documentos", prefixos: ["/membros/documentacao"] },
+      { href: "/membros/inventario", rotulo: "Inventário", prefixos: ["/membros/inventario"] },
       { href: "/membros/metricas", rotulo: "Métricas", prefixos: ["/membros/metricas"] },
     ],
   },
@@ -153,6 +155,7 @@ const TITULOS: Record<string, string> = {
   "/membros/calendario": "Calendário",
   "/membros/diretorio": "Pessoas",
   "/membros/documentacao": "Documentos",
+  "/membros/inventario": "Inventário",
   "/membros/metricas": "Métricas",
   "/membros/administracao": "Gestão",
   "/membros/administracao/atas": "Atas",

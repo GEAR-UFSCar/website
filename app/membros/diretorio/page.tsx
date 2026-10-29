@@ -34,6 +34,9 @@ type Membro = {
   curso: string | null
   frente: string | null
   cargo: string | null
+  whatsapp: string | null
+  github: string | null
+  linkedin: string | null
 }
 
 /** Frente manda; sem frente, cargo joga na Diretoria; sem os dois, formação. */
@@ -56,7 +59,7 @@ export default async function DiretorioPage({
   // Sem e-mail na consulta: a coluna não existe em `perfis` e não deve existir.
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, frente, cargo")
+    .select("id, nome_completo, curso, frente, cargo, whatsapp, github, linkedin")
     .order("nome_completo", { nullsFirst: false })
 
   const membros = (data ?? []) as Membro[]
@@ -67,7 +70,7 @@ export default async function DiretorioPage({
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Pessoas">
-        Quem está no GEAR e em que frente. Nome, curso, frente e cargo, sem contato pessoal: e-mail
+        Quem está no GEAR e em que frente. Contato só aparece quando a própria pessoa preenche no perfil; e-mail
         não aparece aqui para ninguém. {membros.length} {membros.length === 1 ? "membro" : "membros"}.
       </PageHeader>
 

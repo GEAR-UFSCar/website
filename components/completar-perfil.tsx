@@ -19,13 +19,28 @@ type Props = {
   frenteInicial: string
   /** Quem tem cargo não troca a própria frente — o banco recusa (023). */
   frenteTravada?: boolean
+  /** Contato opcional (032), visível só para membros aprovados. */
+  contatoInicial?: { whatsapp: string; github: string; linkedin: string }
 }
 
-export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInicial, frenteTravada = false }: Props) {
+/** "(15) 99999-0000" → "15999990000": o banco guarda só dígitos (032). */
+const soDigitos = (t: string) => t.replace(/\D/g, "")
+/** Aceita "@fulano" ou o link inteiro e guarda só o usuário. */
+const usuarioGithub = (t: string) => t.trim().replace(/^https?:\/\/(www\.)?github\.com\//i, "").replace(/^@/, "").replace(/\/.*$/, "")
+
+export function CompletarPerfil({
+  userId,
+  nomeInicial,
+  cursoInicial,
+  frenteInicial,
+  frenteTravada = false,
+  contatoInicial = { whatsapp: "", github: "", linkedin: "" },
+}: Props) {
   const router = useRouter()
   const [nome, setNome] = useState(nomeInicial)
   const [curso, setCurso] = useState(cursoInicial)
   const [frente, setFrente] = useState(frenteInicial)
+  const [contato, setContato] = useState(contatoInicial)
   const [carregando, setCarregando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
 
@@ -55,6 +70,9 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
           curso: curso.trim(),
           // "Ainda não decidido" grava null: é o que o CHECK da coluna aceita
           frente: frente === "" ? null : frente,
+          whatsapp: soDigitos(contato.whatsapp) || null,
+          github: usuarioGithub(contato.github) || null,
+          linkedin: contato.linkedin.trim() || null,
         },
         { onConflict: "id" },
       )
@@ -166,6 +184,39 @@ export function CompletarPerfil({ userId, nomeInicial, cursoInicial, frenteInici
               </p>
             )}
           </div>
+
+          <fieldset className="space-y-6">
+            <legend className="font-mono text-[10px] tracking-[0.25em] uppercase text-[var(--gear-amber)] mb-3">
+              Contato (opcional, só membros veem)
+            </legend>
+            {(
+              [
+                { chave: "whatsapp", rotulo: "WhatsApp com DDD", tipo: "tel", dica: "15 99999-0000", auto: "tel" },
+                { chave: "github", rotulo: "Usuário do GitHub", tipo: "text", dica: "fulano", auto: "off" },
+                { chave: "linkedin", rotulo: "Link do LinkedIn", tipo: "url", dica: "https://linkedin.com/in/fulano", auto: "url" },
+              ] as const
+            ).map((c) => (
+              <div key={c.chave}>
+                <label
+                  htmlFor={c.chave}
+                  className="block font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground mb-3"
+                >
+                  {c.rotulo}
+                </label>
+                <input
+                  id={c.chave}
+                  name={c.chave}
+                  type={c.tipo}
+                  autoComplete={c.auto}
+                  placeholder={c.dica}
+                  value={contato[c.chave]}
+                  onChange={(e) => setContato((a) => ({ ...a, [c.chave]: e.target.value }))}
+                  disabled={carregando}
+                  className={`${campoGrande} placeholder:text-muted-foreground/40`}
+                />
+              </div>
+            ))}
+          </fieldset>
 
           {erro && <Aviso titulo="ERRO" role="alert">{erro}</Aviso>}
 

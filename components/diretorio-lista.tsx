@@ -13,6 +13,10 @@ export type MembroDiretorio = {
   curso: string | null
   frente: string | null
   cargo: string | null
+  /** Contato opcional, preenchido pelo próprio membro (032). */
+  whatsapp: string | null
+  github: string | null
+  linkedin: string | null
   /** Grupo já decidido no servidor (frente, Diretoria ou Em formação). */
   grupo: string
 }
@@ -159,6 +163,31 @@ export function DiretorioLista({
                       </dd>
                     </div>
                   </dl>
+
+                  {(membro.whatsapp || membro.github || membro.linkedin) && (
+                    <ul className="mt-4 flex flex-wrap gap-x-4 gap-y-1">
+                      {[
+                        // os formatos são garantidos pelos CHECKs da 032, então os hrefs são seguros
+                        membro.whatsapp && { rotulo: "WhatsApp", href: `https://wa.me/${membro.whatsapp.length <= 11 ? `55${membro.whatsapp}` : membro.whatsapp}` },
+                        membro.github && { rotulo: "GitHub", href: `https://github.com/${membro.github}` },
+                        membro.linkedin?.startsWith("https://") && { rotulo: "LinkedIn", href: membro.linkedin },
+                      ]
+                        .filter((l): l is { rotulo: string; href: string } => Boolean(l))
+                        .map((l) => (
+                          <li key={l.rotulo}>
+                            <a
+                              href={l.href}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              data-cursor-hover
+                              className="inline-flex min-h-11 items-center font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-amber)] hover:underline md:min-h-0"
+                            >
+                              {l.rotulo} ↗
+                            </a>
+                          </li>
+                        ))}
+                    </ul>
+                  )}
 
                   {temCargo(membro.cargo) && (
                     <p className="mt-4 inline-block border border-[var(--gear-amber)] px-2 py-1 font-mono text-[10px] tracking-[0.2em] uppercase text-[var(--gear-amber)] md:text-[9px]">

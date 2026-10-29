@@ -47,6 +47,7 @@ a anterior não rodou.
 | 029 | `inventario.sql` | `patrimonio` ganha as colunas da planilha do grupo: **código** `GEAR-NNN` (único, gerado sozinho, imutável), subcategoria, fabricante, modelo, part-number, descrição, link de datasheet (só http/https), **estado** de conservação e origem; as 7 categorias antigas viram as 9 da planilha (+ "Outros"); corrige `trilha_vinculada` → `frente_vinculada`, que a 013 esqueceu e que fazia a página de Patrimônio dar erro. Não apaga dado e não muda a RLS | 003, 015, 019 |
 | 030 | `apagar_atas_e_documentos.sql` | a **diretoria** pode apagar atas e documentos (os outros cargos continuam só criando e corrigindo). O arquivo no bucket não é apagado junto | 003, 006, 013 |
 | 031 | `academia_gerenciavel.sql` | quem tem cargo cria e corrige **módulos** da Academia pelo site (a diretoria apaga, o que leva junto o progresso de todos naquele módulo); quem tem cargo lê o **progresso** de todos, para o painel de Gestão; CHECKs de tamanho e link http/https em `modulos` | 002, 014, 022 |
+| 032 | `emprestimos_e_contato.sql` | todo membro aprovado **lê o inventário**; `retirar_item()` e `devolver_item()` (SECURITY DEFINER) fazem o empréstimo do item inteiro, gravando `patrimonio.emprestado_para`; perfil ganha `whatsapp`, `github` e `linkedin` opcionais, com CHECK de formato e gatilho que impede outra pessoa (inclusive a diretoria) de mudá-los | 014, 029, 031 |
 
 Duas armadilhas conhecidas:
 
