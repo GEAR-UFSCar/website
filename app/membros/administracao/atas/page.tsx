@@ -4,7 +4,8 @@ import { AtaForm } from "@/components/ata-form"
 import { RegistroEditavel } from "@/components/membros/registro-editavel"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
-import { exigirUsuario } from "@/lib/supabase/sessao"
+import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
+import { eDiretoria } from "@/lib/administracao"
 import { Surge } from "@/components/surge"
 import { PageHeader } from "@/components/membros/page-header"
 import { paginaMembros } from "@/lib/ui"
@@ -27,6 +28,7 @@ type Ata = {
 export default async function AtasPage() {
   // o layout já garantiu sessão e cargo; aqui só reaproveitamos o usuário
   const user = await exigirUsuario()
+  const ehDiretoria = eDiretoria((await getPerfil()).perfil?.cargo)
 
   const supabase = await createClient()
   const { data, error } = await supabase
@@ -86,11 +88,11 @@ export default async function AtasPage() {
               ))}
             </dl>
 
-            {/* Sem apagar: ata é registro oficial, e a 003 não tem policy de DELETE. */}
+            {/* Apagar é só da diretoria (030); os demais cargos corrigem. */}
             <RegistroEditavel
               tabela="atas"
               id={ata.id}
-              apagavel={false}
+              apagavel={ehDiretoria}
               className="mt-6"
               formulario={<AtaForm usuarioId={user.id} ata={ata} />}
             />
