@@ -32,7 +32,7 @@
     "next": "^16.4.2",
     "react": "19.3.1",
     "react-dom": "19.3.1",
-    "three": "0.181.2"
+    "three": "0.186.1"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.11",
