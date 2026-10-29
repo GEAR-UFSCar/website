@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react"
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname } from "next/navigation"
-import { Bell, ChevronDown, GraduationCap, Home, LogOut, Search, Settings, Target, Users, type LucideIcon } from "lucide-react"
+import { Bell, ChevronDown, FileText, GraduationCap, Home, LogOut, Search, Settings, Target, Users, type LucideIcon } from "lucide-react"
 
 import { Paleta } from "@/components/membros/paleta"
 import { abaAtual, grupoAtual, gruposVisiveis, titulo as tituloDaRota } from "@/lib/navegacao"
@@ -16,6 +16,7 @@ const ICONES: Record<string, LucideIcon> = {
   frente: Target,
   aprender: GraduationCap,
   equipe: Users,
+  processos: FileText,
   gestao: Settings,
 }
 
