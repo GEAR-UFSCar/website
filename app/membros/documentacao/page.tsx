@@ -349,12 +349,12 @@ export default async function DocumentacaoPage({
                         temArquivo={Boolean(documento.link)}
                       />
                     )}
-                    {/* Sem apagar: documentos não têm policy de DELETE. */}
+                    {/* Apagar é só da diretoria (030). */}
                     {podeEscrever && (
                       <RegistroEditavel
                         tabela="documentos"
                         id={documento.id}
-                        apagavel={false}
+                        apagavel={ehDiretoria}
                         className=""
                         formulario={<DocumentoForm documento={documento} />}
                       />

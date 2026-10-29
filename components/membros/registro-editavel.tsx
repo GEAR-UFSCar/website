@@ -16,9 +16,8 @@ type Props = {
   /** Formulário já preenchido com o registro, montado só ao clicar em Editar. */
   formulario: ReactNode
   /**
-   * Atas e documentos não têm policy de DELETE: são registro oficial, e o
-   * caminho é corrigir, não sumir. Sem o botão, a tela não promete o que o
-   * banco vai recusar.
+   * Atas e documentos só a diretoria apaga (030): para os outros cargos o
+   * botão some, e a tela não promete o que o banco vai recusar.
    */
   apagavel?: boolean
   className?: string

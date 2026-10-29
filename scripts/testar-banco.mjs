@@ -826,6 +826,22 @@ checar(
 )
 await bancoAntigo.close()
 
+// --- 030: apagar atas e documentos é só da diretoria --------------------------
+secao("030. APAGAR — atas e documentos só a diretoria apaga")
+
+for (const [tabela, insere] of [
+  ["atas", `insert into public.atas (data_reuniao, tipo, pauta, decisoes, presentes, registrado_por) values (current_date,'Geral','apagar','d','t','${P}') returning id`],
+  ["documentos", `insert into public.documentos (titulo, categoria) values ('Apagar teste','Técnico') returning id`],
+]) {
+  const id = (await como(P, insere)).rows[0]?.id
+  for (const [quem, rotulo] of [[MEMBRO, "membro sem cargo"], [CARGO, "cargo fora da diretoria"]]) {
+    const r = await como(quem, `delete from public.${tabela} where id = '${id}' returning 1`)
+    checar(`${rotulo} não apaga ${tabela}`, bloqueado(r), "APAGOU")
+  }
+  const r = await como(P, `delete from public.${tabela} where id = '${id}' returning 1`)
+  checar(`diretoria apaga ${tabela}`, passa(r), r.erro)
+}
+
 // --- placar ------------------------------------------------------------------
 await db.close()
 
