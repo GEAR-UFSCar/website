@@ -7,10 +7,11 @@ import { EstadoVazio } from "@/components/membros/estado-vazio"
 import { PageHeader } from "@/components/membros/page-header"
 import { Recolhivel } from "@/components/membros/recolhivel"
 import { Secao } from "@/components/membros/secao"
-import { eFinanceiro } from "@/lib/administracao"
+import { BotaoApagar } from "@/components/membros/botao-apagar"
+import { eDiretoria, eFinanceiro } from "@/lib/administracao"
 import { dataDoDia } from "@/lib/datas"
 import { createClient } from "@/lib/supabase/server"
-import { getPerfil } from "@/lib/supabase/sessao"
+import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
@@ -30,8 +31,11 @@ type Lancamento = {
 
 /** Caixa do grupo: saldo, lançamentos e pedidos esperando decisão (033). */
 export default async function CaixaPage() {
+  const user = await exigirUsuario()
   const { perfil } = await getPerfil()
   const financeiro = eFinanceiro(perfil?.cargo)
+  // espelha "caixa: diretoria apaga" (033): Tesouraria lança, só a diretoria apaga
+  const apaga = eDiretoria(perfil?.cargo)
   const supabase = await createClient()
 
   const [lancR, pedidosR] = await Promise.all([
@@ -64,7 +68,7 @@ export default async function CaixaPage() {
           </p>
 
           <Secao titulo={`Pedidos esperando (${pedidos.length})`}>
-            <ListaPedidos pedidos={pedidos} decide={financeiro} />
+            <ListaPedidos pedidos={pedidos} decide={financeiro} usuarioId={user.id} />
           </Secao>
 
           <Secao titulo="Lançamentos">
@@ -92,6 +96,7 @@ export default async function CaixaPage() {
                     <span className={`font-mono text-[11px] tabular-nums ${l.tipo === "Entrada" ? "text-[var(--gear-amber)]" : ""}`}>
                       {l.tipo === "Entrada" ? "+" : "−"} {moeda.format(Number(l.valor))}
                     </span>
+                    {apaga && <BotaoApagar tabela="caixa_lancamentos" id={l.id} descricao={`lançamento ${l.descricao}`} />}
                   </li>
                 ))}
               </ul>

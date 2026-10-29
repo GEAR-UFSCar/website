@@ -25,7 +25,7 @@ export default async function HorasPage() {
 
   const supabase = await createClient()
   const [chamadas, lancadas] = await Promise.all([
-    supabase.from("eventos_chamada").select("evento_id, dia, horas, evento:eventos(titulo, tipo)").eq("usuario_id", user.id),
+    supabase.from("eventos_chamada").select("id, dia, horas, atividade").eq("usuario_id", user.id),
     supabase.from("horas_lancadas").select("id, data, horas, descricao").eq("usuario_id", user.id),
   ])
   const erro = chamadas.error ?? lancadas.error
@@ -44,7 +44,8 @@ export default async function HorasPage() {
 
       {erro ? (
         <ErroDados titulo="HORAS INDISPONÍVEIS" erro={erro} className="mt-10 max-w-2xl">
-          Falta rodar <code>supabase/033_tarefas_horas_caixa_selecao.sql</code>.
+          Falta rodar <code>supabase/033_tarefas_horas_caixa_selecao.sql</code> ou a{" "}
+          <code>supabase/034_horas_sobrevivem_ao_evento.sql</code>.
         </ErroDados>
       ) : linhas.length === 0 ? (
         <div className="mt-10">

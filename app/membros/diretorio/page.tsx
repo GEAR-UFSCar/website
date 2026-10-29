@@ -60,6 +60,8 @@ export default async function DiretorioPage({
   const { data, error } = await supabase
     .from("perfis")
     .select("id, nome_completo, curso, frente, cargo, whatsapp, github, linkedin")
+    // candidato ainda não é membro: aparece em Gestão › Seleção, não aqui
+    .eq("aprovado", true)
     .order("nome_completo", { nullsFirst: false })
 
   const membros = (data ?? []) as Membro[]

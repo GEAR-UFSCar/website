@@ -1,4 +1,5 @@
 import { PedidoDecisao } from "@/components/compras"
+import { BotaoApagar } from "@/components/membros/botao-apagar"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
 import { Pilula } from "@/components/membros/pilula"
 import { dataDoDia, diaGear } from "@/lib/datas"
@@ -8,6 +9,7 @@ export const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currenc
 
 export type Pedido = {
   id: string
+  solicitante_id: string
   item: string
   justificativa: string
   link: string | null
@@ -20,12 +22,12 @@ export type Pedido = {
 }
 
 export const COLUNAS_PEDIDO =
-  "id, item, justificativa, link, valor_estimado, frente, status, resposta, created_at, solicitante:perfis!pedidos_compra_solicitante_id_fkey(nome_completo)"
+  "id, solicitante_id, item, justificativa, link, valor_estimado, frente, status, resposta, created_at, solicitante:perfis!pedidos_compra_solicitante_id_fkey(nome_completo)"
 
 const TOM: Record<string, "neutro" | "ativo" | "alerta"> = { Pendente: "neutro", Aprovado: "ativo", Comprado: "ativo", Recusado: "alerta" }
 
 /** Lista de pedidos, com os botões de decisão para quem cuida do dinheiro. */
-export function ListaPedidos({ pedidos, decide }: { pedidos: Pedido[]; decide: boolean }) {
+export function ListaPedidos({ pedidos, decide, usuarioId }: { pedidos: Pedido[]; decide: boolean; usuarioId: string }) {
   if (pedidos.length === 0) return <EstadoVazio>Nenhum pedido.</EstadoVazio>
   return (
     <ul className="space-y-4">
@@ -48,6 +50,12 @@ export function ListaPedidos({ pedidos, decide }: { pedidos: Pedido[]; decide: b
           )}
           {p.resposta && <p className="mt-3 border-l-2 border-[var(--gear-amber)] pl-3 font-sans text-sm">{p.resposta}</p>}
           {decide && <PedidoDecisao id={p.id} status={p.status} />}
+          {/* quem pediu pode desistir enquanto ninguém decidiu (033) */}
+          {p.solicitante_id === usuarioId && p.status === "Pendente" && (
+            <div className="mt-3">
+              <BotaoApagar tabela="pedidos_compra" id={p.id} rotulo="Desistir" descricao={`do pedido ${p.item}`} />
+            </div>
+          )}
         </li>
       ))}
     </ul>
