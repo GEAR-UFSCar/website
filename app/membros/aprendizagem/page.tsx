@@ -1,6 +1,10 @@
 import type { Metadata } from "next"
 
 import { ModuloCheckbox } from "@/components/modulo-checkbox"
+import { ModuloForm } from "@/components/modulo-form"
+import { RegistroEditavel } from "@/components/membros/registro-editavel"
+import { Recolhivel } from "@/components/membros/recolhivel"
+import { eDiretoria, temCargo } from "@/lib/administracao"
 import { AnelProgresso } from "@/components/anel-progresso"
 import { ErroDados } from "@/components/erro-dados"
 import { createClient } from "@/lib/supabase/server"
@@ -33,7 +37,10 @@ const rotulo = "font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--gea
 export default async function AprendizagemPage() {
   // mesmo portão de /membros: sem sessão vai ao login, perfil incompleto ao
   // formulário de primeiro acesso.
-  const { user } = await exigirMembroAprovado()
+  const { user, perfil } = await exigirMembroAprovado()
+  // espelham a 031: cargo cadastra e corrige módulo, só a diretoria apaga
+  const gerencia = temCargo(perfil?.cargo)
+  const apagaModulo = eDiretoria(perfil?.cargo)
 
   const supabase = await createClient()
   const [{ data: modulos, error: erroModulos }, { data: progresso }] = await Promise.all([
@@ -136,8 +143,8 @@ export default async function AprendizagemPage() {
               </>
             ) : (
               <p className="mt-5 font-sans text-base font-light leading-relaxed text-muted-foreground">
-                Sem data-alvo definida para este nível. Quem coordena a formação preenche o prazo
-                de cada módulo no painel.
+                Sem data-alvo definida para este nível. Quem tem cargo preenche o prazo de cada
+                módulo aqui mesmo, no botão Editar do módulo.
               </p>
             )}
 
@@ -279,6 +286,13 @@ export default async function AprendizagemPage() {
             {total === 1 ? "O módulo" : `Os ${total} módulos`} na ordem da formação. Cada nível abre
             quando o anterior fecha, cada um assume o vocabulário do anterior, não é burocracia.
           </p>
+          {gerencia && (
+            <Recolhivel rotulo="Novo módulo" aberto={total === 0} className="mt-6">
+              <ModuloForm
+                proximaOrdem={lista.filter((m) => m.nivel === NIVEIS_ACADEMIA[0]).reduce((max, m) => Math.max(max, m.ordem), 0) + 1}
+              />
+            </Recolhivel>
+          )}
         </div>
 
         {estagios.map((estagio) => {
@@ -414,6 +428,15 @@ export default async function AprendizagemPage() {
                         >
                           Abrir material →
                         </a>
+                      )}
+
+                      {gerencia && (
+                        <RegistroEditavel
+                          tabela="modulos"
+                          id={modulo.id}
+                          apagavel={apagaModulo}
+                          formulario={<ModuloForm modulo={modulo} />}
+                        />
                       )}
                     </Surge>
                   )

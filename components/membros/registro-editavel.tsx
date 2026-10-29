@@ -11,12 +11,12 @@ const EncerrarEdicao = createContext<(() => void) | null>(null)
 export const useEncerrarEdicao = () => useContext(EncerrarEdicao)
 
 type Props = {
-  tabela: "avisos" | "eventos" | "sprints" | "atas" | "documentos"
+  tabela: "avisos" | "eventos" | "sprints" | "atas" | "documentos" | "modulos"
   id: string
   /** Formulário já preenchido com o registro, montado só ao clicar em Editar. */
   formulario: ReactNode
   /**
-   * Atas e documentos só a diretoria apaga (030): para os outros cargos o
+   * Atas, documentos e módulos só a diretoria apaga (030, 031): para os outros cargos o
    * botão some, e a tela não promete o que o banco vai recusar.
    */
   apagavel?: boolean
