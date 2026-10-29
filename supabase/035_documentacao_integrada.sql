@@ -30,9 +30,13 @@ language plpgsql
 set search_path = ''
 as $$
 begin
-  if (select auth.uid()) is not null
-     and new.categoria is distinct from old.categoria
-     and not public.e_diretoria() then
+  if (select auth.uid()) is null or public.e_diretoria() then
+    return new;
+  end if;
+  -- perfil criado pelo próprio dono (018) nasce em formação: categoria dá voto
+  if tg_op = 'INSERT' then
+    new.categoria := 'em_formacao';
+  elsif new.categoria is distinct from old.categoria then
     raise exception 'Só a diretoria altera a categoria de um membro.' using errcode = '42501';
   end if;
   return new;
@@ -40,7 +44,7 @@ end;
 $$;
 revoke execute on function public.guardar_categoria() from public, anon, authenticated;
 drop trigger if exists guardar_categoria on public.perfis;
-create trigger guardar_categoria before update on public.perfis
+create trigger guardar_categoria before insert or update on public.perfis
   for each row execute function public.guardar_categoria();
 
 create or replace function public.tem_voto()
@@ -115,7 +119,9 @@ declare
   eu uuid := (select auth.uid());
 begin
   if tg_op = 'INSERT' then
-    -- denúncia é sempre restrita à diretoria; anônimo não guarda autor
+    -- denúncia é sempre restrita à diretoria; só ela pode ser anônima. Fora
+    -- dela, um registro sem autor escaparia da regra "quem pede não aprova".
+    new.anonimo := coalesce(new.anonimo, false) and new.modelo = 'denuncia';
     if new.modelo = 'denuncia' then
       new.visibilidade := 'denuncia';
     end if;
@@ -139,7 +145,8 @@ begin
   new.numero := old.numero;
   new.autor_id := old.autor_id;
   new.anonimo := old.anonimo;
-  new.visibilidade := case when old.modelo = 'denuncia' then 'denuncia' else new.visibilidade end;
+  -- quem lê é decidido na criação: mudar depois exporia o que era restrito
+  new.visibilidade := old.visibilidade;
   new.updated_at := now();
 
   if eu is null then
@@ -148,21 +155,31 @@ begin
 
   if new.status in ('aprovado', 'devolvido') and new.status is distinct from old.status then
     -- quem pede não aprova (doc. 20, separação de funções)
-    if not public.tem_cargo() or eu = old.autor_id then
+    -- NULL-safe: registro sem autor (denúncia anônima) não passa por aprovação
+    if not public.tem_cargo() or old.autor_id is null or eu is not distinct from old.autor_id then
       raise exception 'Só outra pessoa com cargo aprova ou devolve este registro.' using errcode = '42501';
     end if;
     new.decisao_por := eu;
     new.decisao_em := now();
   else
+    -- a nota é parte da decisão: só muda junto com uma decisão
     new.decisao_por := old.decisao_por;
     new.decisao_em := old.decisao_em;
-    if new.status is distinct from old.status then
-      new.decisao_nota := old.decisao_nota;
-    end if;
+    new.decisao_nota := old.decisao_nota;
   end if;
 
-  -- registro aprovado só muda por quem tem cargo (para reabrir ou corrigir)
-  if old.status = 'aprovado' and not public.tem_cargo() then
+  if old.status = 'aprovado' and new.status = 'aprovado'
+     and (new.dados, new.titulo) is distinct from (old.dados, old.titulo) then
+    -- registro aprovado só muda por quem tem cargo, e mudar desfaz a aprovação:
+    -- a assinatura de quem aprovou não pode ficar sob um conteúdo que ela não viu
+    if not public.tem_cargo() then
+      raise exception 'Registro aprovado não pode ser alterado.' using errcode = '42501';
+    end if;
+    new.status := 'enviado';
+    new.decisao_por := null;
+    new.decisao_em := null;
+    new.decisao_nota := null;
+  elsif old.status = 'aprovado' and not public.tem_cargo() then
     raise exception 'Registro aprovado não pode ser alterado.' using errcode = '42501';
   end if;
   return new;
@@ -365,6 +382,7 @@ as $$
     from public.pesquisa_respostas r
     join public.pesquisas p on p.id = r.pesquisa_id
    where r.pesquisa_id = p_pesquisa
+     and p.fecha_em <= now()
      and public.tem_cargo()
      and (select count(*) from public.pesquisa_respostas x where x.pesquisa_id = p_pesquisa) >= p.minimo
    order by random();
@@ -379,7 +397,10 @@ stable
 security definer
 set search_path = ''
 as $$
-  select count(*) from public.pesquisa_participacao where pesquisa_id = p_pesquisa and public.e_membro();
+  -- contagem ao vivo deixaria cruzar o momento de cada resposta com quem respondeu
+  select count(*) from public.pesquisa_participacao pp
+    join public.pesquisas p on p.id = pp.pesquisa_id
+   where pp.pesquisa_id = p_pesquisa and p.fecha_em <= now() and public.e_membro();
 $$;
 revoke execute on function public.contagem_pesquisa(uuid) from public, anon;
 grant execute on function public.contagem_pesquisa(uuid) to authenticated;
