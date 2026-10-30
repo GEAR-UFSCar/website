@@ -17,7 +17,7 @@ const CADASTROS = [
   { href: "/membros/administracao/atas", nome: "Atas", texto: "Registro de reuniões: presentes, pauta, decisões e pendências." },
   { href: "/membros/administracao/cargos", nome: "Cargos e aprovação", texto: "Atribuir e trocar cargos e aprovar membros. Restrito a Presidente e Vice-Presidente." },
   { href: "/membros/administracao/patrimonio", nome: "Patrimônio", texto: "Inventário de robôs, componentes, ferramentas e equipamentos." },
-  { href: "/membros/administracao/horas", nome: "Horas e presença", texto: "Chamada de reuniões e eventos e horas avulsas, que viram a declaração de cada membro." },
+  { href: "/membros/administracao/horas", nome: "Horas e presença", texto: "Chamada, frequência com alerta de faltas e horas avulsas, que viram a declaração de cada membro." },
   { href: "/membros/administracao/selecao", nome: "Processo seletivo", texto: "Candidatos em cada etapa, motivação e notas da banca." },
   { href: "/membros/administracao/caixa", nome: "Caixa", texto: "Saldo, entradas e saídas e os pedidos de compra dos membros." },
   { href: "/membros/administracao/atividade", nome: "Atividade", texto: "Último sinal de cada membro e tarefas atrasadas: quem está parado." },
