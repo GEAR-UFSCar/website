@@ -87,3 +87,25 @@ console.log("hoje: ok")
   assert.equal(r.tipo === "bloqueado" && r.sprint.id, 2)
   console.log("proximaAcao: ok")
 }
+
+// pedidosDeResposta: só janela aberta, sem o que já fiz, e voto só para quem vota.
+{
+  const { pedidosDeResposta } = await import("../lib/hoje.ts")
+  const agora = Date.parse("2026-10-29T12:00:00Z")
+  const j = (id, abre, fecha) => ({ id, abre_em: abre, fecha_em: fecha })
+  const votacoes = [
+    j("aberta", "2026-10-28T00:00:00+00:00", "2026-10-30T00:00:00+00:00"),
+    j("votada", "2026-10-28T00:00:00+00:00", "2026-10-30T00:00:00+00:00"),
+    j("futura", "2026-11-01T00:00:00+00:00", "2026-11-02T00:00:00+00:00"),
+    j("fechada", "2026-10-01T00:00:00+00:00", "2026-10-29T12:00:00+00:00"),
+  ]
+  const base = { agora, hoje: "2026-10-29", comVoto: true, votacoes, votei: ["votada"], pesquisas: votacoes, respondi: [], devolvidos: 2, emprestimos: [{ prazo: "2026-10-28" }, { prazo: null }] }
+  const r = pedidosDeResposta(base)
+  assert.deepEqual(r.map((p) => [p.id, p.quantos]), [["votar", 1], ["pesquisa", 2], ["devolvido", 2], ["emprestimo", 2]])
+  assert.equal(r.find((p) => p.id === "emprestimo").alerta, true)
+  // sem direito a voto, votação não cobra; lista indisponível não vira item
+  const s = pedidosDeResposta({ ...base, comVoto: false, pesquisas: null, devolvidos: null, emprestimos: [{ prazo: "2026-11-30" }] })
+  assert.deepEqual(s.map((p) => [p.id, p.quantos, p.alerta]), [["emprestimo", 1, false]])
+  assert.deepEqual(pedidosDeResposta({ ...base, votacoes: [], pesquisas: [], devolvidos: 0, emprestimos: null }), [])
+  console.log("pedidosDeResposta: ok")
+}

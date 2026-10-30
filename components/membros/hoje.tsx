@@ -6,7 +6,7 @@ import { Secao } from "@/components/membros/secao"
 import { ErroDados } from "@/components/erro-dados"
 import type { ErroDeDados } from "@/lib/erros"
 import { hrefDoSprint } from "@/lib/administracao"
-import type { ItemPrazo, ProximaAcao } from "@/lib/hoje"
+import type { ItemPrazo, PedidoDeResposta, ProximaAcao } from "@/lib/hoje"
 import { aparenciaDoStatus, type Sprint } from "@/lib/sprints"
 import { prazoRelativo } from "@/lib/metas"
 import { formatarDuracao } from "@/lib/academia"
@@ -166,7 +166,37 @@ export function BlocoAcademia({ atual }: { atual: ModuloAtual }) {
   )
 }
 
-export function BlocoPendencias({ aprovacoes, bloqueados }: { aprovacoes: number | null; bloqueados: number | null }) {
+/** Votar, responder, corrigir, devolver: o que espera você fora dos sprints. Vazio, some. */
+export function BlocoPedeResposta({ pedidos }: { pedidos: PedidoDeResposta[] }) {
+  if (pedidos.length === 0) return null
+  return (
+    <Secao titulo="Esperando por você">
+      <ul>
+        {pedidos.map((p) => (
+          <li key={p.id} className={linha}>
+            <Link href={p.href} className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
+              {p.texto}
+            </Link>
+            <Pilula tom={p.alerta ? "alerta" : "ativo"}>{p.quantos}</Pilula>
+          </li>
+        ))}
+      </ul>
+    </Secao>
+  )
+}
+
+export function BlocoPendencias({
+  aprovacoes,
+  bloqueados,
+  registros,
+  compras,
+}: {
+  aprovacoes: number | null
+  bloqueados: number | null
+  registros?: number | null
+  /** undefined: quem vê não decide compras, a linha não aparece. */
+  compras?: number | null
+}) {
   return (
     <Secao titulo="Pendências da diretoria">
       <ul>
@@ -180,6 +210,22 @@ export function BlocoPendencias({ aprovacoes, bloqueados }: { aprovacoes: number
           <span className="flex-1 font-sans text-base">Sprints bloqueados na entidade</span>
           <Pilula tom={bloqueados ? "alerta" : "neutro"}>{bloqueados ?? "?"}</Pilula>
         </li>
+        {registros !== undefined && (
+          <li className={linha}>
+            <Link href="/membros/formularios" className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
+              Registros esperando aprovação
+            </Link>
+            <Pilula tom={registros ? "alerta" : "neutro"}>{registros ?? "?"}</Pilula>
+          </li>
+        )}
+        {compras !== undefined && (
+          <li className={linha}>
+            <Link href="/membros/compras" className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
+              Pedidos de compra pendentes
+            </Link>
+            <Pilula tom={compras ? "alerta" : "neutro"}>{compras ?? "?"}</Pilula>
+          </li>
+        )}
       </ul>
     </Secao>
   )
