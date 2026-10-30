@@ -1,5 +1,20 @@
+// Roda com: node scripts/testar-horas.mjs
 import assert from "node:assert/strict"
-import { frequencia } from "../lib/horas.ts"
+import { duracaoSugerida, formatarHoras, frequencia, linhasDeHoras, somarHoras } from "../lib/horas.ts"
+
+assert.equal(formatarHoras(1.5), "1h30")
+assert.equal(formatarHoras(2), "2h")
+assert.equal(formatarHoras(0.25), "0h15")
+assert.equal(duracaoSugerida("2026-10-01T19:00:00Z", "2026-10-01T21:10:00Z"), 2)
+assert.equal(duracaoSugerida("2026-10-01T19:00:00Z", null), 2)
+assert.equal(duracaoSugerida("2026-10-01T19:00:00Z", "2026-10-01T19:10:00Z"), 0.5)
+const linhas = linhasDeHoras(
+  [{ id: "e", dia: "2026-10-01", horas: "1.5", atividade: "Reunião: Geral" }],
+  [{ id: "l", data: "2026-10-05", horas: "3", descricao: "Viagem" }],
+)
+assert.equal(linhas[0].chave, "l")
+assert.equal(somarHoras(linhas), 4.5)
+assert.equal(linhas[1].descricao, "Reunião: Geral")
 
 const sessao = (chave, dia, frente, ...presentes) => ({ chave, dia, frente, presentes: new Set(presentes) })
 const sessoes = [
@@ -29,4 +44,4 @@ assert.deepEqual(frequencia(nova, sessoes, new Set()), { esperadas: 2, faltas: 2
 // Sem sessões esperadas não há alerta.
 assert.equal(frequencia({ id: "x", frente: null, desde: "2027-01-01" }, sessoes, new Set()).alerta, false)
 
-console.log("frequencia: ok")
+console.log("horas: ok")
