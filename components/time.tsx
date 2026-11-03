@@ -58,9 +58,8 @@ const grupos: Grupo[] = [
   {
     frente: "Pesquisa",
     membros: [
-      { nome: "Bau", cargo: "Diretor de Pesquisa" },
+      { nome: "Mateus Bau", cargo: "Diretor de Pesquisa" },
       { nome: "Pedro", cargo: "Vice-diretor de Pesquisa" },
-      { nome: "Mateus" },
       { nome: "Thomaz" },
     ],
   },
