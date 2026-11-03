@@ -79,7 +79,7 @@ export default async function DocumentosPage() {
 
       <Aviso titulo="O QUE JÁ VALE" tom="neutro" className="mt-10">
         Um documento só aparece como <strong>vigente</strong>, com PDF, depois de aprovado pela
-        Assembleia ou pela Diretoria. Enquanto isso ele aparece como <strong>em aprovação</strong>:
+        Presidência do GEAR. Enquanto isso ele aparece como <strong>em aprovação</strong>:
         você sabe que existe e do que trata, mas ainda não é a regra em vigor.
       </Aviso>
 

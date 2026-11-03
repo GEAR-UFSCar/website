@@ -364,7 +364,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
                           copia[i] = { ...c, edicao: e.target.value }
                           campoM("colocacoes_competicao")(copia)
                         }}
-                        placeholder="RoboCup Rescue 2026"
+                        placeholder="CBR 2027, Drones"
                         aria-label={`Edição da colocação ${i + 1}`}
                         className={`${campoBase} max-w-xs`}
                       />
