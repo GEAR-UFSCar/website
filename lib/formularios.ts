@@ -50,11 +50,11 @@ export const MODELOS: readonly Modelo[] = [
     id: "ficha_projeto",
     nome: "Ficha de projeto",
     grupo: "Projetos e pesquisa",
-    fonte: "Caderno de Modelos (doc. 03), seção 1; Regimento art. 27",
+    fonte: "Caderno de Modelos (doc. 03), seção 1; Regimento art. 26",
     descricao: "Todo projeto, em qualquer trilha, nasce com responsável, escopo e critério de pronto escritos.",
     visibilidade: "interno",
-    aprovacao: "Área Técnica",
-    assinaturas: ["Responsável do projeto", "Área Técnica"],
+    aprovacao: "Presidência",
+    assinaturas: ["Responsável do projeto", "Presidência"],
     secoes: [
       {
         campos: [
@@ -81,9 +81,9 @@ export const MODELOS: readonly Modelo[] = [
     nome: "Pitch de projeto (5 minutos)",
     grupo: "Projetos e pesquisa",
     fonte: "Caderno de Modelos (doc. 03), seção 2; Manual da Trilha Projetos (doc. 19)",
-    descricao: "A ideia só vira projeto oficial depois do pitch e da aprovação da Área Técnica (Regimento art. 26 § 1º).",
+    descricao: "A ideia só vira projeto oficial depois do pitch e da aprovação da Presidência (Regimento art. 25, § 1º).",
     visibilidade: "interno",
-    aprovacao: "Área Técnica",
+    aprovacao: "Presidência",
     secoes: [
       {
         campos: [
@@ -107,8 +107,8 @@ export const MODELOS: readonly Modelo[] = [
     descricao:
       "Pedido de fora do GEAR, registrado antes de aceitar. Em tecnologia assistiva, identifique o caso por código e colete só o necessário: esta ficha é restrita.",
     visibilidade: "restrito",
-    aprovacao: "Área Técnica e líder de Projetos",
-    assinaturas: ["Responsável do esquadrão", "Área Técnica"],
+    aprovacao: "Presidência e diretor de Projetos",
+    assinaturas: ["Responsável do projeto", "Presidência"],
     secoes: [
       {
         campos: [
@@ -185,7 +185,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Caderno de Modelos (doc. 03), seção 6; Trilha Competição (doc. 18), seção 6",
     descricao: "Revisão em portão (conceito, preliminar, prontidão), com decisão de seguir, ajustar ou parar.",
     visibilidade: "interno",
-    aprovacao: "Área Técnica",
+    aprovacao: "Presidência",
     secoes: [
       {
         campos: [
@@ -227,7 +227,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Manual da Trilha Pesquisa (doc. 17), seção 4; portões P0 e P1 (doc. 34)",
     descricao: "Aprovado antes de rodar o primeiro experimento.",
     visibilidade: "interno",
-    aprovacao: "Líder da Pesquisa e Área Técnica",
+    aprovacao: "Diretor de Pesquisa",
     secoes: [
       {
         campos: [
@@ -273,7 +273,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Manual da Trilha Pesquisa (doc. 17), seção 9; portão P5 (doc. 34)",
     descricao: "Antes de enviar qualquer trabalho a evento ou periódico.",
     visibilidade: "interno",
-    aprovacao: "Líder da Pesquisa",
+    aprovacao: "Diretor de Pesquisa",
     secoes: [
       {
         campos: [
@@ -448,7 +448,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Manual da Trilha Competição (doc. 18), seção 9",
     descricao: "Conferência final da equipe antes de viajar para uma competição.",
     visibilidade: "interno",
-    aprovacao: "Líder da Competição",
+    aprovacao: "Diretor de Competição",
     secoes: [
       {
         campos: [
@@ -481,12 +481,12 @@ export const MODELOS: readonly Modelo[] = [
     id: "termo_emprestimo",
     nome: "Termo de empréstimo de patrimônio",
     grupo: "Patrimônio, dinheiro e viagens",
-    fonte: "Termo de Empréstimo (doc. 04); Regimento art. 41",
+    fonte: "Termo de Empréstimo (doc. 04); Regimento art. 40",
     descricao:
       "Para empréstimo formal: vários itens, uso fora do laboratório ou bem de terceiro. Retiradas rápidas de um item continuam no Inventário.",
     visibilidade: "interno",
-    aprovacao: "Operações e Patrimônio",
-    assinaturas: ["Membro responsável", "Operações e Patrimônio"],
+    aprovacao: "Presidência",
+    assinaturas: ["Membro responsável", "Presidência"],
     secoes: [
       {
         titulo: "Saída",
@@ -531,12 +531,12 @@ export const MODELOS: readonly Modelo[] = [
     id: "termo_doacao",
     nome: "Termo de doação e recibo de bens",
     grupo: "Patrimônio, dinheiro e viagens",
-    fonte: "Termo de Doação (doc. 29); Regimento art. 39, parágrafo único",
+    fonte: "Termo de Doação (doc. 29); Regimento art. 38, parágrafo único",
     descricao:
       "Doação de bens em favor da UFSCar, destinada ao GEAR. Dinheiro não é recebido pelo Grupo. Restrito: tem CPF ou CNPJ do doador.",
     visibilidade: "restrito",
-    aprovacao: "Operações e Patrimônio (Diretoria acima do limite)",
-    assinaturas: ["Doador(a) ou representante", "Coordenador da atividade", "Operações e Patrimônio"],
+    aprovacao: "Presidência",
+    assinaturas: ["Doador(a) ou representante", "Coordenador da atividade", "Presidência do GEAR"],
     secoes: [
       {
         titulo: "Partes e bens",
@@ -557,7 +557,7 @@ export const MODELOS: readonly Modelo[] = [
             tipo: "checklist",
             itens: [
               "Origem do bem verificada; sem indício de irregularidade",
-              "Utilidade confirmada pela Área Técnica",
+              "Utilidade confirmada pela Presidência",
               "Condições de segurança verificadas (baterias, tensão, peças móveis)",
               "Sem condição ou contrapartida não prevista",
               "Aceite ou procedimento da UFSCar concluído",
@@ -615,7 +615,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Caderno de Modelos (doc. 03), seção 9; Manual Financeiro (doc. 20), seção 3",
     descricao: "Ao menos três cotações quando possível, com a escolha justificada e conflito de interesses declarado.",
     visibilidade: "interno",
-    aprovacao: "Operações e Patrimônio (Diretoria acima de R$ 1.000)",
+    aprovacao: "Presidência (acima de R$ 1.000, com ciência do orientador)",
     secoes: [
       {
         campos: [
@@ -632,10 +632,10 @@ export const MODELOS: readonly Modelo[] = [
     id: "ficha_parceria",
     nome: "Ficha de parceria ou patrocínio",
     grupo: "Patrimônio, dinheiro e viagens",
-    fonte: "Política de Parcerias e Patrocínio (doc. 07), Anexos A e B; Regimento arts. 50 a 53",
+    fonte: "Política de Parcerias e Patrocínio (doc. 07), Anexos A e B; Regimento arts. 49 a 53",
     descricao: "Do primeiro contato ao encerramento. Nenhum compromisso vale antes da formalização pela UFSCar.",
     visibilidade: "restrito",
-    aprovacao: "Diretoria (estratégica: Assembleia)",
+    aprovacao: "Presidência, com ciência do orientador",
     secoes: [
       {
         campos: [
@@ -668,7 +668,7 @@ export const MODELOS: readonly Modelo[] = [
     id: "termo_compromisso",
     nome: "Termo de compromisso do membro",
     grupo: "Pessoas e cargos",
-    fonte: "Termo de Compromisso (doc. 02); Regimento art. 33",
+    fonte: "Termo de Compromisso (doc. 02); Regimento art. 32",
     descricao: "Condição para participar das atividades. Inclui a declaração de conhecimentos preexistentes e a autorização de imagem.",
     visibilidade: "restrito",
     aprovacao: "Presidente",
@@ -744,7 +744,7 @@ export const MODELOS: readonly Modelo[] = [
               "Uso a informação reservada só para o projeto",
               "Não divulgo nem compartilho sem autorização",
               "Devolvo ou elimino as informações ao fim do projeto ou do vínculo",
-              "Publicação científica passa antes pela Diretoria e pelo orientador",
+              "Publicação científica passa antes pela Presidência e pelo orientador",
               "Dados pessoais encontrados seguem a LGPD",
             ],
           },
@@ -756,8 +756,8 @@ export const MODELOS: readonly Modelo[] = [
     id: "declaracao_conflito",
     nome: "Declaração de ciência e de conflito de interesses",
     grupo: "Pessoas e cargos",
-    fonte: "Código de Conduta (doc. 24), Anexo; Regimento art. 52",
-    descricao: "Assinada na entrada e sempre que surgir um conflito. Quem tem conflito se abstém de deliberar e votar.",
+    fonte: "Código de Conduta (doc. 24), Anexo; Regimento art. 51",
+    descricao: "Assinada na entrada e sempre que surgir um conflito. Quem tem conflito declara o impedimento e não participa da deliberação.",
     visibilidade: "restrito",
     secoes: [
       {
@@ -789,7 +789,7 @@ export const MODELOS: readonly Modelo[] = [
               "Dia 1–2: Guia de Bolso lido; Termo de Compromisso e Declaração de Conflito assinados",
               "Dia 3–7: formação de segurança; ambiente técnico configurado",
               "Semana 2: primeira tarefa pequena; uma reunião de trilha",
-              "Semana 3: conversa com os líderes das trilhas; caminho na Academia definido",
+              "Semana 3: conversa com os diretores das trilhas; caminho na Academia definido",
               "Semana 4: apresentação de 3 minutos; pesquisa de clima rápida respondida",
             ],
           },
@@ -800,16 +800,17 @@ export const MODELOS: readonly Modelo[] = [
   },
   {
     id: "candidatura",
-    nome: "Candidatura a cargo",
+    nome: "Indicação para cargo",
     grupo: "Pessoas e cargos",
-    fonte: "Processo Eleitoral (doc. 28), Modelo 2; Regimento art. 69",
-    descricao: "Fundador ou efetivo com 6 meses de atuação, em dia com a frequência e sem sanção vigente. Uma pessoa, um cargo.",
+    fonte: "Processo de Sucessão (doc. 28); Regimento arts. 69 a 71",
+    descricao:
+      "Não há eleição: a Presidência indica, entre membros efetivos com 6 meses de atuação, com ciência do orientador, até 30 dias antes do fim do mandato. Diretores de trilha são escolhidos pelos efetivos da trilha e homologados pela Presidência. Quem quer ser considerado registra aqui o interesse.",
     visibilidade: "interno",
-    aprovacao: "Comissão Eleitoral",
+    aprovacao: "Presidência",
     secoes: [
       {
         campos: [
-          { id: "cargo", rotulo: "Cargo pretendido", tipo: "texto", obrigatorio: true },
+          { id: "cargo", rotulo: "Cargo de interesse", tipo: "texto", obrigatorio: true },
           { id: "tempo", rotulo: "Categoria no Grupo e tempo de atuação", tipo: "texto", obrigatorio: true },
           {
             id: "declaracoes",
@@ -867,7 +868,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Gestão do Conhecimento (doc. 22), seção 8; Regimento art. 14",
     descricao: "Quando alguém sai ou se forma: trabalho entregue, bens devolvidos, acessos removidos e contribuição reconhecida.",
     visibilidade: "restrito",
-    aprovacao: "Documentação",
+    aprovacao: "Presidência",
     secoes: [
       {
         campos: [
@@ -897,7 +898,7 @@ export const MODELOS: readonly Modelo[] = [
     fonte: "Privacidade e Segurança da Informação (doc. 25), Parte 1, arts. 3º e 4º",
     descricao: "Acesso, correção ou eliminação dos seus dados. O Grupo responde em até [15] dias ou encaminha ao encarregado da UFSCar.",
     visibilidade: "restrito",
-    aprovacao: "Diretoria",
+    aprovacao: "Presidência",
     secoes: [
       {
         campos: [
@@ -914,9 +915,9 @@ export const MODELOS: readonly Modelo[] = [
     nome: "Relato mensal da frente ou área",
     grupo: "Gestão e rotina",
     fonte: "Guia das Frentes (doc. 34), seção 7; Manual de Funções (doc. 13), Parte 2",
-    descricao: "Uma página à Diretoria até o dia [5] de cada mês.",
+    descricao: "Uma página à Presidência até o dia [5] de cada mês.",
     visibilidade: "interno",
-    aprovacao: "Diretoria (ciência)",
+    aprovacao: "Presidência (ciência)",
     secoes: [
       {
         campos: [
@@ -924,9 +925,9 @@ export const MODELOS: readonly Modelo[] = [
           { id: "mes", rotulo: "Mês", tipo: "texto", obrigatorio: true },
           { id: "entregues", rotulo: "O que entregamos", tipo: "area", obrigatorio: true },
           { id: "proximo", rotulo: "O que vamos entregar no próximo mês", tipo: "area" },
-          { id: "semaforo", rotulo: "Metas do trimestre (semáforo)", tipo: "opcao", opcoes: ["Verde: no ritmo", "Amarelo: atraso recuperável", "Vermelho: precisa de decisão da Diretoria"] },
+          { id: "semaforo", rotulo: "Metas do trimestre (semáforo)", tipo: "opcao", opcoes: ["Verde: no ritmo", "Amarelo: atraso recuperável", "Vermelho: precisa de decisão da Presidência"] },
           { id: "riscos", rotulo: "Riscos e bloqueios (com dono)", tipo: "area" },
-          { id: "pedidos", rotulo: "Pedidos à Diretoria ou a outras áreas", tipo: "area" },
+          { id: "pedidos", rotulo: "Pedidos à Presidência ou a outras áreas", tipo: "area" },
           { id: "frequencia", rotulo: "Frequência e horas registradas", tipo: "texto" },
           { id: "patrimonio", rotulo: "Patrimônio em uso e pendências", tipo: "area" },
         ],
@@ -975,10 +976,10 @@ export const MODELOS: readonly Modelo[] = [
     id: "checklist_semestral",
     nome: "Checklist semestral",
     grupo: "Gestão e rotina",
-    fonte: "Gestão do Conhecimento (doc. 22), seção 10; Regimento art. 40",
-    descricao: "Conferência que a Documentação e Operações fazem a cada semestre.",
+    fonte: "Gestão do Conhecimento (doc. 22), seção 10; Regimento art. 39",
+    descricao: "Conferência que a Presidência faz a cada semestre, com as trilhas.",
     visibilidade: "interno",
-    aprovacao: "Diretoria",
+    aprovacao: "Presidência",
     secoes: [
       {
         campos: [
@@ -995,7 +996,7 @@ export const MODELOS: readonly Modelo[] = [
               "Backup testado",
               "Manuais de função revisados",
               "Calendário de prazos da UFSCar atualizado",
-              "Inventário conferido; divergências comunicadas à Diretoria e ao orientador",
+              "Inventário conferido; divergências comunicadas à Presidência e ao orientador",
             ],
           },
           { id: "divergencias", rotulo: "Divergências encontradas", tipo: "area" },

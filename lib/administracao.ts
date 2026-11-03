@@ -108,6 +108,10 @@ export const CARGOS = [
   "Diretor de Competição",
   "Diretor de Pesquisa",
   "Diretor de Projetos",
+  // vices das trilhas, definidos pela Presidência em nov/2026 (036)
+  "Vice-diretor de Competição",
+  "Vice-diretor de Pesquisa",
+  "Vice-diretor de Projetos",
   "Tesouraria",
   "Comunicação",
   // áreas da Diretoria no Regimento (art. 20), somadas às que já existiam (035)
@@ -144,11 +148,12 @@ export const ETAPAS = ["Inscrito", "Entrevista", "Desafio", "Aprovado", "Recusad
 
 /**
  * Quem aprova uma compra pelo valor (Guia de Governança, doc. 31, e Tabela de
- * Parâmetros, doc. 35). Os limites são propostas a confirmar em ata.
+ * Parâmetros, doc. 35, já no modelo do Regimento v2: sem Assembleia, a
+ * Presidência decide). Os limites são propostas a confirmar em ata.
  */
 export function alcada(valor: number | null | undefined) {
-  if (valor === null || valor === undefined) return "Valor não estimado: Operações e Patrimônio avalia"
-  if (valor <= 200) return "Até R$ 200: Operações e Patrimônio"
-  if (valor <= 1000) return "De R$ 200 a R$ 1.000: Diretoria, por maioria"
-  return "Acima de R$ 1.000: Assembleia, com ciência do orientador"
+  if (valor === null || valor === undefined) return "Valor não estimado: a Presidência avalia"
+  if (valor <= 200) return "Até R$ 200: Presidente ou Vice-Presidente"
+  if (valor <= 1000) return "De R$ 200 a R$ 1.000: Presidente e Vice-Presidente, em conjunto"
+  return "Acima de R$ 1.000: Presidência, com ciência do orientador"
 }

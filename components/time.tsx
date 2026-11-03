@@ -7,6 +7,8 @@ import { botaoPrimario, botaoSecundario } from "@/lib/ui"
 type Membro = {
   nome: string
   cargo?: string
+  /** Sigla do placeholder quando a regra automática colidiria com outra pessoa. */
+  sigla?: string
 }
 
 type Grupo = {
@@ -15,35 +17,40 @@ type Grupo = {
 }
 
 /*
- * Iniciais: com só o primeiro nome, uma letra colidiria (Michael/Mateus,
- * João/Julio), então o placeholder usa as duas primeiras letras. Quando
- * houver sobrenome, trocar por inicial do nome + inicial do sobrenome.
+ * Iniciais: com nome composto, inicial do primeiro + do último (Julio Cezar →
+ * JC). Com só o primeiro nome, uma letra colidiria (Michael/Mateus), então
+ * entram as duas primeiras. Quando ainda assim duas pessoas caem na mesma
+ * sigla (João/Joanna → JO), o card informa a sua em `sigla`.
  */
-const iniciais = (nome: string) => nome.slice(0, 2).toUpperCase()
+const iniciais = (membro: Membro) => {
+  if (membro.sigla) return membro.sigla
+  const partes = membro.nome.trim().split(/\s+/)
+  if (partes.length > 1) return `${partes[0][0]}${partes[partes.length - 1][0]}`.toUpperCase()
+  return membro.nome.slice(0, 2).toUpperCase()
+}
 
 /*
- * Sem cargo de direção: a diretoria ainda não foi definida, e publicar nome
- * com "Presidente" ou "Direção de <Frente>" seria anunciar uma estrutura que
- * a entidade não formalizou. Cada card diz a frente em que a pessoa está —
- * que é o que de fato existe hoje.
+ * Estrutura definida pela Presidência em nov/2026: cada trilha tem diretor e
+ * vice, e Marketing tem uma responsável (Regimento, arts. 19 e 22). Quem tem
+ * cargo vem primeiro no grupo, e o cargo aparece no card; o resto do time diz
+ * só a trilha em que está.
  *
- * Quando a designação acontecer, é aqui que ela entra: o `cargo` volta a ser
- * o cargo, e o destaque de quem tem cargo pode voltar junto. Os valores
- * válidos já estão em lib/administracao.ts (CARGOS), que é o que o banco
- * aceita no CHECK de `perfis.cargo`.
+ * Os cargos que o sistema da área de membros aceita moram em
+ * lib/administracao.ts (CARGOS), espelhando o CHECK de `perfis.cargo`.
  */
 const grupos: Grupo[] = [
   {
-    frente: "Fundação",
+    frente: "Presidência",
     membros: [
-      { nome: "Michael" },
-      { nome: "Alan" },
+      { nome: "Michael", cargo: "Presidente" },
+      { nome: "Alan", cargo: "Vice-Presidente" },
     ],
   },
   {
     frente: "Competição",
     membros: [
-      { nome: "João" },
+      { nome: "João", cargo: "Diretor de Competição" },
+      { nome: "Joanna", cargo: "Vice-diretora de Competição · Marketing", sigla: "JN" },
       { nome: "Nasser" },
       { nome: "Guilherme" },
     ],
@@ -51,16 +58,17 @@ const grupos: Grupo[] = [
   {
     frente: "Pesquisa",
     membros: [
+      { nome: "Bau", cargo: "Diretor de Pesquisa" },
+      { nome: "Pedro", cargo: "Vice-diretor de Pesquisa" },
       { nome: "Mateus" },
-      { nome: "Pedro" },
       { nome: "Thomaz" },
     ],
   },
   {
     frente: "Projetos",
     membros: [
-      { nome: "Luiza" },
-      { nome: "Julio" },
+      { nome: "Julio Cezar", cargo: "Diretor de Projetos" },
+      { nome: "Luiza", cargo: "Vice-diretora de Projetos" },
       { nome: "Elis" },
     ],
   },
@@ -80,7 +88,7 @@ function Card({ membro, index }: { membro: Membro; index: number }) {
       {/* Placeholder da foto, substituir por <Image> quando houver retrato */}
       <div className="w-16 h-16 flex items-center justify-center border border-[var(--gear-amber)] bg-[var(--gear-navy)]">
         <span className="font-mono text-lg tracking-widest text-[var(--gear-amber)]">
-          {iniciais(membro.nome)}
+          {iniciais(membro)}
         </span>
       </div>
 

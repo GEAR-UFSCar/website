@@ -30,7 +30,7 @@ assert.deepEqual(nivelDeRisco("2", "3"), { valor: 6, faixa: "aceitável com cont
 assert.equal(nivelDeRisco("3", "5").faixa, "não voa")
 assert.equal(nivelDeRisco("", "5"), null)
 
-assert.match(alcada(200), /Operações/)
-assert.match(alcada(200.01), /Diretoria/)
-assert.match(alcada(5000), /Assembleia/)
+assert.match(alcada(200), /Presidente ou Vice-Presidente/)
+assert.match(alcada(200.01), /em conjunto/)
+assert.match(alcada(5000), /ciência do orientador/)
 console.log(`formularios: ok (${MODELOS.length} modelos)`)
