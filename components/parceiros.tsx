@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Surge } from "@/components/surge"
 import { MarqueeLogos, type ParceiroLogo } from "@/components/marquee-row"
 import logoNta from "@/public/nta-logo.png"
+import logoMaxDrone from "@/public/maxdrone-logo.png"
 
 import { CONTATO_PARCERIA, EMAIL_CONTATO } from "@/lib/site"
 import { NIVEIS, RESPONSAVEL_PATROCINIO, VALOR } from "@/lib/parceiros"
@@ -25,6 +26,7 @@ import { botaoPrimario, linkNoTexto } from "@/lib/ui"
  */
 const parceiros: ParceiroLogo[] = [
   { nome: "NTA, Núcleo de Tecnologia Assistiva", logo: logoNta, url: "https://www.nta.ufscar.br/" },
+  { nome: "Max Drone Brasil", logo: logoMaxDrone, url: "https://www.maxdrone.com.br/" },
 ]
 
 
