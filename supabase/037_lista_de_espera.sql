@@ -13,11 +13,15 @@
 -- usar o formulário para descobrir quem se inscreveu). Ler e apagar é de quem
 -- tem cargo, em /membros/administracao/selecao. Dado pessoal mínimo: só o
 -- e-mail, e a política de privacidade diz para que serve e quando sai.
+--
+-- O CHECK aceita só caracteres de endereço: `?`, `&` e `=` ficam de fora porque
+-- a lista vira um mailto: em Seleção, e um "e-mail" como a@b.com&body=... iria
+-- injetar texto na mensagem que a diretoria envia.
 -- =============================================================================
 
 create table if not exists public.lista_de_espera (
   email text primary key
-    check (email = lower(email) and length(email) <= 254 and email ~ '^[^@\s]+@[^@\s]+\.[^@\s]+$'),
+    check (email = lower(email) and length(email) <= 254 and email ~ '^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$'),
   criado_em timestamptz not null default now()
 );
 

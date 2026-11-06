@@ -850,6 +850,7 @@ checar("anônimo entra na lista", (await anon(`select public.entrar_na_lista_de_
 const repetido = await anon(`select public.entrar_na_lista_de_espera('fulano@exemplo.com')`)
 checar("e-mail repetido não dá erro (não revela quem já está)", repetido.ok, repetido.erro)
 checar("e-mail inválido é recusado", !(await anon(`select public.entrar_na_lista_de_espera('nao-e-email')`)).ok)
+checar("parâmetro de mailto no e-mail é recusado", !(await anon(`select public.entrar_na_lista_de_espera('a@b.com&body=oi')`)).ok)
 checar("anônimo não lê a lista", bloqueado(await anon(`select email from public.lista_de_espera`)), "LEU")
 checar("anônimo não insere direto", !(await anon(`insert into public.lista_de_espera (email) values ('x@y.com')`)).ok)
 checar("membro sem cargo não lê", bloqueado(await como(MEMBRO, `select email from public.lista_de_espera`)), "LEU")

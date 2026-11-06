@@ -108,7 +108,7 @@ export function ListaDeEsperaAdmin({ emails }: { emails: string[] }) {
   return (
     <div>
       <div className="flex flex-wrap gap-6">
-        <a href={`mailto:?bcc=${restantes.join(",")}`} className={acao}>
+        <a href={`mailto:?bcc=${restantes.map(encodeURIComponent).join(",")}`} className={acao}>
           Escrever para todos ({restantes.length}) →
         </a>
         <button type="button" onClick={() => apagar(restantes)} className={acao}>
