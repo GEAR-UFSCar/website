@@ -15,11 +15,12 @@ import { botaoPrimario, linkNoTexto } from "@/lib/ui"
 /*
  * Quem já apoia.
  *
- * Com UM parceiro a faixa de rolagem não se sustenta: o marquee precisa
- * repetir o mesmo logo quatro vezes só para ter largura, e o que lê na tela é
- * repetição forçada, não ritmo. Por isso a seção 03 mostra um card único e
- * grande enquanto `parceiros.length === 1`, e volta para <MarqueeLogos> a
- * partir do segundo, sem mexer neste array, que já está no formato final.
+ * Com poucos parceiros a faixa de rolagem não se sustenta: o marquee repete
+ * os mesmos logos quatro vezes só para ter largura, e o que lê na tela é
+ * repetição forçada, não diversidade. Por isso a seção 03 mostra cards fixos,
+ * lado a lado, enquanto houver menos de MIN_PARCEIROS_FAIXA, e volta para
+ * <MarqueeLogos> a partir daí, sem mexer neste array, que já está no formato
+ * final. Decisão da diretoria em 06/11/2026, com NTA e Max Drone.
  *
  * O logo vem por import estático: se o arquivo sumir do repositório, o build
  * quebra, em vez de a página ir ao ar com um retângulo vazio.
@@ -28,6 +29,9 @@ const parceiros: ParceiroLogo[] = [
   { nome: "NTA, Núcleo de Tecnologia Assistiva", logo: logoNta, url: "https://www.nta.ufscar.br/" },
   { nome: "Max Drone Brasil", logo: logoMaxDrone, url: "https://www.maxdrone.com.br/" },
 ]
+
+/** A partir de quantos parceiros a seção vira faixa rolando. */
+const MIN_PARCEIROS_FAIXA = 6
 
 
 
@@ -70,10 +74,10 @@ export function Parceiros() {
           <h2 className="font-sans text-3xl md:text-5xl font-light italic">Quem já está junto</h2>
         </Surge>
 
-        {parceiros.length > 1 ? (
+        {parceiros.length >= MIN_PARCEIROS_FAIXA ? (
           <MarqueeLogos items={parceiros} />
         ) : (
-          <div className="mx-auto max-w-6xl px-8 md:px-12">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-start justify-center gap-x-10 gap-y-12 px-8 md:gap-x-16 md:px-12">
             {parceiros.map((parceiro, index) => (
               <Surge key={parceiro.nome} delay={index * 0.1} className="flex flex-col items-center">
                 <a
@@ -86,8 +90,10 @@ export function Parceiros() {
                    * azul sólido com fundo transparente e some contra o ink do
                    * site. O suporte é da nossa paleta (--gear-fog), a marca
                    * continua deles, recolorir logo de terceiro não nos cabe.
+                   * A altura é a mesma para todos os logos; a largura acompanha
+                   * a proporção de cada um.
                    */
-                  className="group inline-block rounded border border-linha bg-[var(--gear-fog)] px-10 py-8 md:px-16 md:py-12 transition duration-300 hover:border-[var(--gear-amber)] hover:scale-[1.02]"
+                  className="group inline-block rounded border border-linha bg-[var(--gear-fog)] px-8 py-6 md:px-12 md:py-10 transition duration-300 hover:border-[var(--gear-amber)] hover:scale-[1.02]"
                 >
                   <Image
                     src={parceiro.logo}
@@ -95,7 +101,7 @@ export function Parceiros() {
                     /* h-* com w-auto define as duas dimensões em CSS, que é
                        como o next/image aceita redimensionamento sem avisar de
                        proporção. */
-                    className="h-24 w-auto md:h-32"
+                    className="h-16 w-auto md:h-24"
                   />
                 </a>
                 <p className="mt-6 text-center font-mono text-[10px] tracking-[0.25em] uppercase text-muted-foreground">
