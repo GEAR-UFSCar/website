@@ -1,9 +1,10 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { CONTATO_INGRESSO, OG_IMAGE, TOTAL_MEMBROS } from "@/lib/site"
+import { OG_IMAGE, TOTAL_MEMBROS } from "@/lib/site"
 import { Aviso } from "@/components/aviso"
-import { botaoPrimario, botaoSecundario } from "@/lib/ui"
+import { ListaDeEspera } from "@/components/lista-de-espera"
+import { botaoSecundario } from "@/lib/ui"
 import { ETAPAS_FORMACAO } from "@/lib/formacao"
 
 const DESCRICAO =
@@ -29,7 +30,8 @@ export const metadata: Metadata = {
  * benchmarking têm "Join Us" ou "Apply" no primeiro nível do menu.
  *
  * Esta página NÃO inventa processo seletivo aberto. Ela diz o que é verdade
- * hoje: não há inscrição em andamento, e quem quiser ser avisado escreve.
+ * hoje: não há inscrição em andamento, e quem quiser ser avisado deixa o
+ * e-mail na lista de espera (037).
  * Quando o ciclo abrir, é trocar o bloco de estado por datas e formulário.
  */
 
@@ -80,8 +82,8 @@ export default function IngressarPage() {
 
       {/* Estado real do ciclo. Substituir por datas quando abrir. */}
       <Aviso titulo="INSCRIÇÕES FECHADAS" className="mt-10">
-        Não há processo seletivo aberto no momento, e o próximo ciclo ainda não tem data. Escreva
-        para a gente e avisamos quando abrir. É o jeito mais direto de não perder.
+        Não há processo seletivo aberto no momento, e o próximo ciclo ainda não tem data. Deixe
+        seu e-mail no fim desta página e avisamos quando abrir. É o jeito mais direto de não perder.
       </Aviso>
 
       <section className="mt-20">
@@ -142,14 +144,13 @@ export default function IngressarPage() {
         </p>
       </section>
 
-      <div className="mt-16 flex flex-col sm:flex-row gap-5">
-        <a href={CONTATO_INGRESSO} data-cursor-hover className={`text-center ${botaoPrimario}`}>
-          Quero ser avisado
-        </a>
-        <Link href="/sobre" data-cursor-hover className={`text-center ${botaoSecundario}`}>
+      <section id="avisar" className="mt-16 scroll-mt-24">
+        <h2 className="mb-6 font-sans text-3xl md:text-5xl font-light italic">Avisamos quando abrir</h2>
+        <ListaDeEspera />
+        <Link href="/sobre" data-cursor-hover className={`mt-10 inline-block text-center ${botaoSecundario}`}>
           Ver a formação
         </Link>
-      </div>
+      </section>
     </section>
   )
 }

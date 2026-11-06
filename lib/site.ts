@@ -43,9 +43,13 @@ export const EMAIL_CONTATO = "gearufscar@gmail.com"
  * Enquanto não há processo seletivo aberto, o site precisava de ALGUM ponto de
  * chegada: a auditoria mostrou que /frentes e /projetos apontavam um para o
  * outro num anel fechado, e /sobre e /time não levavam a lugar nenhum. Sem um
- * destino terminal, o candidato circula e sai sem fazer nada.
+ * destino terminal, o candidato circula e sai sem fazer nada. Desde a 037 o
+ * destino é o formulário da lista de espera, não mais um mailto.
  */
-export const CONTATO_INGRESSO =
+export const CONTATO_INGRESSO = "/ingressar#avisar"
+
+/** Plano B do formulário de /ingressar, quando o banco não responde. */
+export const CONTATO_INGRESSO_EMAIL =
   `mailto:${EMAIL_CONTATO}?subject=${encodeURIComponent("Quero ser avisado do próximo ciclo do GEAR")}`
 
 export const CONTATO_PARCERIA =

@@ -288,14 +288,15 @@ checar(
 )
 
 // O que `anon` chama por RPC é uma lista curta, escolhida: cada uma exige token
-// ou caminho e só responde sim/não (ou o feed). Entrou outra? Vai aparecer aqui.
+// ou caminho e só responde sim/não (ou o feed); a da 037 só insere e-mail e não
+// devolve nada. Entrou outra? Vai aparecer aqui.
 const anonChama = await tenta(`
   select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
    where n.nspname = 'public' and p.prosecdef and has_function_privilege('anon', p.oid, 'execute')
    order by 1`)
-const esperadasAnon = ["calendario_token_valido", "documento_e_publico", "feed_do_calendario"]
+const esperadasAnon = ["calendario_token_valido", "documento_e_publico", "entrar_na_lista_de_espera", "feed_do_calendario"]
 checar(
-  "SECURITY DEFINER chamável por anon = só as três escolhidas",
+  "SECURITY DEFINER chamável por anon = só as quatro escolhidas",
   JSON.stringify(anonChama.rows.map((x) => x.proname)) === JSON.stringify(esperadasAnon),
   anonChama.rows.map((x) => x.proname).join(", "),
 )
@@ -841,6 +842,22 @@ for (const [tabela, insere] of [
   const r = await como(P, `delete from public.${tabela} where id = '${id}' returning 1`)
   checar(`diretoria apaga ${tabela}`, passa(r), r.erro)
 }
+
+// --- 037: lista de espera do próximo ciclo ------------------------------------
+secao("037. LISTA DE ESPERA — visitante entra, só cargo lê")
+
+checar("anônimo entra na lista", (await anon(`select public.entrar_na_lista_de_espera('  Fulano@Exemplo.com ')`)).ok)
+const repetido = await anon(`select public.entrar_na_lista_de_espera('fulano@exemplo.com')`)
+checar("e-mail repetido não dá erro (não revela quem já está)", repetido.ok, repetido.erro)
+checar("e-mail inválido é recusado", !(await anon(`select public.entrar_na_lista_de_espera('nao-e-email')`)).ok)
+checar("parâmetro de mailto no e-mail é recusado", !(await anon(`select public.entrar_na_lista_de_espera('a@b.com&body=oi')`)).ok)
+checar("anônimo não lê a lista", bloqueado(await anon(`select email from public.lista_de_espera`)), "LEU")
+checar("anônimo não insere direto", !(await anon(`insert into public.lista_de_espera (email) values ('x@y.com')`)).ok)
+checar("membro sem cargo não lê", bloqueado(await como(MEMBRO, `select email from public.lista_de_espera`)), "LEU")
+const lida = await como(CARGO, `select email from public.lista_de_espera`)
+checar("cargo lê, já normalizado", lida.ok && lida.rows.length === 1 && lida.rows[0].email === "fulano@exemplo.com", JSON.stringify(lida.rows))
+checar("membro sem cargo não apaga", bloqueado(await como(MEMBRO, `delete from public.lista_de_espera returning 1`)), "APAGOU")
+checar("cargo apaga", passa(await como(CARGO, `delete from public.lista_de_espera returning 1`)))
 
 // --- placar ------------------------------------------------------------------
 await db.close()

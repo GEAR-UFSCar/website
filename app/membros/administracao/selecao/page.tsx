@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { ErroDados } from "@/components/erro-dados"
+import { ListaDeEsperaAdmin } from "@/components/lista-de-espera"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
 import { PageHeader } from "@/components/membros/page-header"
 import { Pilula } from "@/components/membros/pilula"
@@ -27,7 +28,7 @@ export default async function SelecaoPage() {
   const ehDiretoria = eDiretoria((await getPerfil()).perfil?.cargo)
   const supabase = await createClient()
 
-  const [candR, fichasR, motivR] = await Promise.all([
+  const [candR, fichasR, motivR, esperaR] = await Promise.all([
     supabase
       .from("perfis")
       .select("id, nome_completo, curso, frente, created_at")
@@ -36,6 +37,7 @@ export default async function SelecaoPage() {
       .order("created_at"),
     supabase.from("selecao").select("perfil_id, etapa, notas"),
     supabase.from("candidaturas").select("perfil_id, motivacao"),
+    supabase.from("lista_de_espera").select("email").order("criado_em"),
   ])
   const motivacoes = new Map((motivR.data ?? []).map((m) => [m.perfil_id, m.motivacao as string]))
   const erro = candR.error ?? fichasR.error ?? motivR.error
@@ -85,6 +87,22 @@ export default async function SelecaoPage() {
           ))}
         </ul>
       )}
+
+      {/* Quem pediu, em /ingressar, para ser avisado do próximo ciclo (037). */}
+      <div className="mt-16 border-t border-linha pt-8">
+        <h2 className="font-sans text-2xl font-light italic">Lista de espera</h2>
+        <p className="mt-2 mb-6 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
+          Visitantes que deixaram o e-mail para saber quando abre o próximo ciclo. Avise todos quando o edital sair e
+          apague a lista em seguida: a política de privacidade promete isso.
+        </p>
+        {esperaR.error ? (
+          <ErroDados titulo="LISTA INDISPONÍVEL" erro={esperaR.error} className="max-w-2xl">
+            Falta rodar <code>supabase/037_lista_de_espera.sql</code>.
+          </ErroDados>
+        ) : (
+          <ListaDeEsperaAdmin emails={(esperaR.data ?? []).map((l) => l.email as string)} />
+        )}
+      </div>
     </section>
   )
 }

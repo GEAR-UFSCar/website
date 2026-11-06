@@ -43,7 +43,7 @@ export type Projeto = {
   nome: string
   frente: Frente
   etapa: Etapa
-  /** Ausente = não registrado. A página mostra "ano a definir". */
+  /** Ausente = não registrado. A página omite o selo em vez de exibir lacuna. */
   anoInicio?: number
   /** Uma frase, o que aparece antes dos detalhes. */
   resumo: string
@@ -192,6 +192,7 @@ export const PROJETOS: Projeto[] = [
       "/fotos/universidade-aberta/foto-05.jpg",
       "/fotos/universidade-aberta/foto-04.jpg",
     ],
+    repositorio: "https://github.com/GEAR-UFSCar/OSOYOO-Mecanum-Line-Navigator",
   },
 ]
 
