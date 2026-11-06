@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
+import { CiclosSelecao, type Ciclo } from "@/components/ciclos-selecao"
 import { ErroDados } from "@/components/erro-dados"
 import { ListaDeEsperaAdmin } from "@/components/lista-de-espera"
 import { EstadoVazio } from "@/components/membros/estado-vazio"
@@ -8,7 +9,7 @@ import { PageHeader } from "@/components/membros/page-header"
 import { Pilula } from "@/components/membros/pilula"
 import { SelecaoFicha } from "@/components/selecao-ficha"
 import { ETAPAS, eDiretoria } from "@/lib/administracao"
-import { dataDoDia, diaGear } from "@/lib/datas"
+import { dataDoDia, diaGear, hojeISO } from "@/lib/datas"
 import { createClient } from "@/lib/supabase/server"
 import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
@@ -28,7 +29,7 @@ export default async function SelecaoPage() {
   const ehDiretoria = eDiretoria((await getPerfil()).perfil?.cargo)
   const supabase = await createClient()
 
-  const [candR, fichasR, motivR, esperaR] = await Promise.all([
+  const [candR, fichasR, motivR, esperaR, ciclosR] = await Promise.all([
     supabase
       .from("perfis")
       .select("id, nome_completo, curso, frente, created_at")
@@ -38,6 +39,7 @@ export default async function SelecaoPage() {
     supabase.from("selecao").select("perfil_id, etapa, notas"),
     supabase.from("candidaturas").select("perfil_id, motivacao"),
     supabase.from("lista_de_espera").select("email").order("criado_em"),
+    supabase.from("ciclos_selecao").select("id, titulo, inscricoes_de, inscricoes_ate, edital_url").order("inscricoes_de", { ascending: false }),
   ])
   const motivacoes = new Map((motivR.data ?? []).map((m) => [m.perfil_id, m.motivacao as string]))
   const erro = candR.error ?? fichasR.error ?? motivR.error
@@ -87,6 +89,22 @@ export default async function SelecaoPage() {
           ))}
         </ul>
       )}
+
+      {/* O ciclo cadastrado aqui decide o que /ingressar mostra (038). */}
+      <div className="mt-16 border-t border-linha pt-8">
+        <h2 className="font-sans text-2xl font-light italic">Ciclos</h2>
+        <p className="mt-2 mb-6 max-w-[62ch] font-sans text-sm font-light leading-relaxed text-muted-foreground">
+          Publique o ciclo com as datas do edital. Antes de abrir, /ingressar mostra as datas; durante, o botão de
+          inscrição; depois, volta para a lista de espera. {ehDiretoria ? "" : "Só a diretoria publica e apaga ciclos."}
+        </p>
+        {ciclosR.error ? (
+          <ErroDados titulo="CICLOS INDISPONÍVEIS" erro={ciclosR.error} className="max-w-2xl">
+            Falta rodar <code>supabase/038_agenda_publica_e_ciclos.sql</code>.
+          </ErroDados>
+        ) : (
+          <CiclosSelecao ciclos={(ciclosR.data ?? []) as Ciclo[]} podeEditar={ehDiretoria} hoje={hojeISO()} />
+        )}
+      </div>
 
       {/* Quem pediu, em /ingressar, para ser avisado do próximo ciclo (037). */}
       <div className="mt-16 border-t border-linha pt-8">

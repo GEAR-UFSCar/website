@@ -142,6 +142,8 @@ export type EventoCal = {
   dia_inteiro?: boolean | null
   recorrencia?: string | null
   recorrencia_ate?: string | null
+  /** 038: aparece em /agenda. Ausente = banco sem a 038. */
+  publico?: boolean | null
 }
 
 export type Ocorrencia = {

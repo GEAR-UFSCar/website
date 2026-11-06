@@ -859,6 +859,31 @@ checar("cargo lê, já normalizado", lida.ok && lida.rows.length === 1 && lida.r
 checar("membro sem cargo não apaga", bloqueado(await como(MEMBRO, `delete from public.lista_de_espera returning 1`)), "APAGOU")
 checar("cargo apaga", passa(await como(CARGO, `delete from public.lista_de_espera returning 1`)))
 
+// --- 038: agenda pública e ciclos do processo seletivo ------------------------
+secao("038. AGENDA PÚBLICA E CICLOS — só o recorte publicável sai")
+
+const evPriv = (await como(P, `insert into public.eventos (titulo, tipo, data_inicio, link) values ('Reunião interna','Reunião', now() + interval '1 day', 'https://meet.example/x') returning id`)).rows[0]?.id
+const evPub = (await como(P, `insert into public.eventos (titulo, tipo, data_inicio, publico, link) values ('Oficina aberta','Outro', now() + interval '2 days', true, 'https://meet.example/y') returning id`)).rows[0]?.id
+const agenda = await anon(`select * from public.agenda_publica`)
+checar("anônimo vê só o evento público", agenda.ok && agenda.rows.length === 1 && agenda.rows[0].id === evPub, agenda.erro ?? JSON.stringify(agenda.rows.map((r) => r.titulo)))
+checar("agenda pública não expõe link nem autor", agenda.ok && !("link" in (agenda.rows[0] ?? {})) && !("criado_por" in (agenda.rows[0] ?? {})))
+checar("anônimo continua sem ler eventos direto", bloqueado(await anon(`select id from public.eventos`)), "LEU")
+await como(P, `delete from public.eventos where id in ('${evPriv}','${evPub}')`)
+
+const emDias = (n) => `((now() at time zone 'America/Sao_Paulo')::date + ${n})`
+checar("ciclo com menos de 7 dias de antecedência é recusado",
+  !(await como(P, `insert into public.ciclos_selecao (titulo, inscricoes_de, inscricoes_ate) values ('Cedo demais', ${emDias(3)}, ${emDias(10)})`)).ok)
+checar("cargo fora da diretoria não cria ciclo",
+  bloqueado(await como(CARGO, `insert into public.ciclos_selecao (titulo, inscricoes_de, inscricoes_ate) values ('Tesouraria', ${emDias(8)}, ${emDias(20)}) returning id`)), "CRIOU")
+const ciclo = await como(P, `insert into public.ciclos_selecao (titulo, inscricoes_de, inscricoes_ate, edital_url) values ('Ciclo 2027.1', ${emDias(8)}, ${emDias(20)}, 'https://exemplo.com/edital.pdf') returning id`)
+checar("diretoria cria ciclo com 7+ dias", passa(ciclo), ciclo.erro)
+checar("corrigir título de ciclo não esbarra na antecedência",
+  passa(await como(P, `update public.ciclos_selecao set titulo = 'Ciclo 2027/1' where id = '${ciclo.rows[0]?.id}' returning 1`)))
+const pub = await anon(`select * from public.ciclo_publico`)
+checar("anônimo vê o próximo ciclo, sem autor", pub.ok && pub.rows[0]?.titulo === "Ciclo 2027/1" && !("criado_por" in (pub.rows[0] ?? {})), pub.erro ?? JSON.stringify(pub.rows))
+checar("anônimo não lê ciclos_selecao direto", bloqueado(await anon(`select id from public.ciclos_selecao`)), "LEU")
+checar("membro sem cargo não lê ciclos_selecao", bloqueado(await como(MEMBRO, `select id from public.ciclos_selecao`)), "LEU")
+
 // --- placar ------------------------------------------------------------------
 await db.close()
 
