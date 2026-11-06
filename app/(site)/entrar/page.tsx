@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: true },
 }
 
-export default function EntrarPage() {
-  return <Entrar />
+export default async function EntrarPage({ searchParams }: { searchParams: Promise<{ modo?: string }> }) {
+  const { modo } = await searchParams
+  return <Entrar modoInicial={modo === "criar" ? "criar" : "entrar"} />
 }

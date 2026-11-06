@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Link from "next/link"
 
 import { BotaoImprimir } from "@/components/membros/botao-imprimir"
 import { ErroDados } from "@/components/erro-dados"
@@ -84,7 +85,17 @@ export default async function HorasPage() {
                 {linhas.map((l) => (
                   <tr key={l.chave} className="border-b border-linha">
                     <td className="py-2 pr-4 font-mono text-[11px] whitespace-nowrap">{dataDoDia(l.data)}</td>
-                    <td className="py-2 pr-4 font-sans text-sm">{l.descricao}</td>
+                    <td className="py-2 pr-4 font-sans text-sm">
+                      {l.descricao}
+                      {l.origem === "Evento" && (
+                        <Link
+                          href={`/membros/horas/certificado/${l.chave}`}
+                          className="nao-imprimir ml-3 font-mono text-[10px] uppercase tracking-[0.15em] text-[var(--gear-amber)] hover:underline"
+                        >
+                          Certificado
+                        </Link>
+                      )}
+                    </td>
                     <td className="py-2 pr-4 font-mono text-[11px] text-muted-foreground">{l.origem}</td>
                     <td className="py-2 font-mono text-[11px] tabular-nums">{formatarHoras(l.horas)}</td>
                   </tr>
