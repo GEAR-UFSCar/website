@@ -49,6 +49,12 @@ const secoes = [
     ],
   },
   {
+    titulo: "Lista de espera",
+    conteudo: [
+      "Quem não é membro e pede, em Ingressar, para ser avisado do próximo ciclo deixa só o e-mail. Ele serve para um único aviso de abertura de inscrições, é visto apenas por quem tem cargo na entidade e é apagado depois que o ciclo abre. Para sair antes, escreva para o e-mail no fim desta página.",
+    ],
+  },
+  {
     titulo: "Para que usamos",
     conteudo: [
       "Para operar a área de membros: identificar quem é da entidade, organizar as frentes, registrar presença em atas e acompanhar a formação na Academia GEAR.",

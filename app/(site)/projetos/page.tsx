@@ -126,7 +126,7 @@ function Abertura({ projeto, indice }: { projeto: Projeto; indice: number }) {
         </h2>
         <div className="mt-5 flex flex-wrap items-center gap-2.5">
           <Chip>{projeto.etapa}</Chip>
-          <Chip>{projeto.anoInicio ? `desde ${projeto.anoInicio}` : "ano a definir"}</Chip>
+          {projeto.anoInicio && <Chip>desde {projeto.anoInicio}</Chip>}
           {projeto.contexto && <Chip>{projeto.contexto}</Chip>}
         </div>
       </div>
