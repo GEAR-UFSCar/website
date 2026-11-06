@@ -859,6 +859,13 @@ checar("cargo lê, já normalizado", lida.ok && lida.rows.length === 1 && lida.r
 checar("membro sem cargo não apaga", bloqueado(await como(MEMBRO, `delete from public.lista_de_espera returning 1`)), "APAGOU")
 checar("cargo apaga", passa(await como(CARGO, `delete from public.lista_de_espera returning 1`)))
 
+// 040: teto de 60 por hora — a 61ª some calada, sem erro
+await db.exec(`insert into public.lista_de_espera (email) select 'lote' || g || '@exemplo.com' from generate_series(1, 60) g`)
+checar("acima do teto: chamada não falha", (await anon(`select public.entrar_na_lista_de_espera('extra@exemplo.com')`)).ok)
+const total = await db.query(`select count(*)::int as n from public.lista_de_espera`)
+checar("acima do teto: não insere", total.rows[0].n === 60, JSON.stringify(total.rows))
+await db.exec(`delete from public.lista_de_espera`)
+
 // --- 038: agenda pública e ciclos do processo seletivo ------------------------
 secao("038. AGENDA PÚBLICA E CICLOS — só o recorte publicável sai")
 
