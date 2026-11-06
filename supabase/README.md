@@ -54,6 +54,7 @@ a anterior não rodou.
 | 036 | `vice_diretores.sql` | acrescenta os três vice-diretores de trilha ao CHECK de `perfis.cargo`; contam em `tem_cargo()` como qualquer cargo. Não apaga dado | 035 |
 | 037 | `lista_de_espera.sql` | `lista_de_espera` (só o e-mail) de quem pediu em /ingressar para ser avisado do próximo ciclo; visitante só entra por `entrar_na_lista_de_espera()` (SECURITY DEFINER, ignora repetido sem revelar), quem tem cargo lê e apaga em Seleção. Não apaga dado | 014 |
 | 038 | `agenda_publica_e_ciclos.sql` | `eventos.publico` e a view `agenda_publica` (só título, datas, local, descrição e repetição; sem link) para /agenda; `ciclos_selecao` (diretoria cria, corrige e apaga; quem tem cargo lê), com gatilho que recusa abertura a menos de 7 dias do edital (doc. 35), e a view `ciclo_publico` com o próximo ciclo para /ingressar. Não apaga dado | 008, 014, 016, 027, 037 |
+| 039 | `chamada_sem_escrita_anonima.sql` | tira de `anon` o privilégio de escrever em `eventos_chamada`: o gatilho da 034 respondia antes da RLS (23503) e `test:rls` não conseguia provar que a autorização barrava. Não apaga dado | 034 |
 
 Duas armadilhas conhecidas:
 

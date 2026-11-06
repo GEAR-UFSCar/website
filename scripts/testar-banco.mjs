@@ -884,6 +884,11 @@ checar("anônimo vê o próximo ciclo, sem autor", pub.ok && pub.rows[0]?.titulo
 checar("anônimo não lê ciclos_selecao direto", bloqueado(await anon(`select id from public.ciclos_selecao`)), "LEU")
 checar("membro sem cargo não lê ciclos_selecao", bloqueado(await como(MEMBRO, `select id from public.ciclos_selecao`)), "LEU")
 
+// --- 039: chamada sem escrita anônima ---------------------------------------
+secao("039. CHAMADA — anônimo barrado pela autorização, não pelo gatilho")
+const chamadaAnon = await anon(`insert into public.eventos_chamada (dia, usuario_id, horas) values (current_date, '${MEMBRO}', 1)`)
+checar("anônimo recebe 42501 ao gravar presença", !chamadaAnon.ok && chamadaAnon.codigo === "42501", `${chamadaAnon.codigo} ${chamadaAnon.erro}`)
+
 // --- placar ------------------------------------------------------------------
 await db.close()
 
