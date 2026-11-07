@@ -32,8 +32,8 @@ export const VERSAO_TERMOS = "1.0"
  * Canal público da entidade. Estava repetido em parceiros.tsx, footer.tsx e
  * privacidade/page.tsx — três lugares para trocar quando o endereço mudar.
  */
-/** Membros do GEAR hoje (informado pela presidência, out/2026). */
-export const TOTAL_MEMBROS = 14
+/** Membros do GEAR hoje (informado pela presidência; 15 desde a entrada de Guilherme Scatolin Mota, nov/2026). */
+export const TOTAL_MEMBROS = 15
 
 export const EMAIL_CONTATO = "gearufscar@gmail.com"
 

@@ -52,7 +52,6 @@ const grupos: Grupo[] = [
       { nome: "João", cargo: "Diretor de Competição" },
       { nome: "Joanna", cargo: "Vice-diretora de Competição · Marketing", sigla: "JN" },
       { nome: "Nasser" },
-      { nome: "Guilherme" },
     ],
   },
   {
@@ -61,6 +60,7 @@ const grupos: Grupo[] = [
       { nome: "Mateus Bau", cargo: "Diretor de Pesquisa" },
       { nome: "Pedro", cargo: "Vice-diretor de Pesquisa" },
       { nome: "Thomaz" },
+      { nome: "Guilherme" },
     ],
   },
   {
@@ -69,11 +69,12 @@ const grupos: Grupo[] = [
       { nome: "Julio Cezar", cargo: "Diretor de Projetos" },
       { nome: "Luiza", cargo: "Vice-diretora de Projetos" },
       { nome: "Elis" },
+      { nome: "Guilherme Scatolin Mota" },
     ],
   },
 ]
 
-const TOTAL_FUNDADORES = grupos.reduce((soma, g) => soma + g.membros.length, 0)
+const TOTAL_NO_SITE = grupos.reduce((soma, g) => soma + g.membros.length, 0)
 
 const orientador = [
   { label: "Nome", valor: "Prof. Iago Pacheco Gomes" },
@@ -114,7 +115,7 @@ export function Time() {
             O time
           </h1>
           <p className="mt-6 font-sans text-base font-light text-muted-foreground">
-            Abaixo, a equipe fundadora, com {TOTAL_FUNDADORES} pessoas.
+            Abaixo, a equipe por frente, com {TOTAL_NO_SITE} pessoas.
           </p>
         </Surge>
       </section>
