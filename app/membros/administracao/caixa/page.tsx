@@ -51,7 +51,7 @@ export default async function CaixaPage() {
     <section className={paginaMembros}>
       <PageHeader titulo="Caixa">
         Entradas e saídas do grupo e os pedidos de compra dos membros. Todo membro lê as contas (Regimento art. 49);
-        Presidência, Vice, Tesouraria e Operações e Patrimônio lançam e decidem.
+        A Presidência lança e decide (Regimento v3: o caixa é dela).
       </PageHeader>
 
       {erro ? (

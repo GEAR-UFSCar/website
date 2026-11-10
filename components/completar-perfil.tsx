@@ -202,7 +202,7 @@ export function CompletarPerfil({
             </select>
             {frenteTravada && (
               <p id="frente-travada" className="mt-2 font-mono text-[10px] tracking-wider text-muted-foreground">
-                COM CARGO, A FRENTE É DEFINIDA PELA DIRETORIA
+                COM CARGO, A TRILHA É DEFINIDA PELA PRESIDÊNCIA
               </p>
             )}
           </div>

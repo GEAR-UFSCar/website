@@ -105,7 +105,7 @@ export default async function PesquisasPage() {
                   <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
                     Encerrada em {dataHora(p.fecha_em)} · {r.total} {r.total === 1 ? "resposta" : "respostas"}
                     {r.total < p.minimo && ` · menos de ${p.minimo}: resultado não é divulgado, para ninguém ser identificado`}
-                    {r.total >= p.minimo && !comCargo && " · a devolutiva é apresentada pela Diretoria"}
+                    {r.total >= p.minimo && !comCargo && " · a devolutiva é apresentada pela Presidência"}
                   </p>
                   {visivel && (
                     <div className="mt-4 space-y-4">

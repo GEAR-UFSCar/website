@@ -9,6 +9,7 @@ import {
   BlocoAvisos,
   BlocoPedeResposta,
   BlocoPendencias,
+  BlocoPrimeirosPassos,
   BlocoPrazos,
   FaixaNumeros,
   ProximaAcaoCard,
@@ -23,7 +24,7 @@ import Link from "next/link"
 import { Secao } from "@/components/membros/secao"
 import { dataDoDia, hojeISO, saudacao } from "@/lib/datas"
 import { eFinanceiro, hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
-import { eventoVisivel, maisDias, ordenarSprints, pedidosDeResposta, prazosDaSemana, proximaAcao, type ItemPrazo } from "@/lib/hoje"
+import { eventoVisivel, maisDias, ordenarSprints, pedidosDeResposta, prazosDaSemana, primeirosPassos, proximaAcao, type ItemPrazo } from "@/lib/hoje"
 import { MODELOS } from "@/lib/formularios"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
 import { COLUNAS_META, type Meta } from "@/lib/metas"
@@ -70,7 +71,7 @@ export default async function HojePage() {
   const decideCompras = eFinanceiro(perfil?.cargo)
   const [
     sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR, tarefasR,
-    categoriaR, votacoesR, voteiR, pesquisasR, respondiR, devolvidosR, emprestimosR, registrosR, comprasR,
+    pesquisasR, respondiR, devolvidosR, emprestimosR, registrosR, comprasR, termoR, diarioR,
   ] = await Promise.all([
     supabase.from("sprints").select(COLUNAS_SPRINT).eq("responsavel_id", user.id).neq("status", "Concluído"),
     // Já expande a repetição: a reunião semanal de toda quarta aparece sem estar "na janela" no banco.
@@ -99,9 +100,6 @@ export default async function HojePage() {
       .order("prazo", { nullsFirst: false })
       .limit(8),
     // 035: o que espera uma resposta minha. Sem a migração, cada consulta erra e o item some.
-    supabase.from("perfis").select("categoria").eq("id", user.id).maybeSingle(),
-    supabase.from("votacoes").select("id, abre_em, fecha_em").gt("fecha_em", agora),
-    supabase.from("votacao_participacao").select("votacao_id").eq("usuario_id", user.id),
     supabase.from("pesquisas").select("id, abre_em, fecha_em").gt("fecha_em", agora),
     supabase.from("pesquisa_participacao").select("pesquisa_id").eq("usuario_id", user.id),
     supabase.from("registros").select("id", { count: "exact", head: true }).eq("autor_id", user.id).eq("status", "devolvido"),
@@ -118,14 +116,18 @@ export default async function HojePage() {
     decideCompras
       ? supabase.from("pedidos_compra").select("id", { count: "exact", head: true }).eq("status", "Pendente")
       : Promise.resolve({ count: null, error: null }),
+    // Primeiros passos: Termo enviado e primeiro registro no diário de um sprint.
+    supabase
+      .from("registros")
+      .select("id", { count: "exact", head: true })
+      .eq("autor_id", user.id)
+      .eq("modelo", "termo_compromisso")
+      .neq("status", "rascunho"),
+    supabase.from("sprint_atualizacoes").select("id", { count: "exact", head: true }).eq("autor_id", user.id),
   ])
-  const categoria = (categoriaR.data as { categoria?: string } | null)?.categoria
   const pedidos = pedidosDeResposta({
     agora: Date.parse(agora),
     hoje,
-    comVoto: categoria === "fundador" || categoria === "efetivo",
-    votacoes: votacoesR.error ? null : (votacoesR.data ?? []),
-    votei: (voteiR.data ?? []).map((v) => v.votacao_id),
     pesquisas: pesquisasR.error ? null : (pesquisasR.data ?? []),
     respondi: (respondiR.data ?? []).map((p) => p.pesquisa_id),
     devolvidos: devolvidosR.error ? null : devolvidosR.count,
@@ -211,6 +213,15 @@ export default async function HojePage() {
     moduloAtual: moduloAtual?.titulo ?? null,
   })
 
+  const passos = primeirosPassos({
+    temFrente: Boolean(frente),
+    termo: termoR.error ? null : (termoR.count ?? 0),
+    modulosConcluidos: progressoR.error
+      ? null
+      : ((progressoR.data ?? []) as Progresso[]).filter((p) => p.concluido_em).length,
+    registrouNoSprint: diarioR.error ? null : (diarioR.count ?? 0),
+  })
+
   const numeros = [
     { rotulo: "Sprints abertos", valor: String(sprints.length), href: rotaFrente },
     { rotulo: "Prazos em 7 dias", valor: String(proximos.length), href: "/membros/calendario" },
@@ -221,7 +232,7 @@ export default async function HojePage() {
   return (
     <section className={paginaMembros}>
       <PageHeader titulo={`${saudacao()}, ${primeiroNome(perfil?.nome_completo)}`}>
-        {frente ? `Frente ${frente}.` : "Você ainda não tem uma frente definida."} O que pede a sua atenção agora.
+        {frente ? `Trilha ${frente}.` : "Você ainda não tem uma trilha definida."} O que pede a sua atenção agora.
       </PageHeader>
 
       {/* Primeiro a resposta; depois o contexto. */}
@@ -258,6 +269,7 @@ export default async function HojePage() {
           <BlocoPrazos atrasados={atrasados} proximos={proximos} hoje={hoje} erros={errosPrazos} />
         </div>
         <div>
+          <BlocoPrimeirosPassos passos={passos} />
           <BlocoPedeResposta pedidos={pedidos} />
           <BlocoAvisos avisos={(avisosR.data ?? []) as unknown as AvisoResumo[]} erro={avisosR.error} />
           {moduloAtual && <BlocoAcademia atual={moduloAtual} />}

@@ -129,27 +129,22 @@ type Janela = { id: string; abre_em: string; fecha_em: string }
 const aberta = (j: Janela, agora: number) => Date.parse(j.abre_em) <= agora && Date.parse(j.fecha_em) > agora
 
 /**
- * O que espera uma resposta minha fora dos sprints (035 e 033): votar, responder
+ * O que espera uma resposta minha fora dos sprints (035 e 033): responder
  * pesquisa, corrigir registro devolvido, devolver item. Só entra o que tem
  * quantidade; lista indisponível (null) some em vez de virar "0".
  */
 export function pedidosDeResposta(e: {
   agora: number
   hoje: string
-  comVoto: boolean
-  votacoes: Janela[] | null
-  votei: string[]
   pesquisas: Janela[] | null
   respondi: string[]
   devolvidos: number | null
   emprestimos: { prazo: string | null }[] | null
 }): PedidoDeResposta[] {
-  const votar = e.comVoto && e.votacoes ? e.votacoes.filter((v) => aberta(v, e.agora) && !e.votei.includes(v.id)).length : 0
   const responder = e.pesquisas ? e.pesquisas.filter((p) => aberta(p, e.agora) && !e.respondi.includes(p.id)).length : 0
   const atrasados = (e.emprestimos ?? []).filter((x) => x.prazo && x.prazo < e.hoje).length
   const comigo = e.emprestimos?.length ?? 0
   return [
-    { id: "votar", texto: votar === 1 ? "Votação aberta sem o seu voto" : "Votações abertas sem o seu voto", href: "/membros/assembleia", quantos: votar, alerta: true },
     { id: "pesquisa", texto: responder === 1 ? "Pesquisa anônima para responder" : "Pesquisas anônimas para responder", href: "/membros/pesquisas", quantos: responder, alerta: false },
     { id: "devolvido", texto: "Registros devolvidos para você corrigir", href: "/membros/formularios", quantos: e.devolvidos ?? 0, alerta: true },
     {
@@ -160,4 +155,33 @@ export function pedidosDeResposta(e: {
       alerta: atrasados > 0,
     },
   ].filter((p) => p.quantos > 0)
+}
+
+export type Passo = { id: string; texto: string; href: string; feito: boolean }
+
+/**
+ * Primeiros passos de quem acabou de entrar. A lista some quando tudo está
+ * feito: é rampa de entrada, não painel permanente. `null` = não deu para
+ * saber (consulta falhou); o passo fica de fora em vez de cobrar à toa.
+ */
+export function primeirosPassos(e: {
+  temFrente: boolean
+  termo: number | null
+  modulosConcluidos: number | null
+  registrouNoSprint: number | null
+}): Passo[] {
+  const passos: (Passo | null)[] = [
+    { id: "trilha", texto: "Escolher a sua trilha", href: "/membros/completar-perfil", feito: e.temFrente },
+    e.termo === null
+      ? null
+      : { id: "termo", texto: "Assinar o Termo de Compromisso", href: "/membros/formularios/novo?modelo=termo_compromisso", feito: e.termo > 0 },
+    e.modulosConcluidos === null
+      ? null
+      : { id: "modulo", texto: "Concluir o primeiro módulo da formação", href: "/membros/aprendizagem", feito: e.modulosConcluidos > 0 },
+    e.registrouNoSprint === null
+      ? null
+      : { id: "diario", texto: "Registrar no sprint da trilha o que você fez", href: "/membros/frente", feito: e.registrouNoSprint > 0 },
+  ]
+  const lista = passos.filter((p): p is Passo => p !== null)
+  return lista.every((p) => p.feito) ? [] : lista
 }

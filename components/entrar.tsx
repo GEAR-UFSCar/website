@@ -363,7 +363,7 @@ export function Entrar() {
         progresso na formação.
       </p>
       <p className="font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase">
-        O acesso abre após a diretoria confirmar seu vínculo com a entidade
+        O acesso abre após a Presidência confirmar seu vínculo com a entidade
       </p>
     </AcessoQuadro>
   )

@@ -139,7 +139,7 @@ checar(
 )
 
 // Reexecutar é prometido nos cabeçalhos; para as três mais recentes, é testado.
-for (const prefixo of ["027", "028", "029"]) {
+for (const prefixo of ["027", "028", "029", "038"]) {
   const arquivo = arquivos.find((f) => f.startsWith(prefixo))
   if (!arquivo || sem.has(prefixo)) continue
   let erro = ""
@@ -439,7 +439,9 @@ await db.exec(`update public.perfis set aprovado = true where id = '${CARGO}'`)
 const lerAta = await como(CARGO, `select 1 from public.atas`)
 checar("cargo aprovado lê atas", passa(lerAta), lerAta.erro)
 const lerAtaMembro = await como(MEMBRO, `select 1 from public.atas`)
-checar("membro aprovado sem cargo não lê atas", bloqueado(lerAtaMembro))
+checar("membro aprovado sem cargo lê atas (038, Regimento art. 35 § 1º)", passa(lerAtaMembro), lerAtaMembro.erro)
+const escreveAtaMembro = await como(MEMBRO, `insert into public.atas (data_reuniao, tipo, pauta, decisoes, presentes) values (current_date,'Geral','p','d','t') returning 1`)
+checar("membro sem cargo continua sem escrever ata", bloqueado(escreveAtaMembro), "ESCREVEU")
 
 await db.exec(`insert into public.avisos (titulo, conteudo, autor_id) values ('semente','x','${P}')`)
 const aviso = await como(CARGO, `insert into public.avisos (titulo, conteudo, autor_id) values ('Forjado','texto','${P}') returning autor_id`)
@@ -459,8 +461,8 @@ const politicasSprints = await db.query(
   `select cmd from pg_policies where schemaname = 'public' and tablename = 'sprints' order by cmd`,
 )
 checar(
-  "sprints: 4 políticas (1 de leitura e 3 de escrita), sem sobra da 010 (B6)",
-  politicasSprints.rows.length === 4,
+  "sprints: 5 políticas (1 de leitura, 3 de quem edita e 1 de andamento da 038), sem sobra da 010 (B6)",
+  politicasSprints.rows.length === 5,
   `${politicasSprints.rows.length}: ${politicasSprints.rows.map((x) => x.cmd).join(", ")}`,
 )
 
@@ -493,8 +495,8 @@ if (!sem.has("028")) {
   await db.exec(readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("028"))), "utf8"))
   const depois = await db.query(`select 1 from pg_policies where schemaname='public' and tablename='sprints'`)
   checar(
-    "028 remove as três políticas da 010 quando elas sobram (7 → 4)",
-    sobrando.rows.length === 7 && depois.rows.length === 4,
+    "028 remove as três políticas da 010 quando elas sobram (8 → 5)",
+    sobrando.rows.length === 8 && depois.rows.length === 5,
     `${sobrando.rows.length} → ${depois.rows.length}`,
   )
 }
@@ -858,6 +860,64 @@ const lida = await como(CARGO, `select email from public.lista_de_espera`)
 checar("cargo lê, já normalizado", lida.ok && lida.rows.length === 1 && lida.rows[0].email === "fulano@exemplo.com", JSON.stringify(lida.rows))
 checar("membro sem cargo não apaga", bloqueado(await como(MEMBRO, `delete from public.lista_de_espera returning 1`)), "APAGOU")
 checar("cargo apaga", passa(await como(CARGO, `delete from public.lista_de_espera returning 1`)))
+
+// --- 038: membros participam -----------------------------------------------------
+secao("038. PARTICIPAÇÃO — membro da trilha escreve no sprint, e só no andamento")
+
+const FORA = "7b7b7b7b-7b7b-4b7b-8b7b-7b7b7b7b7b7b" // aprovado, sem cargo, de OUTRA trilha
+await db.exec(`insert into auth.users (id, email) values ('${FORA}', 'fora@estudante.ufscar.br')`)
+await db.exec(`
+  update public.perfis set nome_completo='Fora', aprovado=true, frente='Competição' where id='${FORA}';
+  update public.perfis set frente='Pesquisa' where id='${MEMBRO}';
+`)
+const sp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','Sprint 038','x','Planejado') returning id`)).rows[0].id
+const spResp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status, responsavel_id) values ('Projetos','Sprint com responsável','x','Planejado','${FORA}') returning id`)).rows[0].id
+
+const diario = await como(MEMBRO, `insert into public.sprint_atualizacoes (sprint_id, texto) values ('${sp}','fiz o teste') returning autor_id`)
+checar("membro da trilha escreve no diário, assinado por ele", passa(diario) && diario.rows[0].autor_id === MEMBRO, diario.erro)
+checar("membro de outra trilha não escreve no diário", bloqueado(await como(FORA, `insert into public.sprint_atualizacoes (sprint_id, texto) values ('${sp}','intruso') returning 1`)), "ESCREVEU")
+checar("responsável escreve no diário mesmo sendo de outra trilha", passa(await como(FORA, `insert into public.sprint_atualizacoes (sprint_id, texto) values ('${spResp}','sou o responsável') returning 1`)))
+checar("conta não aprovada não escreve no diário", bloqueado(await como(NOVO, `insert into public.sprint_atualizacoes (sprint_id, texto) values ('${sp}','x') returning 1`)), "ESCREVEU")
+
+const andamento = await como(MEMBRO, `update public.sprints set progresso = 40, proximo_passo = 'soldar a placa', status = 'Em andamento' where id = '${sp}' returning progresso, atualizado_por`)
+checar("membro da trilha atualiza progresso, próximo passo e status", passa(andamento) && andamento.rows[0].progresso === 40 && andamento.rows[0].atualizado_por === MEMBRO, andamento.erro)
+checar("membro da trilha marca bloqueado", passa(await como(MEMBRO, `update public.sprints set status = 'Bloqueado' where id = '${sp}' returning 1`)))
+for (const [rotulo, set] of [
+  ["o título", `titulo = 'tomado'`],
+  ["o responsável", `responsavel_id = '${MEMBRO}'`],
+  ["a trilha", `frente = 'Projetos'`],
+  ["as datas", `data_fim = current_date`],
+]) {
+  const r = await como(MEMBRO, `update public.sprints set ${set} where id = '${sp}' returning 1`)
+  checar(`membro da trilha não muda ${rotulo} do sprint`, !r.ok && r.codigo === "42501", r.ok ? "MUDOU" : r.erro)
+}
+const conclui = await como(MEMBRO, `update public.sprints set status = 'Concluído' where id = '${sp}' returning 1`)
+checar("membro da trilha não conclui o sprint", !conclui.ok && conclui.codigo === "42501", conclui.ok ? "CONCLUIU" : conclui.erro)
+checar("membro de outra trilha não atualiza o andamento", bloqueado(await como(FORA, `update public.sprints set progresso = 99 where id = '${sp}' returning 1`)), "MUDOU")
+checar("membro da trilha não apaga o sprint", bloqueado(await como(MEMBRO, `delete from public.sprints where id = '${sp}' returning 1`)), "APAGOU")
+checar("diretor da trilha continua editando tudo e conclui", passa(await como(PESQ, `update public.sprints set titulo = 'Sprint 038 revisto', status = 'Concluído' where id = '${sp}' returning 1`)))
+checar("sprint concluído não é reaberto por membro", !(await como(MEMBRO, `update public.sprints set status = 'Em andamento' where id = '${sp}' returning 1`)).ok)
+
+const tarefa = await como(MEMBRO, `insert into public.sprint_tarefas (sprint_id, titulo, responsavel_id) values ('${sp}','medir a bateria','${MEMBRO}') returning criado_por`)
+checar("membro da trilha cria tarefa", passa(tarefa) && tarefa.rows[0].criado_por === MEMBRO, tarefa.erro)
+checar("membro de outra trilha não cria tarefa", bloqueado(await como(FORA, `insert into public.sprint_tarefas (sprint_id, titulo) values ('${sp}','x') returning 1`)), "CRIOU")
+
+secao("038. FORMULÁRIO ENVIADO — só o autor muda o conteúdo")
+const reg = (await como(MEMBRO, `insert into public.registros (modelo, titulo, dados, status) values ('pitch_projeto','Pitch','{"a":1}','enviado') returning id`)).rows[0]?.id
+const adultera = await como(CARGO, `update public.registros set dados = '{"a":2}' where id = '${reg}' returning 1`)
+checar("cargo não reescreve registro enviado por outra pessoa", !adultera.ok && adultera.codigo === "42501", adultera.ok ? "REESCREVEU" : adultera.erro)
+checar("o autor corrige o próprio registro enviado", passa(await como(MEMBRO, `update public.registros set dados = '{"a":3}' where id = '${reg}' returning 1`)))
+checar("cargo ainda devolve com nota", passa(await como(CARGO, `update public.registros set status = 'devolvido', decisao_nota = 'faltou escopo' where id = '${reg}' returning 1`)))
+checar("cargo ainda aprova", passa(await como(CARGO, `update public.registros set status = 'aprovado' where id = '${reg}' returning 1`)))
+
+secao("038. PONTAS SOLTAS — conta não aprovada e teto da lista de espera")
+checar("conta não aprovada não cria meta", bloqueado(await como(NOVO, `insert into public.metas (usuario_id, titulo, prazo) values ('${NOVO}','x', current_date) returning 1`)), "CRIOU")
+checar("membro aprovado cria meta", passa(await como(MEMBRO, `insert into public.metas (usuario_id, titulo, prazo) values ('${MEMBRO}','entregar relatório', current_date) returning 1`)))
+await db.exec(`insert into public.lista_de_espera (email) select 'lote' || g || '@exemplo.com' from generate_series(1, 40) g`)
+const cheio = await anon(`select public.entrar_na_lista_de_espera('mais.um@exemplo.com')`)
+checar("lista de espera recusa depois de 40 inscrições na hora", !cheio.ok && cheio.codigo === "GE007", cheio.ok ? "ACEITOU" : cheio.erro)
+await db.exec(`update public.lista_de_espera set criado_em = now() - interval '2 hours'`)
+checar("passada a hora, a lista volta a aceitar", (await anon(`select public.entrar_na_lista_de_espera('depois@exemplo.com')`)).ok)
 
 // --- placar ------------------------------------------------------------------
 await db.close()

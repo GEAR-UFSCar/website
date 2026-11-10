@@ -92,7 +92,7 @@ export default async function HorasPage() {
               </tbody>
             </table>
 
-            <p className="mt-16 max-w-xs border-t border-foreground pt-2 font-sans text-sm">Diretoria do GEAR</p>
+            <p className="mt-16 max-w-xs border-t border-foreground pt-2 font-sans text-sm">Presidência do GEAR</p>
             <p className="mt-2 font-mono text-[10px] text-muted-foreground">
               Gerado pela área de membros. Vale como declaração com a assinatura acima.
             </p>

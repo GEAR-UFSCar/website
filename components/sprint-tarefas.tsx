@@ -29,15 +29,18 @@ const acao =
  * quadro passar de dezenas de sprints, trazer tudo junto em frente-painel.
  *
  * Quem edita o sprint cria, atribui e apaga; o responsável marca como feita.
+ * Desde a 038, quem participa do sprint (`podeCriar`) também cria tarefa.
  */
 export function SprintTarefas({
   sprintId,
   podeEscrever,
+  podeCriar = podeEscrever,
   usuarioId,
   pessoas,
 }: {
   sprintId: string
   podeEscrever: boolean
+  podeCriar?: boolean
   usuarioId: string
   pessoas: Pessoa[]
 }) {
@@ -147,7 +150,7 @@ export function SprintTarefas({
         })}
       </ul>
 
-      {podeEscrever && (
+      {podeCriar && (
         <form onSubmit={criar} className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
           <label htmlFor={`tarefa-${sprintId}`} className="sr-only">Nova tarefa</label>
           <input

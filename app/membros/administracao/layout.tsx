@@ -18,7 +18,7 @@ export default async function AdministracaoLayout({ children }: { children: Reac
       <section className="relative mx-auto max-w-5xl px-8 md:px-12 pt-12 pb-24 md:pt-16 md:pb-32">
             <PageHeader titulo="Acesso restrito">
               Esta área é restrita a membros com cargo na entidade. Sua conta continua ativa. Se você
-              deveria ter acesso, peça para a diretoria preencher seu cargo no perfil.
+              deveria ter acesso, peça para a Presidência preencher seu cargo no perfil.
             </PageHeader>
       </section>
     )

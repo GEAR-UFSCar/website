@@ -19,7 +19,8 @@ assert.equal(id("/membros/diretorio"), "equipe")
 assert.equal(id("/membros/documentacao"), "equipe")
 assert.equal(id("/membros/metricas"), "equipe")
 assert.equal(id("/membros/administracao"), "gestao")
-assert.equal(id("/membros/administracao/atas"), "gestao")
+assert.equal(id("/membros/administracao/cargos"), "gestao")
+assert.equal(id("/membros/atas"), "equipe") // 038: todo membro lê
 
 // Rota desconhecida sob /membros não devolve grupo errado nem lança.
 assert.equal(id("/membros/algo-novo"), undefined)
@@ -29,7 +30,8 @@ assert.equal(id("/outro"), undefined)
 assert.ok(!gruposVisiveis(false).some((g) => g.id === "gestao"))
 assert.ok(gruposVisiveis(true).some((g) => g.id === "gestao"))
 // Sem cargo, a rota de gestão não resolve para grupo nenhum.
-assert.equal(id("/membros/administracao/atas", gruposVisiveis(false)), undefined)
+assert.equal(id("/membros/administracao/cargos", gruposVisiveis(false)), undefined)
+assert.equal(id("/membros/atas", gruposVisiveis(false)), "equipe")
 
 // Aba ativa: Sprints cobre as três frentes; Visão geral de Gestão é exata.
 const frente = grupoAtual("/membros/sprints/projetos")
@@ -54,7 +56,9 @@ const rotulos = (comCargo) => destinosDaPaleta(comCargo).map((d) => d.rotulo)
 assert.ok(rotulos(false).includes("Hoje"))
 assert.ok(rotulos(false).includes("Nova meta"))
 assert.ok(!rotulos(false).includes("Novo aviso"))
-assert.ok(!rotulos(false).includes("Atas"))
+assert.ok(rotulos(false).includes("Atas")) // 038: todo membro lê
+assert.ok(!rotulos(false).includes("Cargos"))
+assert.ok(!rotulos(false).includes("Assembleia"))
 assert.ok(!rotulos(false).includes("Patrimônio"))
 assert.ok(rotulos(true).includes("Novo aviso"))
 assert.ok(rotulos(true).includes("Atas"))

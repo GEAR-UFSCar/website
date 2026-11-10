@@ -45,7 +45,7 @@ export default async function AguardandoPage() {
       </h1>
 
       <p className="mt-8 max-w-2xl font-sans text-lg font-light leading-relaxed text-muted-foreground">
-        Seu cadastro chegou. A área de membros abre quando a diretoria confirmar seu vínculo com
+        Seu cadastro chegou. A área de membros abre quando a Presidência confirmar seu vínculo com
         a entidade, é o que impede que qualquer pessoa de fora leia o diretório e os documentos
         internos.
       </p>
@@ -68,8 +68,8 @@ export default async function AguardandoPage() {
           ))}
         </dl>
         <p className="mt-5">
-          É por esses dados que a diretoria vai te reconhecer. Se algo estiver errado, corrija
-          antes, depois de aprovado, só a diretoria altera cargo e vínculo.
+          É por esses dados que a Presidência vai te reconhecer. Se algo estiver errado, corrija
+          antes, depois de aprovado, só a Presidência altera cargo e vínculo.
         </p>
       </Aviso>
 

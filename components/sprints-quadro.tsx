@@ -12,6 +12,8 @@ type Props = {
   /** Diário já agrupado por sprint no servidor, o cartão só consome. */
   atualizacoes: Record<string, Atualizacao[]>
   podeEscrever: boolean
+  /** Quem vê é membro aprovado desta trilha (038). */
+  daTrilha: boolean
   usuarioId: string
   pessoas: NonNullable<PessoaResumo>[]
 }
@@ -29,7 +31,7 @@ type Props = {
  * "Concluído · 0" é a resposta certa, e um "Concluído · 7" que não leva a nada
  * seria só um chip mentindo.
  */
-export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId, pessoas }: Props) {
+export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, daTrilha, usuarioId, pessoas }: Props) {
   const [busca, setBusca] = useState("")
   const [status, setStatus] = useState<StatusSprint | null>(null)
   // Abre em "Meus" só se a pessoa tem sprint aqui: senão a frente parece vazia.
@@ -170,6 +172,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, usuarioId, 
                       sprint={sprint}
                       atualizacoes={atualizacoes[sprint.id] ?? []}
                       podeEscrever={podeEscrever}
+                      daTrilha={daTrilha}
                       usuarioId={usuarioId}
                       pessoas={pessoas}
                     />

@@ -99,13 +99,50 @@ console.log("hoje: ok")
     j("futura", "2026-11-01T00:00:00+00:00", "2026-11-02T00:00:00+00:00"),
     j("fechada", "2026-10-01T00:00:00+00:00", "2026-10-29T12:00:00+00:00"),
   ]
-  const base = { agora, hoje: "2026-10-29", comVoto: true, votacoes, votei: ["votada"], pesquisas: votacoes, respondi: [], devolvidos: 2, emprestimos: [{ prazo: "2026-10-28" }, { prazo: null }] }
+  const base = { agora, hoje: "2026-10-29", pesquisas: votacoes, respondi: [], devolvidos: 2, emprestimos: [{ prazo: "2026-10-28" }, { prazo: null }] }
   const r = pedidosDeResposta(base)
-  assert.deepEqual(r.map((p) => [p.id, p.quantos]), [["votar", 1], ["pesquisa", 2], ["devolvido", 2], ["emprestimo", 2]])
+  assert.deepEqual(r.map((p) => [p.id, p.quantos]), [["pesquisa", 2], ["devolvido", 2], ["emprestimo", 2]])
   assert.equal(r.find((p) => p.id === "emprestimo").alerta, true)
-  // sem direito a voto, votação não cobra; lista indisponível não vira item
-  const s = pedidosDeResposta({ ...base, comVoto: false, pesquisas: null, devolvidos: null, emprestimos: [{ prazo: "2026-11-30" }] })
+  // lista indisponível não vira item
+  const s = pedidosDeResposta({ ...base, pesquisas: null, devolvidos: null, emprestimos: [{ prazo: "2026-11-30" }] })
   assert.deepEqual(s.map((p) => [p.id, p.quantos, p.alerta]), [["emprestimo", 1, false]])
-  assert.deepEqual(pedidosDeResposta({ ...base, votacoes: [], pesquisas: [], devolvidos: 0, emprestimos: null }), [])
+  assert.deepEqual(pedidosDeResposta({ ...base, pesquisas: [], devolvidos: 0, emprestimos: null }), [])
   console.log("pedidosDeResposta: ok")
+}
+
+{
+  const { primeirosPassos } = await import("../lib/hoje.ts")
+  const novo = primeirosPassos({ temFrente: false, termo: 0, modulosConcluidos: 0, registrouNoSprint: 0 })
+  assert.deepEqual(novo.map((p) => [p.id, p.feito]), [["trilha", false], ["termo", false], ["modulo", false], ["diario", false]])
+  // parte feita: a lista continua, marcando o que já foi
+  const meio = primeirosPassos({ temFrente: true, termo: 1, modulosConcluidos: 0, registrouNoSprint: null })
+  assert.deepEqual(meio.map((p) => [p.id, p.feito]), [["trilha", true], ["termo", true], ["modulo", false]])
+  // tudo feito: some
+  assert.deepEqual(primeirosPassos({ temFrente: true, termo: 2, modulosConcluidos: 3, registrouNoSprint: 1 }), [])
+  console.log("primeirosPassos: ok")
+}
+
+{
+  const { resumoDaSemana } = await import("../lib/resumo.ts")
+  const p = (nome) => ({ nome_completo: nome })
+  const lista = [
+    { id: "a", titulo: "Seguidor de linha", status: "Em andamento", progresso: 40, proximo_passo: "Calibrar PID", responsavel: p("João Silva") },
+    { id: "b", titulo: "Drone CBR", status: "Bloqueado", progresso: 10, proximo_passo: null, responsavel: null },
+    { id: "c", titulo: "Antigo", status: "Concluído", progresso: 100, proximo_passo: null, responsavel: null },
+  ]
+  const diario = {
+    a: [
+      { texto: "Montei  o chassi\ne soldei", created_at: "2026-11-09T10:00:00Z", autor: p("Nasser") },
+      { texto: "velho", created_at: "2026-10-01T10:00:00Z", autor: p("Nasser") },
+    ],
+  }
+  const t = resumoDaSemana("Competição", lista, diario, "2026-11-03T00:00:00Z")
+  assert.match(t, /^GEAR · Competição · resumo da semana/)
+  assert.match(t, /\*Seguidor de linha\* · Em andamento · 40% · João/)
+  assert.match(t, /- Montei o chassi e soldei \(Nasser\)/)
+  assert.doesNotMatch(t, /velho/)
+  assert.match(t, /\*Drone CBR\*.*\n  sem registro na semana\n  Próximo passo: não declarado/)
+  assert.doesNotMatch(t, /Antigo/) // concluído e calado na semana fica de fora
+  assert.match(resumoDaSemana("Pesquisa", [], {}, "2026-11-03T00:00:00Z"), /Nenhum sprint aberto/)
+  console.log("resumoDaSemana: ok")
 }

@@ -101,7 +101,7 @@ export default async function MetricasPage({
           <p className="font-sans text-sm font-light text-muted-foreground">
             {souDiretoria
               ? "Nenhum período aberto ainda. Abra o semestre atual para começar a registrar; os números da entidade e das frentes entram depois, pelo formulário que aparece aqui."
-              : "Nenhum período aberto ainda. A diretoria abre o semestre, e a partir daí os números aparecem aqui."}
+              : "Nenhum período aberto ainda. A Presidência abre o semestre, e a partir daí os números aparecem aqui."}
           </p>
           {souDiretoria && <MetricasPrimeiroPeriodo />}
         </div>

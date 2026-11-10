@@ -8,8 +8,24 @@ import { STATUS_SPRINT } from "@/lib/administracao"
 import { selectInline } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 
-/** Select inline que grava assim que o valor muda. Só para quem tem cargo. */
-export function SprintStatus({ id, valor, usuarioId }: { id: string; valor: string; usuarioId: string }) {
+/**
+ * Select inline que grava assim que o valor muda.
+ *
+ * `podeConcluir` espelha o gatilho da 038: quem só participa do sprint move
+ * entre Planejado, Em andamento e Bloqueado; concluir e reabrir é de quem
+ * edita o sprint. A opção some em vez de aparecer para o banco recusar.
+ */
+export function SprintStatus({
+  id,
+  valor,
+  usuarioId,
+  podeConcluir = true,
+}: {
+  id: string
+  valor: string
+  usuarioId: string
+  podeConcluir?: boolean
+}) {
   const router = useRouter()
   const [salvando, iniciar] = useTransition()
   const [erro, setErro] = useState<string | null>(null)
@@ -49,7 +65,7 @@ export function SprintStatus({ id, valor, usuarioId }: { id: string; valor: stri
         aria-label="Status do sprint"
         className={selectInline}
       >
-        {STATUS_SPRINT.map((s) => (
+        {STATUS_SPRINT.filter((s) => podeConcluir || s !== "Concluído").map((s) => (
           <option key={s} value={s} className="bg-[var(--gear-ink)]">
             {s}
           </option>

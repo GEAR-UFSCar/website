@@ -3,6 +3,10 @@ import { ErroDados } from "@/components/erro-dados"
 import { FrenteAbas } from "@/components/frente-abas"
 import { SprintsQuadro } from "@/components/sprints-quadro"
 import { SprintForm } from "@/components/sprint-form"
+import { ResumoSemana } from "@/components/resumo-semana"
+import { resumoDaSemana } from "@/lib/resumo"
+import { maisDias } from "@/lib/hoje"
+import { hojeISO } from "@/lib/datas"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { eDiretoria, temCargo, type FrenteNome } from "@/lib/administracao"
@@ -75,21 +79,31 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
     ;(atualizacoes[item.sprint_id] ??= []).push(item)
   }
 
-  // Só quem cria sprint precisa da lista de responsáveis possíveis.
-  const pessoas = podeEscrever
+  const eMinhaFrente = perfil?.frente?.trim() === frente
+
+  /*
+   * A lista de pessoas serve a quem cria sprint e, desde a 038, a quem cria
+   * tarefa: membros da trilha e responsáveis. São poucas linhas, então vem
+   * sempre que a pessoa pode participar de algum sprint desta página.
+   */
+  const participa = podeEscrever || eMinhaFrente || sprints.some((s) => s.responsavel?.id === user.id)
+  const pessoas = participa
     ? (((
         await supabase.from("perfis").select("id, nome_completo").eq("aprovado", true).order("nome_completo")
       ).data ?? []) as NonNullable<Sprint["responsavel"]>[])
     : []
 
-  const eMinhaFrente = perfil?.frente?.trim() === frente
-
   return (
     <section className={paginaMembros}>
       <PageHeader titulo={frente}>
-        Os sprints da frente {frente}. Qualquer membro acompanha as três; mudar status, progresso
-        e diário é de quem tem cargo nesta frente, ou da diretoria, em qualquer uma.
-        {eMinhaFrente ? " Esta é a sua frente." : ""}
+        Os sprints da trilha {frente}. Qualquer membro acompanha as três. Quem é da trilha, ou
+        responsável por um sprint, registra o que fez, o próximo passo e o progresso; criar,
+        concluir e apagar sprint é de quem tem cargo na trilha ou da Presidência.
+        {eMinhaFrente
+          ? " Esta é a sua trilha."
+          : !perfil?.frente?.trim()
+            ? " Você ainda não escolheu uma trilha: defina no seu perfil para escrever aqui."
+            : ""}
       </PageHeader>
       <FrenteAbas atual={frente} />
 
@@ -117,6 +131,12 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
         </ErroDados>
       )}
 
+      {!error && sprints.length > 0 && (
+        <ResumoSemana
+          texto={resumoDaSemana(frente, sprints, atualizacoes, maisDias(hojeISO(), -7))}
+        />
+      )}
+
       {!error && podeEscrever && <SprintForm frente={frente} usuarioId={user.id} pessoas={pessoas} />}
 
       {!error && (
@@ -124,6 +144,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
           sprints={sprints}
           atualizacoes={atualizacoes}
           podeEscrever={podeEscrever}
+          daTrilha={eMinhaFrente}
           usuarioId={user.id}
           pessoas={pessoas}
         />

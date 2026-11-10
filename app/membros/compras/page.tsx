@@ -35,7 +35,7 @@ export default async function ComprasPage() {
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Compras">
-        Precisa de componente, ferramenta ou inscrição? Faça o pedido aqui. A tesouraria aprova ou recusa e a resposta
+        Precisa de componente, ferramenta ou inscrição? Faça o pedido aqui. A Presidência aprova ou recusa e a resposta
         aparece no próprio pedido.
       </PageHeader>
 
