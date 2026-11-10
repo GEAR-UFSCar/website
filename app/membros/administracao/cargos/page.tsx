@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { CargoSelect } from "@/components/cargo-select"
+import { FrenteSelect } from "@/components/frente-select"
 import { CategoriaSelect } from "@/components/categoria-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { AprovacaoPendentes, type Pendente } from "@/components/aprovacao-pendentes"
@@ -92,8 +93,8 @@ export default async function CargosPage() {
 
       <Aviso titulo="ATENÇÃO" tom="neutro" className="mt-8 max-w-3xl">
         Aprovar é o que abre a área de membros: sem isso a conta existe mas não lê diretório,
-        documentos, avisos nem calendário. Qualquer cargo preenchido dá acesso ao painel de
-        Patrimônio e Atas, e exige aprovação. Só Presidente e Vice-Presidente alteram cargo e
+        documentos, avisos nem calendário. Qualquer cargo preenchido dá acesso à Gestão e a
+        escrever atas, e exige aprovação. Só Presidente e Vice-Presidente alteram cargo e
         aprovação, e ninguém altera a própria. Revogar corta leitura e escrita de uma vez.
       </Aviso>
 
@@ -108,7 +109,8 @@ export default async function CargosPage() {
       <div className="mt-16 border-t border-linha pt-8">
         <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Todos os perfis</h2>
         <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
-          Cargo, frente e histórico de alteração. Aprovados e pendentes, na mesma lista.
+          Cargo, trilha e histórico de alteração. Aprovados e pendentes, na mesma lista. Defina a trilha
+          de cada pessoa aqui: sem trilha, ela lê os quadros mas não escreve em nenhum.
         </p>
       </div>
 
@@ -116,7 +118,7 @@ export default async function CargosPage() {
         <table className="w-full min-w-[54rem] border-collapse">
           <thead>
             <tr className="border-b border-linha-forte text-left">
-              {["Membro", "Curso", "Frente", "Aprovação", "Categoria", "Cargo", "Alterado em"].map((h) => (
+              {["Membro", "Curso", "Trilha", "Aprovação", "Categoria", "Cargo", "Alterado em"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
                 </th>
@@ -138,7 +140,7 @@ export default async function CargosPage() {
                   )}
                 </td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.curso ?? "—"}</td>
-                <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">{p.frente ?? "—"}</td>
+                <td className="py-4 pr-4 w-40"><FrenteSelect perfilId={p.id} valor={p.frente} nome={p.nome_completo} /></td>
                 <td className="py-4 pr-4 w-44">
                   <AprovacaoToggle perfilId={p.id} aprovado={p.aprovado} ehVoce={p.id === user.id} nome={p.nome_completo} />
                 </td>

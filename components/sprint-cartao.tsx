@@ -2,6 +2,7 @@
 
 import { SprintStatus } from "@/components/sprint-status"
 import { SprintProgresso } from "@/components/sprint-progresso"
+import { SprintProximoPasso } from "@/components/sprint-proximo-passo"
 import { SprintDiario } from "@/components/sprint-diario"
 import { SprintTarefas } from "@/components/sprint-tarefas"
 import { SprintForm } from "@/components/sprint-form"
@@ -16,6 +17,8 @@ type Props = {
   atualizacoes: Atualizacao[]
   /** Espelha pode_editar_sprint() (021): diretoria, ou cargo na mesma frente. */
   podeEscrever: boolean
+  /** Membro aprovado da trilha desta página; espelha participa_do_sprint() (038). */
+  daTrilha: boolean
   usuarioId: string
   /** Responsáveis possíveis, para o formulário de edição. */
   pessoas: NonNullable<PessoaResumo>[]
@@ -39,7 +42,14 @@ const dataSimples = (iso: string) => {
  * navegador, então os cartões que ele monta e desmonta também. Os dados já
  * vieram prontos do servidor; aqui não há consulta nenhuma até alguém editar.
  */
-export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId, pessoas }: Props) {
+export function SprintCartao({ sprint, atualizacoes, podeEscrever, daTrilha, usuarioId, pessoas }: Props) {
+  /*
+   * Participar (038): quem edita o sprint, quem é da trilha e o responsável
+   * escrevem diário, tarefa e andamento. Sprint concluído fica parado para
+   * quem só participa: reabrir é de quem edita.
+   */
+  const podeParticipar = podeEscrever || daTrilha || sprint.responsavel?.id === usuarioId
+  const mexeNoAndamento = podeEscrever || (podeParticipar && sprint.status !== "Concluído")
   const aparencia = aparenciaDoStatus(sprint.status)
   const responsavel = sprint.responsavel?.nome_completo?.trim()
 
@@ -113,9 +123,15 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId, pe
         <p className="font-mono text-[10px] tracking-[0.3em] uppercase text-[var(--gear-amber)]">
           Próximo passo
         </p>
-        <p className="mt-2 max-w-[70ch] font-sans text-sm font-light leading-relaxed">
-          {sprint.proximo_passo?.trim() || "Ainda não declarado."}
-        </p>
+        {mexeNoAndamento ? (
+          <div className="mt-2 max-w-[70ch]">
+            <SprintProximoPasso key={sprint.proximo_passo ?? ""} id={sprint.id} valor={sprint.proximo_passo} />
+          </div>
+        ) : (
+          <p className="mt-2 max-w-[70ch] font-sans text-sm font-light leading-relaxed">
+            {sprint.proximo_passo?.trim() || "Ainda não declarado."}
+          </p>
+        )}
       </div>
 
       <p className="mt-5 font-mono text-[10px] md:text-[9px] tracking-[0.2em] uppercase text-muted-foreground">
@@ -126,15 +142,15 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId, pe
         Atualizado em {dataLonga(sprint.updated_at)}
       </p>
 
-      {/* Controles de quem tem cargo na frente. Ficam juntos e rotulados. */}
-      {podeEscrever && (
+      {/* Andamento: de quem participa do sprint. Ficam juntos e rotulados. */}
+      {mexeNoAndamento && (
         <div className="mt-5 flex flex-wrap items-start gap-5 border-t border-linha pt-5">
           <div>
             <p className="mb-2 font-mono text-[10px] tracking-[0.2em] uppercase text-muted-foreground">
               Mudar status
             </p>
             <div className="w-44">
-              <SprintStatus id={sprint.id} valor={sprint.status} usuarioId={usuarioId} />
+              <SprintStatus id={sprint.id} valor={sprint.status} usuarioId={usuarioId} podeConcluir={podeEscrever} />
             </div>
           </div>
           <div>
@@ -156,12 +172,18 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, usuarioId, pe
         />
       )}
 
-      <SprintTarefas sprintId={sprint.id} podeEscrever={podeEscrever} usuarioId={usuarioId} pessoas={pessoas} />
+      <SprintTarefas
+        sprintId={sprint.id}
+        podeEscrever={podeEscrever}
+        podeCriar={podeParticipar}
+        usuarioId={usuarioId}
+        pessoas={pessoas}
+      />
 
       <SprintDiario
         sprintId={sprint.id}
         atualizacoes={atualizacoes}
-        podeEscrever={podeEscrever}
+        podeEscrever={podeParticipar}
       />
     </article>
   )

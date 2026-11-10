@@ -44,7 +44,7 @@ export function DocumentoPublicacao({ documentoId, status, publico, temArquivo }
   return (
     <div className="w-full border-t border-linha pt-4">
       <p className="font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground">
-        Publicação (diretoria)
+        Publicação (Presidência)
       </p>
       <div className="mt-2 flex flex-wrap items-center gap-4">
         <label className="sr-only" htmlFor={`status-${documentoId}`}>

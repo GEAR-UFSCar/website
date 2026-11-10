@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 }
 
 const CADASTROS = [
-  { href: "/membros/administracao/atas", nome: "Atas", texto: "Registro de reuniões: presentes, pauta, decisões e pendências." },
+  { href: "/membros/atas", nome: "Atas", texto: "Registro de reuniões: presentes, pauta, decisões e pendências. Todo membro lê." },
   { href: "/membros/administracao/cargos", nome: "Cargos e aprovação", texto: "Atribuir e trocar cargos e aprovar membros. Restrito a Presidente e Vice-Presidente." },
   { href: "/membros/administracao/patrimonio", nome: "Patrimônio", texto: "Inventário de robôs, componentes, ferramentas e equipamentos." },
   { href: "/membros/administracao/horas", nome: "Horas e presença", texto: "Chamada, frequência com alerta de faltas e horas avulsas, que viram a declaração de cada membro." },

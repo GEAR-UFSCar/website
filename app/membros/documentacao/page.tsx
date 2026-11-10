@@ -374,7 +374,7 @@ export default async function DocumentacaoPage({
             <p className="mt-3 max-w-2xl font-sans text-sm font-light leading-relaxed text-muted-foreground">
               O arquivo vai para um bucket privado: ninguém abre sem sessão, e o link que aparece na
               lista é assinado e expira em uma hora. O documento entra como rascunho e interno; a
-              diretoria decide quando ele é vigente e se aparece no site público.
+              Presidência decide quando ele é vigente e se aparece no site público.
             </p>
           </div>
           <div className="mt-8">

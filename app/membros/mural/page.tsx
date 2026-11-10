@@ -70,7 +70,7 @@ export default async function MuralPage({
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Mural">
-        Comunicados da diretoria. Qualquer membro lê; publicar e fixar é de quem tem cargo.
+        Comunicados da entidade. Qualquer membro lê; publicar e fixar é de quem tem cargo.
         {avisos.length > 0 && (
           <>
             {" "}

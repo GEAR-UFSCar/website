@@ -6,7 +6,7 @@ import { Secao } from "@/components/membros/secao"
 import { ErroDados } from "@/components/erro-dados"
 import type { ErroDeDados } from "@/lib/erros"
 import { hrefDoSprint } from "@/lib/administracao"
-import type { ItemPrazo, PedidoDeResposta, ProximaAcao } from "@/lib/hoje"
+import type { ItemPrazo, Passo, PedidoDeResposta, ProximaAcao } from "@/lib/hoje"
 import { aparenciaDoStatus, type Sprint } from "@/lib/sprints"
 import { prazoRelativo } from "@/lib/metas"
 import { formatarDuracao } from "@/lib/academia"
@@ -167,6 +167,30 @@ export function BlocoAcademia({ atual }: { atual: ModuloAtual }) {
 }
 
 /** Votar, responder, corrigir, devolver: o que espera você fora dos sprints. Vazio, some. */
+/** Rampa de entrada: aparece até a pessoa fechar os quatro passos, depois some. */
+export function BlocoPrimeirosPassos({ passos }: { passos: Passo[] }) {
+  if (passos.length === 0) return null
+  const feitos = passos.filter((p) => p.feito).length
+  return (
+    <Secao titulo={`Primeiros passos (${feitos} de ${passos.length})`}>
+      <ul>
+        {passos.map((p) => (
+          <li key={p.id} className={linha}>
+            {p.feito ? (
+              <span className="flex-1 font-sans text-base text-muted-foreground line-through">{p.texto}</span>
+            ) : (
+              <Link href={p.href} className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
+                {p.texto}
+              </Link>
+            )}
+            <Pilula tom={p.feito ? "ativo" : "alerta"}>{p.feito ? "Feito" : "Falta"}</Pilula>
+          </li>
+        ))}
+      </ul>
+    </Secao>
+  )
+}
+
 export function BlocoPedeResposta({ pedidos }: { pedidos: PedidoDeResposta[] }) {
   if (pedidos.length === 0) return null
   return (
@@ -198,7 +222,7 @@ export function BlocoPendencias({
   compras?: number | null
 }) {
   return (
-    <Secao titulo="Pendências da diretoria">
+    <Secao titulo="Pendências da gestão">
       <ul>
         <li className={linha}>
           <Link href="/membros/administracao/cargos" className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
@@ -245,7 +269,7 @@ function redigir(acao: ProximaAcao, hoje: string, hrefSprint: (id: string) => st
       return {
         eyebrow: "Destrave primeiro",
         titulo: acao.sprint.titulo,
-        porque: "O seu sprint está bloqueado. Registre o que trava e chame a diretoria da frente: bloqueio que fica calado atrasa quem depende dele.",
+        porque: "O seu sprint está bloqueado. Registre o que trava e chame a direção da trilha: bloqueio que fica calado atrasa quem depende dele.",
         href: hrefSprint(acao.sprint.id),
         cta: "Abrir o sprint",
         urgente: true,

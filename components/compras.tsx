@@ -42,7 +42,7 @@ export function PedidoForm() {
     setSalvando(false)
     if (error) return setMsg(mensagemSegura(error))
     setC(vazio)
-    setMsg("Pedido enviado. A tesouraria responde por aqui.")
+    setMsg("Pedido enviado. A Presidência responde por aqui.")
     router.refresh()
   }
 

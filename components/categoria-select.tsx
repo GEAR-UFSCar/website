@@ -9,8 +9,8 @@ import { mensagemSegura } from "@/lib/erros"
 import { selectInline } from "@/lib/ui"
 
 /**
- * Categoria do membro (Regimento art. 11). Fundador e efetivo votam na
- * Assembleia; só a diretoria muda, e nunca a própria pessoa (035).
+ * Categoria do membro (Regimento art. 11). Só a Presidência muda, e nunca a
+ * própria pessoa (035).
  */
 export function CategoriaSelect({ perfilId, valor, nome }: { perfilId: string; valor: string; nome?: string | null }) {
   const router = useRouter()
