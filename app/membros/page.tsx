@@ -73,7 +73,13 @@ export default async function HojePage() {
     sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR, tarefasR,
     pesquisasR, respondiR, devolvidosR, emprestimosR, registrosR, comprasR, termoR, diarioR,
   ] = await Promise.all([
-    supabase.from("sprints").select(COLUNAS_SPRINT).eq("responsavel_id", user.id).neq("status", "Concluído"),
+    // Os meus e os da minha trilha: desde a 040 quem é da trilha escreve em todos eles.
+    // `frente` vem do CHECK de perfis (três valores fixos); as aspas cobrem o "ç".
+    supabase
+      .from("sprints")
+      .select(COLUNAS_SPRINT)
+      .or(frente ? `responsavel_id.eq.${user.id},frente.eq."${frente}"` : `responsavel_id.eq.${user.id}`)
+      .neq("status", "Concluído"),
     // Já expande a repetição: a reunião semanal de toda quarta aparece sem estar "na janela" no banco.
     buscarEventos(supabase, hoje, ate),
     supabase.from("metas").select(COLUNAS_META).eq("usuario_id", user.id).eq("concluida", false).lte("prazo", ate),
@@ -140,7 +146,9 @@ export default async function HojePage() {
     sprint: { id: string; titulo: string; frente: string } | null
   }[]
 
-  const sprints = ordenarSprints((sprintsR.data ?? []) as unknown as Sprint[])
+  const sprintsAbertos = ordenarSprints((sprintsR.data ?? []) as unknown as Sprint[])
+  // A próxima ação só cobra o que é meu; os da trilha aparecem em Agora sem cobrança.
+  const sprints = sprintsAbertos.filter((s) => s.responsavel?.id === user.id)
 
   // Evento da minha frente ou sem frente; as metas já são só minhas.
   const itens: ItemPrazo[] = [
@@ -202,7 +210,7 @@ export default async function HojePage() {
   }
 
   const hrefSprint = (id: string) => {
-    const sprint = sprints.find((x) => x.id === id)
+    const sprint = sprintsAbertos.find((x) => x.id === id)
     return hrefDoSprint(sprint?.frente, id)
   }
   const acao = proximaAcao({
@@ -223,7 +231,7 @@ export default async function HojePage() {
   })
 
   const numeros = [
-    { rotulo: "Sprints abertos", valor: String(sprints.length), href: rotaFrente },
+    { rotulo: frente ? "Sprints da trilha" : "Sprints abertos", valor: String(sprintsAbertos.length), href: rotaFrente },
     { rotulo: "Prazos em 7 dias", valor: String(proximos.length), href: "/membros/calendario" },
     { rotulo: "Atrasados", valor: String(atrasados.length), href: "/membros/metas", alerta: atrasados.length > 0 },
     { rotulo: "Formação", valor: moduloAtual ? `${moduloAtual.percentual}%` : "—", href: "/membros/aprendizagem" },
@@ -241,7 +249,7 @@ export default async function HojePage() {
 
       <div className="mt-2 grid grid-cols-1 gap-x-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
         <div>
-          <BlocoAgora sprints={sprints} erro={sprintsR.error} rotaFrente={rotaFrente} />
+          <BlocoAgora sprints={sprintsAbertos} meuId={user.id} frente={frente} erro={sprintsR.error} rotaFrente={rotaFrente} />
           {minhasTarefas.length > 0 && (
             <Secao titulo="Minhas tarefas">
               <ul className="border border-linha">

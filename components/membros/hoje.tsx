@@ -14,7 +14,19 @@ import { formatarDuracao } from "@/lib/academia"
 const linha = "flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-linha py-3"
 const verMais = "font-mono text-[11px] text-[var(--gear-amber)] hover:underline"
 
-export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; erro: ErroDeDados | null; rotaFrente: string }) {
+export function BlocoAgora({
+  sprints,
+  meuId,
+  frente,
+  erro,
+  rotaFrente,
+}: {
+  sprints: Sprint[]
+  meuId: string
+  frente: string | null
+  erro: ErroDeDados | null
+  rotaFrente: string
+}) {
   return (
     <Secao titulo="Agora" className="mt-10">
       {erro ? (
@@ -23,9 +35,15 @@ export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; e
           <code>supabase/021_sprints_progresso_bloqueado_e_diario.sql</code>.
         </ErroDados>
       ) : sprints.length === 0 ? (
-        <EstadoVazio href={rotaFrente} acao="Ver sprints da frente">
-          Você não é responsável por nenhum sprint em aberto.
-        </EstadoVazio>
+        frente ? (
+          <EstadoVazio href={rotaFrente} acao="Ver sprints da trilha">
+            Nenhum sprint aberto na trilha {frente}.
+          </EstadoVazio>
+        ) : (
+          <EstadoVazio href="/membros/completar-perfil" acao="Definir minha trilha">
+            Sem trilha você acompanha os quadros, mas não escreve neles.
+          </EstadoVazio>
+        )
       ) : (
         <ul>
           {sprints.map((s) => {
@@ -39,6 +57,7 @@ export function BlocoAgora({ sprints, erro, rotaFrente }: { sprints: Sprint[]; e
                   </span>
                 </Link>
                 <div className="flex shrink-0 items-center gap-3">
+                  {s.responsavel?.id === meuId && <Pilula tom="ativo">Seu</Pilula>}
                   <Pilula tom={s.status === "Bloqueado" ? "alerta" : "ativo"}>{s.status}</Pilula>
                   <div
                     role="progressbar"
