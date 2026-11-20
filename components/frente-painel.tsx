@@ -82,7 +82,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   const eMinhaFrente = perfil?.frente?.trim() === frente
 
   /*
-   * A lista de pessoas serve a quem cria sprint e, desde a 038, a quem cria
+   * A lista de pessoas serve a quem cria sprint e, desde a 040, a quem cria
    * tarefa: membros da trilha e responsáveis. São poucas linhas, então vem
    * sempre que a pessoa pode participar de algum sprint desta página.
    */

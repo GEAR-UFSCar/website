@@ -20,7 +20,7 @@ assert.equal(id("/membros/documentacao"), "equipe")
 assert.equal(id("/membros/metricas"), "equipe")
 assert.equal(id("/membros/administracao"), "gestao")
 assert.equal(id("/membros/administracao/cargos"), "gestao")
-assert.equal(id("/membros/atas"), "equipe") // 038: todo membro lê
+assert.equal(id("/membros/atas"), "equipe") // 040: todo membro lê
 
 // Rota desconhecida sob /membros não devolve grupo errado nem lança.
 assert.equal(id("/membros/algo-novo"), undefined)
@@ -56,7 +56,7 @@ const rotulos = (comCargo) => destinosDaPaleta(comCargo).map((d) => d.rotulo)
 assert.ok(rotulos(false).includes("Hoje"))
 assert.ok(rotulos(false).includes("Nova meta"))
 assert.ok(!rotulos(false).includes("Novo aviso"))
-assert.ok(rotulos(false).includes("Atas")) // 038: todo membro lê
+assert.ok(rotulos(false).includes("Atas")) // 040: todo membro lê
 assert.ok(!rotulos(false).includes("Cargos"))
 assert.ok(!rotulos(false).includes("Assembleia"))
 assert.ok(!rotulos(false).includes("Patrimônio"))
