@@ -151,7 +151,9 @@ export function SprintTarefas({
       </ul>
 
       {podeCriar && (
-        <form onSubmit={criar} className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
+        <form onSubmit={criar} className="@container mt-4">
+          {/* O cartão vive numa coluna estreita do quadro: quem decide o layout é a largura dele, não a da janela. */}
+          <div className="grid grid-cols-1 gap-2 @md:grid-cols-[1fr_auto_auto_auto]">
           <label htmlFor={`tarefa-${sprintId}`} className="sr-only">Nova tarefa</label>
           <input
             id={`tarefa-${sprintId}`}
@@ -191,6 +193,7 @@ export function SprintTarefas({
           >
             Adicionar
           </button>
+          </div>
         </form>
       )}
 
