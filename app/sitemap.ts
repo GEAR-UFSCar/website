@@ -9,6 +9,7 @@ const ROTAS = [
   "/time",
   "/parceiros",
   "/documentos",
+  "/agenda",
   "/ingressar",
   "/privacidade",
 ]

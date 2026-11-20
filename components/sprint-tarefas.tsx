@@ -29,7 +29,7 @@ const acao =
  * quadro passar de dezenas de sprints, trazer tudo junto em frente-painel.
  *
  * Quem edita o sprint cria, atribui e apaga; o responsável marca como feita.
- * Desde a 038, quem participa do sprint (`podeCriar`) também cria tarefa.
+ * Desde a 040, quem participa do sprint (`podeCriar`) também cria tarefa.
  */
 export function SprintTarefas({
   sprintId,

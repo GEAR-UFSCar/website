@@ -1,20 +1,25 @@
 import type { MetadataRoute } from "next"
 
 /**
- * Deixa a área de membros ser instalada na tela inicial do celular. Abre
- * direto em Hoje; sem sessão, o portão de /membros leva ao login.
+ * Permite "Adicionar à tela inicial": quem usa a área de membros pelo celular
+ * abre direto em /membros, sem barra do navegador. Ícones em public/icone-*.png
+ * (engrenagem âmbar sobre o ink, com margem para a máscara redonda do Android).
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "GEAR — área de membros",
+    name: "GEAR · UFSCar Sorocaba",
     short_name: "GEAR",
-    description: "Sprints, agenda, documentos e formação do GEAR, UFSCar Sorocaba.",
+    description: "Área de membros do GEAR, Grupo de Extensão em Automação e Robótica da UFSCar Sorocaba.",
+    lang: "pt-BR",
     start_url: "/membros",
     scope: "/",
     display: "standalone",
     background_color: "#081726",
     theme_color: "#081726",
-    lang: "pt-BR",
-    icons: [{ src: "/gear-icon-g.svg", sizes: "any", type: "image/svg+xml", purpose: "any" }],
+    icons: [
+      { src: "/icone-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icone-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icone-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+    ],
   }
 }

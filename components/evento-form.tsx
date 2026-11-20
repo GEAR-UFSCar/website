@@ -49,7 +49,7 @@ function camposIniciais(inicial: EventoCal | undefined, diaPadrao: string) {
     return {
       titulo: "", descricao: "", tipo: TIPOS_EVENTO[0] as string, frente: "", diaInteiro: false,
       diaIni: diaPadrao, horaIni: HORA_PADRAO, diaFim: "", horaFim: "",
-      local: "", link: "", recorrencia: "", ate: "",
+      local: "", link: "", recorrencia: "", ate: "", publico: false,
     }
   }
   const ini = partesGear(inicial.data_inicio)
@@ -70,6 +70,7 @@ function camposIniciais(inicial: EventoCal | undefined, diaPadrao: string) {
     link: inicial.link ?? "",
     recorrencia: recorrenciaValida(inicial.recorrencia) ?? "",
     ate: inicial.recorrencia_ate ?? "",
+    publico: Boolean(inicial.publico),
   }
 }
 
@@ -149,6 +150,9 @@ export function EventoForm({ usuarioId, estado, diaPadrao, inicial, migrado }: P
     const novos = migrado
       ? { local: local || null, link: link || null, dia_inteiro: campos.diaInteiro, recorrencia, recorrencia_ate: recorrencia && campos.ate ? campos.ate : null }
       : {}
+
+    // A coluna `publico` só existe com a 038: vai no corpo quando foi marcada ou já veio do banco.
+    if (campos.publico || inicial?.publico != null) Object.assign(novos, { publico: campos.publico })
 
     setSalvando(true)
     const supabase = createClient()
@@ -250,6 +254,17 @@ export function EventoForm({ usuarioId, estado, diaPadrao, inicial, migrado }: P
             className="h-4 w-4 accent-[var(--gear-amber)]"
           />
           <span className="font-sans text-sm font-light text-foreground">Dia inteiro (sem hora marcada)</span>
+        </label>
+
+        <label className="flex min-h-11 items-center gap-3 sm:col-span-2">
+          <input
+            type="checkbox" checked={campos.publico} disabled={salvando}
+            onChange={(e) => setCampos((a) => ({ ...a, publico: e.target.checked }))}
+            className="h-4 w-4 accent-[var(--gear-amber)]"
+          />
+          <span className="font-sans text-sm font-light text-foreground">
+            Mostrar no site, em /agenda (título, data, local e descrição; o link não aparece)
+          </span>
         </label>
 
         <div>

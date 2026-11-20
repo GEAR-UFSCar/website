@@ -104,6 +104,9 @@ const TABELAS = [
   "candidaturas",
   "caixa_lancamentos",
   "pedidos_compra",
+  // 037–038
+  "lista_de_espera",
+  "ciclos_selecao",
 ]
 
 /** Predicados de autorização — não deveriam ser chamáveis sem sessão (SEC-07). */

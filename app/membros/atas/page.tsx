@@ -26,7 +26,7 @@ type Ata = {
 }
 
 export default async function AtasPage() {
-  // Todo membro aprovado lê (038; Regimento art. 35, § 1º). Escrever é de quem tem cargo.
+  // Todo membro aprovado lê (040; Regimento art. 35, § 1º). Escrever é de quem tem cargo.
   const { user, perfil } = await exigirMembroAprovado()
   const ehDiretoria = eDiretoria(perfil?.cargo)
   const escreve = temCargo(perfil?.cargo)

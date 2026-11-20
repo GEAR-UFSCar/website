@@ -12,7 +12,7 @@ type Props = {
   /** Diário já agrupado por sprint no servidor, o cartão só consome. */
   atualizacoes: Record<string, Atualizacao[]>
   podeEscrever: boolean
-  /** Quem vê é membro aprovado desta trilha (038). */
+  /** Quem vê é membro aprovado desta trilha (040). */
   daTrilha: boolean
   usuarioId: string
   pessoas: NonNullable<PessoaResumo>[]

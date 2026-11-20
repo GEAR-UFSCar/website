@@ -17,7 +17,7 @@ type Props = {
   atualizacoes: Atualizacao[]
   /** Espelha pode_editar_sprint() (021): diretoria, ou cargo na mesma frente. */
   podeEscrever: boolean
-  /** Membro aprovado da trilha desta página; espelha participa_do_sprint() (038). */
+  /** Membro aprovado da trilha desta página; espelha participa_do_sprint() (040). */
   daTrilha: boolean
   usuarioId: string
   /** Responsáveis possíveis, para o formulário de edição. */
@@ -44,7 +44,7 @@ const dataSimples = (iso: string) => {
  */
 export function SprintCartao({ sprint, atualizacoes, podeEscrever, daTrilha, usuarioId, pessoas }: Props) {
   /*
-   * Participar (038): quem edita o sprint, quem é da trilha e o responsável
+   * Participar (040): quem edita o sprint, quem é da trilha e o responsável
    * escrevem diário, tarefa e andamento. Sprint concluído fica parado para
    * quem só participa: reabrir é de quem edita.
    */

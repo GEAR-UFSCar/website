@@ -5,6 +5,7 @@ import {
   ocorrenciaEm, ocorrencias, partesGear, rotuloDaRecorrencia, rotuloDoHorario, segmentos, somarDias,
 } from "../lib/calendario.ts"
 import { diaGear, horaGear } from "../lib/datas.ts"
+import { faseDoCiclo } from "../lib/ciclo.ts"
 
 // ---------------------------------------------------------------- dias
 assert.equal(diaDoNumero(numeroDoDia("2026-10-21")), "2026-10-21")
@@ -251,5 +252,13 @@ assert.ok(g.searchParams.get("details").includes("https://x.com/y"))
 const gd = new URL(linkGoogleAgenda(ocorrenciaEm(viagem, "2026-11-13")))
 assert.equal(gd.searchParams.get("dates"), "20261113/20261116")
 assert.equal(gd.searchParams.get("recur"), null)
+
+// ---------------------------------------------------------------- ciclo do processo seletivo (038)
+const ciclo = { titulo: "2027.1", inscricoes_de: "2027-02-01", inscricoes_ate: "2027-02-15", edital_url: null }
+assert.equal(faseDoCiclo(null, "2027-01-10"), "fechado")
+assert.equal(faseDoCiclo(ciclo, "2027-01-31"), "anunciado")
+assert.equal(faseDoCiclo(ciclo, "2027-02-01"), "aberto") // primeiro dia conta
+assert.equal(faseDoCiclo(ciclo, "2027-02-15"), "aberto") // último dia conta
+assert.equal(faseDoCiclo(ciclo, "2027-02-16"), "fechado")
 
 console.log("calendario: ok")

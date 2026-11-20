@@ -11,7 +11,7 @@ import { mensagemSegura } from "@/lib/erros"
 /**
  * Select inline que grava assim que o valor muda.
  *
- * `podeConcluir` espelha o gatilho da 038: quem só participa do sprint move
+ * `podeConcluir` espelha o gatilho da 040: quem só participa do sprint move
  * entre Planejado, Em andamento e Bloqueado; concluir e reabrir é de quem
  * edita o sprint. A opção some em vez de aparecer para o banco recusar.
  */

@@ -11,7 +11,7 @@ import { mensagemSegura } from "@/lib/erros"
 const MAX = 200
 
 /**
- * O próximo passo do sprint, editável por quem participa dele (038): o
+ * O próximo passo do sprint, editável por quem participa dele (040): o
  * responsável e os membros da trilha, além de quem edita o sprint.
  *
  * Grava ao sair do campo, como o progresso: é uma frase curta, e um botão de

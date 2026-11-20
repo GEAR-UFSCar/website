@@ -35,9 +35,10 @@ function eInstitucional(email: string) {
 }
 
 
-export function Entrar() {
+/** `modoInicial` vem de /entrar?modo=criar, o link de inscrição de /ingressar. */
+export function Entrar({ modoInicial = "entrar" }: { modoInicial?: Modo }) {
   const router = useRouter()
-  const [modo, setModo] = useState<Modo>("entrar")
+  const [modo, setModo] = useState<Modo>(modoInicial)
   const [email, setEmail] = useState("")
   const [senha, setSenha] = useState("")
   const [nome, setNome] = useState("")

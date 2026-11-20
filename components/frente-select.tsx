@@ -10,7 +10,7 @@ import { selectInline } from "@/lib/ui"
 
 /**
  * Trilha do membro, definida pela Presidência na mesma tela em que aprova.
- * Sem trilha a pessoa não escreve em quadro nenhum (038), e quem tem cargo não
+ * Sem trilha a pessoa não escreve em quadro nenhum (040), e quem tem cargo não
  * troca a própria (023): este select é o caminho.
  */
 export function FrenteSelect({ perfilId, valor, nome }: { perfilId: string; valor: string | null; nome?: string | null }) {
