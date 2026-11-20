@@ -1,6 +1,6 @@
 -- =============================================================================
 -- GEAR — a área de membros deixa de ser só leitura para quem não tem cargo
--- Rodar no SQL Editor, DEPOIS de 037_lista_de_espera.sql. Pode rodar mais de
+-- Rodar no SQL Editor, DEPOIS de 039_chamada_sem_escrita_anonima.sql. Pode rodar mais de
 -- uma vez. Só amplia e aperta regra; não apaga nem muda dado.
 --
 -- A revisão de 09/11/2026 achou o motivo de o quadro de sprints não ter vida:
@@ -169,6 +169,10 @@ security definer
 set search_path = ''
 as $$
 begin
+  -- Serializa contar-e-inserir: sem o lock, chamadas simultâneas leem a mesma
+  -- contagem e passam juntas do teto.
+  perform pg_advisory_xact_lock(hashtext('lista_de_espera'));
+
   if (select count(*) from public.lista_de_espera where criado_em > now() - interval '1 hour') >= 40
      or (select count(*) from public.lista_de_espera) >= 3000 then
     raise exception 'Muitas inscrições agora. Tente de novo mais tarde.' using errcode = 'GE007';

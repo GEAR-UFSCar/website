@@ -861,8 +861,38 @@ checar("cargo lê, já normalizado", lida.ok && lida.rows.length === 1 && lida.r
 checar("membro sem cargo não apaga", bloqueado(await como(MEMBRO, `delete from public.lista_de_espera returning 1`)), "APAGOU")
 checar("cargo apaga", passa(await como(CARGO, `delete from public.lista_de_espera returning 1`)))
 
-// --- 038: membros participam -----------------------------------------------------
-secao("038. PARTICIPAÇÃO — membro da trilha escreve no sprint, e só no andamento")
+// --- 038: agenda pública e ciclos do processo seletivo ------------------------
+secao("038. AGENDA PÚBLICA E CICLOS — só o recorte publicável sai")
+
+const evPriv = (await como(P, `insert into public.eventos (titulo, tipo, data_inicio, link) values ('Reunião interna','Reunião', now() + interval '1 day', 'https://meet.example/x') returning id`)).rows[0]?.id
+const evPub = (await como(P, `insert into public.eventos (titulo, tipo, data_inicio, publico, link) values ('Oficina aberta','Outro', now() + interval '2 days', true, 'https://meet.example/y') returning id`)).rows[0]?.id
+const agenda = await anon(`select * from public.agenda_publica`)
+checar("anônimo vê só o evento público", agenda.ok && agenda.rows.length === 1 && agenda.rows[0].id === evPub, agenda.erro ?? JSON.stringify(agenda.rows.map((r) => r.titulo)))
+checar("agenda pública não expõe link nem autor", agenda.ok && !("link" in (agenda.rows[0] ?? {})) && !("criado_por" in (agenda.rows[0] ?? {})))
+checar("anônimo continua sem ler eventos direto", bloqueado(await anon(`select id from public.eventos`)), "LEU")
+await como(P, `delete from public.eventos where id in ('${evPriv}','${evPub}')`)
+
+const emDias = (n) => `((now() at time zone 'America/Sao_Paulo')::date + ${n})`
+checar("ciclo com menos de 7 dias de antecedência é recusado",
+  !(await como(P, `insert into public.ciclos_selecao (titulo, inscricoes_de, inscricoes_ate) values ('Cedo demais', ${emDias(3)}, ${emDias(10)})`)).ok)
+checar("cargo fora da diretoria não cria ciclo",
+  bloqueado(await como(CARGO, `insert into public.ciclos_selecao (titulo, inscricoes_de, inscricoes_ate) values ('Tesouraria', ${emDias(8)}, ${emDias(20)}) returning id`)), "CRIOU")
+const ciclo = await como(P, `insert into public.ciclos_selecao (titulo, inscricoes_de, inscricoes_ate, edital_url) values ('Ciclo 2027.1', ${emDias(8)}, ${emDias(20)}, 'https://exemplo.com/edital.pdf') returning id`)
+checar("diretoria cria ciclo com 7+ dias", passa(ciclo), ciclo.erro)
+checar("corrigir título de ciclo não esbarra na antecedência",
+  passa(await como(P, `update public.ciclos_selecao set titulo = 'Ciclo 2027/1' where id = '${ciclo.rows[0]?.id}' returning 1`)))
+const pub = await anon(`select * from public.ciclo_publico`)
+checar("anônimo vê o próximo ciclo, sem autor", pub.ok && pub.rows[0]?.titulo === "Ciclo 2027/1" && !("criado_por" in (pub.rows[0] ?? {})), pub.erro ?? JSON.stringify(pub.rows))
+checar("anônimo não lê ciclos_selecao direto", bloqueado(await anon(`select id from public.ciclos_selecao`)), "LEU")
+checar("membro sem cargo não lê ciclos_selecao", bloqueado(await como(MEMBRO, `select id from public.ciclos_selecao`)), "LEU")
+
+// --- 039: chamada sem escrita anônima ---------------------------------------
+secao("039. CHAMADA — anônimo barrado pela autorização, não pelo gatilho")
+const chamadaAnon = await anon(`insert into public.eventos_chamada (dia, usuario_id, horas) values (current_date, '${MEMBRO}', 1)`)
+checar("anônimo recebe 42501 ao gravar presença", !chamadaAnon.ok && chamadaAnon.codigo === "42501", `${chamadaAnon.codigo} ${chamadaAnon.erro}`)
+
+// --- 040: membros participam -----------------------------------------------------
+secao("040. PARTICIPAÇÃO — membro da trilha escreve no sprint, e só no andamento")
 
 const FORA = "7b7b7b7b-7b7b-4b7b-8b7b-7b7b7b7b7b7b" // aprovado, sem cargo, de OUTRA trilha
 await db.exec(`insert into auth.users (id, email) values ('${FORA}', 'fora@estudante.ufscar.br')`)
@@ -902,7 +932,7 @@ const tarefa = await como(MEMBRO, `insert into public.sprint_tarefas (sprint_id,
 checar("membro da trilha cria tarefa", passa(tarefa) && tarefa.rows[0].criado_por === MEMBRO, tarefa.erro)
 checar("membro de outra trilha não cria tarefa", bloqueado(await como(FORA, `insert into public.sprint_tarefas (sprint_id, titulo) values ('${sp}','x') returning 1`)), "CRIOU")
 
-secao("038. FORMULÁRIO ENVIADO — só o autor muda o conteúdo")
+secao("040. FORMULÁRIO ENVIADO — só o autor muda o conteúdo")
 const reg = (await como(MEMBRO, `insert into public.registros (modelo, titulo, dados, status) values ('pitch_projeto','Pitch','{"a":1}','enviado') returning id`)).rows[0]?.id
 const adultera = await como(CARGO, `update public.registros set dados = '{"a":2}' where id = '${reg}' returning 1`)
 checar("cargo não reescreve registro enviado por outra pessoa", !adultera.ok && adultera.codigo === "42501", adultera.ok ? "REESCREVEU" : adultera.erro)
@@ -910,7 +940,7 @@ checar("o autor corrige o próprio registro enviado", passa(await como(MEMBRO, `
 checar("cargo ainda devolve com nota", passa(await como(CARGO, `update public.registros set status = 'devolvido', decisao_nota = 'faltou escopo' where id = '${reg}' returning 1`)))
 checar("cargo ainda aprova", passa(await como(CARGO, `update public.registros set status = 'aprovado' where id = '${reg}' returning 1`)))
 
-secao("038. PONTAS SOLTAS — conta não aprovada e teto da lista de espera")
+secao("040. PONTAS SOLTAS — conta não aprovada e teto da lista de espera")
 checar("conta não aprovada não cria meta", bloqueado(await como(NOVO, `insert into public.metas (usuario_id, titulo, prazo) values ('${NOVO}','x', current_date) returning 1`)), "CRIOU")
 checar("membro aprovado cria meta", passa(await como(MEMBRO, `insert into public.metas (usuario_id, titulo, prazo) values ('${MEMBRO}','entregar relatório', current_date) returning 1`)))
 await db.exec(`insert into public.lista_de_espera (email) select 'lote' || g || '@exemplo.com' from generate_series(1, 40) g`)

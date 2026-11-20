@@ -2,9 +2,12 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { OG_IMAGE, TOTAL_MEMBROS } from "@/lib/site"
+import { faseDoCiclo, type CicloPublico } from "@/lib/ciclo"
+import { dataDoDia, hojeISO } from "@/lib/datas"
+import { createClientePublico } from "@/lib/supabase/publico"
 import { Aviso } from "@/components/aviso"
 import { ListaDeEspera } from "@/components/lista-de-espera"
-import { botaoSecundario } from "@/lib/ui"
+import { botaoPrimario, botaoSecundario, linkNoTexto } from "@/lib/ui"
 import { ETAPAS_FORMACAO } from "@/lib/formacao"
 
 const DESCRICAO =
@@ -29,11 +32,21 @@ export const metadata: Metadata = {
  * e /time não levavam a lugar nenhum. Quatro das seis referências do
  * benchmarking têm "Join Us" ou "Apply" no primeiro nível do menu.
  *
- * Esta página NÃO inventa processo seletivo aberto. Ela diz o que é verdade
- * hoje: não há inscrição em andamento, e quem quiser ser avisado deixa o
- * e-mail na lista de espera (037).
- * Quando o ciclo abrir, é trocar o bloco de estado por datas e formulário.
+ * Esta página NÃO inventa processo seletivo aberto. O estado vem do ciclo que
+ * a diretoria cadastra em Seleção (038): fechado (lista de espera, 037),
+ * anunciado (datas e edital) ou aberto (link para criar conta, que é a
+ * inscrição). Sem a 038 ou sem banco, cai em "fechado", que é o seguro.
  */
+
+// O ciclo abre e fecha por data; 10 min de atraso na virada é aceitável.
+export const revalidate = 600
+
+async function cicloAtual(): Promise<CicloPublico | null> {
+  const supabase = createClientePublico()
+  if (!supabase) return null
+  const { data } = await supabase.from("ciclo_publico").select("*").maybeSingle()
+  return (data as CicloPublico | null) ?? null
+}
 
 
 const PERGUNTAS = [
@@ -59,7 +72,7 @@ const PERGUNTAS = [
   {
     pergunta: "Como as vagas são anunciadas?",
     resposta:
-      "Por edital público, com vagas, prazos, etapas e critérios, publicado com pelo menos sete dias de antecedência. Ainda não há edital aberto.",
+      "Por edital público, com vagas, prazos, etapas e critérios, publicado com pelo menos sete dias de antecedência. Quando houver um, o link aparece no topo desta página.",
   },
   {
     pergunta: "Posso mudar de frente depois?",
@@ -67,7 +80,19 @@ const PERGUNTAS = [
   },
 ]
 
-export default function IngressarPage() {
+export default async function IngressarPage() {
+  const ciclo = await cicloAtual()
+  const fase = faseDoCiclo(ciclo, hojeISO())
+  const edital = ciclo?.edital_url && (
+    <>
+      {" "}
+      <a href={ciclo.edital_url} target="_blank" rel="noopener noreferrer" className={linkNoTexto}>
+        Leia o edital
+      </a>
+      .
+    </>
+  )
+
   return (
     <section className="relative mx-auto max-w-4xl px-8 md:px-12 pt-40 pb-24 md:pt-48 md:pb-32">
       <h1 className="font-sans text-5xl md:text-7xl lg:text-8xl font-light tracking-tight text-balance">
@@ -80,11 +105,26 @@ export default function IngressarPage() {
         potencial agora.
       </p>
 
-      {/* Estado real do ciclo. Substituir por datas quando abrir. */}
-      <Aviso titulo="INSCRIÇÕES FECHADAS" className="mt-10">
-        Não há processo seletivo aberto no momento, e o próximo ciclo ainda não tem data. Deixe
-        seu e-mail no fim desta página e avisamos quando abrir. É o jeito mais direto de não perder.
-      </Aviso>
+      {/* Estado real do ciclo, vindo do banco (038). */}
+      {fase === "aberto" && ciclo ? (
+        <Aviso titulo={`INSCRIÇÕES ABERTAS ATÉ ${dataDoDia(ciclo.inscricoes_ate)}`} className="mt-10">
+          {ciclo.titulo}: a inscrição é criar sua conta com o e-mail da UFSCar e escrever por que quer entrar.
+          {edital}
+          <Link href="/entrar?modo=criar" data-cursor-hover className={`mt-6 block w-fit ${botaoPrimario}`}>
+            Inscrever-se
+          </Link>
+        </Aviso>
+      ) : fase === "anunciado" && ciclo ? (
+        <Aviso titulo={`INSCRIÇÕES ABREM EM ${dataDoDia(ciclo.inscricoes_de)}`} className="mt-10">
+          {ciclo.titulo}: inscrições de {dataDoDia(ciclo.inscricoes_de)} a {dataDoDia(ciclo.inscricoes_ate)}.
+          {edital} Deixe seu e-mail no fim desta página e avisamos quando abrir.
+        </Aviso>
+      ) : (
+        <Aviso titulo="INSCRIÇÕES FECHADAS" className="mt-10">
+          Não há processo seletivo aberto no momento, e o próximo ciclo ainda não tem data. Deixe
+          seu e-mail no fim desta página e avisamos quando abrir. É o jeito mais direto de não perder.
+        </Aviso>
+      )}
 
       <section className="mt-20">
         <div className="border-t border-linha pt-8">
@@ -145,8 +185,16 @@ export default function IngressarPage() {
       </section>
 
       <section id="avisar" className="mt-16 scroll-mt-24">
-        <h2 className="mb-6 font-sans text-3xl md:text-5xl font-light italic">Avisamos quando abrir</h2>
-        <ListaDeEspera />
+        {fase === "aberto" ? (
+          <Link href="/entrar?modo=criar" data-cursor-hover className={`inline-block text-center ${botaoPrimario}`}>
+            Inscrever-se
+          </Link>
+        ) : (
+          <>
+            <h2 className="mb-6 font-sans text-3xl md:text-5xl font-light italic">Avisamos quando abrir</h2>
+            <ListaDeEspera />
+          </>
+        )}
         <Link href="/sobre" data-cursor-hover className={`mt-10 inline-block text-center ${botaoSecundario}`}>
           Ver a formação
         </Link>
