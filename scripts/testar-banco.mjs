@@ -949,6 +949,25 @@ checar("lista de espera recusa depois de 40 inscrições na hora", !cheio.ok && 
 await db.exec(`update public.lista_de_espera set criado_em = now() - interval '2 hours'`)
 checar("passada a hora, a lista volta a aceitar", (await anon(`select public.entrar_na_lista_de_espera('depois@exemplo.com')`)).ok)
 
+// --- 041: trilha pelo cargo -------------------------------------------------------
+secao("041. TRILHA PELO CARGO — diretor e vice ganham a frente do cargo")
+
+const DIR41 = "41414141-4141-4141-8141-414141414141" // vira Diretor de Projetos sem frente
+await db.exec(`insert into auth.users (id, email) values ('${DIR41}', 'dir@estudante.ufscar.br')`)
+await db.exec(`update public.perfis set nome_completo='Dir', aprovado=true, frente=null where id='${DIR41}'`)
+const virouDiretor = await como(P, `update public.perfis set cargo = 'Diretor de Projetos' where id = '${DIR41}' returning frente`)
+checar("Presidente dá cargo de diretor e a frente vem junto", passa(virouDiretor) && virouDiretor.rows[0]?.frente === "Projetos", virouDiretor.erro ?? JSON.stringify(virouDiretor.rows))
+const spDir = await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','Sprint do diretor','x','Planejado') returning id`)
+checar("diretor cria sprint na própria trilha sem ninguém preencher a frente", passa(spDir), spDir.erro)
+checar("diretor continua sem criar sprint em outra trilha", bloqueado(await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','intruso','x','Planejado') returning id`)), "CRIOU")
+const tentaTrocar = await como(P, `update public.perfis set frente = 'Pesquisa' where id = '${DIR41}' returning frente`)
+checar("frente de diretor não diverge do cargo", passa(tentaTrocar) && tentaTrocar.rows[0]?.frente === "Projetos", tentaTrocar.erro ?? JSON.stringify(tentaTrocar.rows))
+const vice = await como(P, `update public.perfis set cargo = 'Vice-diretor de Competição' where id = '${DIR41}' returning frente`)
+checar("vice-diretor também carrega a trilha", passa(vice) && vice.rows[0]?.frente === "Competição", vice.erro)
+const outro = await como(P, `update public.perfis set cargo = 'Marketing' where id = '${DIR41}' returning frente`)
+checar("cargo que não é de trilha mantém a frente que estava", passa(outro) && outro.rows[0]?.frente === "Competição", outro.erro)
+checar("trilha_do_cargo ignora cargos fora de trilha", (await tenta(`select public.trilha_do_cargo('Presidente') is null as ok`)).rows[0]?.ok === true)
+
 // --- placar ------------------------------------------------------------------
 await db.close()
 

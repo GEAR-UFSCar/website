@@ -56,6 +56,7 @@ a anterior não rodou.
 | 038 | `agenda_publica_e_ciclos.sql` | `eventos.publico` e a view `agenda_publica` (só título, datas, local, descrição e repetição; sem link) para /agenda; `ciclos_selecao` (diretoria cria, corrige e apaga; quem tem cargo lê), com gatilho que recusa abertura a menos de 7 dias do edital (doc. 35), e a view `ciclo_publico` com o próximo ciclo para /ingressar. Não apaga dado | 008, 014, 016, 027, 037 |
 | 039 | `chamada_sem_escrita_anonima.sql` | tira de `anon` o privilégio de escrever em `eventos_chamada`: o gatilho da 034 respondia antes da RLS (23503) e `test:rls` não conseguia provar que a autorização barrava. Não apaga dado | 034 |
 | 040 | `membros_participam.sql` | `participa_do_sprint()`: o responsável e os membros da trilha escrevem no diário, criam tarefa e atualizam o andamento do sprint (progresso, próximo passo e status, menos concluir), com gatilho que recusa as outras colunas; atas lidas por todo membro aprovado (Regimento art. 35, § 1º); registro enviado só muda de conteúdo pelo autor; conta não aprovada não grava metas nem progresso; `entrar_na_lista_de_espera()` com advisory lock e teto de 40/h e 3000 no total (erro GE007). Não apaga dado | 021, 033, 035, 039 |
+| 041 | `frente_pelo_cargo.sql` | `trilha_do_cargo()` e gatilho `perfis_trilha_pelo_cargo`: Diretor/Vice-diretor de X fica com `frente = X` (na gravação e nos dados atuais). Sem isso `pode_editar_sprint()` barrava o próprio diretor da trilha, porque ninguém preenchia a frente de quem tem cargo. Não apaga dado | 021, 023, 036 |
 
 Duas armadilhas conhecidas:
 
