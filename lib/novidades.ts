@@ -37,7 +37,7 @@ export async function buscarNovidades(
     comCargo
       ? supabase.from("perfis").select("id, nome_completo, created_at").eq("aprovado", false).not("nome_completo", "is", null).gt("created_at", desde).limit(20)
       : null,
-    financeiro ? supabase.from("pedidos_compra").select("id, item, created_at").eq("status", "Pendente").gt("created_at", desde).limit(20) : null,
+    financeiro ? supabase.from("pedidos_compra").select("id, item, created_at").eq("status", "Aguardando aprovação").gt("created_at", desde).limit(20) : null,
   ])
 
   // Erro em uma fonte (tabela ainda não migrada) some com ela, não com a lista toda.
@@ -48,9 +48,9 @@ export async function buscarNovidades(
     ...(pedidos.data ?? []).map((p) => ({
       chave: `p${p.id}${p.status}`,
       quando: p.decidido_em as string,
-      tipo: `Pedido ${p.status.toLowerCase()}`,
+      tipo: `Gasto ${p.status.toLowerCase()}`,
       titulo: p.item,
-      href: "/membros/compras",
+      href: "/membros/gastos",
     })),
     ...(candidatos?.data ?? []).map((c) => ({
       chave: `c${c.id}`,
@@ -59,6 +59,6 @@ export async function buscarNovidades(
       titulo: c.nome_completo ?? "",
       href: "/membros/administracao/selecao",
     })),
-    ...(pedidosNovos?.data ?? []).map((p) => ({ chave: `n${p.id}`, quando: p.created_at, tipo: "Pedido de compra", titulo: p.item, href: "/membros/administracao/caixa" })),
+    ...(pedidosNovos?.data ?? []).map((p) => ({ chave: `n${p.id}`, quando: p.created_at, tipo: "Gasto aguardando aprovação", titulo: p.item, href: "/membros/gastos" })),
   ].sort((a, b) => b.quando.localeCompare(a.quando))
 }

@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 /**
  * Atalho para os sprints da frente de quem está logado. Sem frente definida
- * (diretoria, por exemplo), lista as três para escolher.
+ * (diretoria, por exemplo), lista as quatro para escolher.
  */
 export default async function MinhaFrentePage() {
   const { perfil } = await exigirMembroAprovado()
@@ -29,7 +29,7 @@ export default async function MinhaFrentePage() {
       <PageHeader titulo="Minha frente">
         Você ainda não tem uma frente definida. Escolha qual acompanhar.
       </PageHeader>
-      <ul className="grid gap-px border border-linha bg-linha sm:grid-cols-3">
+      <ul className="grid gap-px border border-linha bg-linha sm:grid-cols-2 lg:grid-cols-4">
         {FRENTES_ROTAS.map((f) => (
           <li key={f.slug} className="bg-[var(--gear-ink)]">
             <Link

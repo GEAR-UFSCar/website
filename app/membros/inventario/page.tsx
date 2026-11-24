@@ -33,9 +33,8 @@ export default async function InventarioPage() {
   return (
     <section className={paginaMembros}>
       <PageHeader titulo="Inventário">
-        O que o GEAR tem, onde está e com quem. Precisa de uma peça? Abra o item e clique em Retirar; ao
-        terminar, Devolver. O empréstimo é do item inteiro, então para kits combine antes com quem cuida do
-        patrimônio.
+        O que o GEAR tem, onde está, com quem e até quando. Precisa de algo? Abra o item e clique em Retirar,
+        sem pedir permissão; ao terminar, Devolver. Equipamento caro: avise o grupo, mas não espere resposta.
         {comigo.length > 0 && ` Com você agora: ${comigo.map((i) => i.codigo).join(", ")}.`}
       </PageHeader>
 

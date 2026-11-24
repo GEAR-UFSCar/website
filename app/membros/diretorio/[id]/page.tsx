@@ -40,7 +40,7 @@ export default async function PessoaPage({ params }: { params: Promise<{ id: str
 
   const vePrivado = id === user.id || temCargo(eu?.cargo)
 
-  const [sprints, tarefas, itens, modulos, progresso, chamadas, lancadas] = await Promise.all([
+  const [sprints, tarefas, itens, modulos, progresso, chamadas, lancadas, aprovadas] = await Promise.all([
     supabase.from("sprints").select("id, titulo, status, frente").eq("responsavel_id", id).neq("status", "Concluído"),
     supabase
       .from("sprint_tarefas")
@@ -52,7 +52,21 @@ export default async function PessoaPage({ params }: { params: Promise<{ id: str
     vePrivado ? supabase.from("progresso").select("modulo_id").eq("usuario_id", id).not("concluido_em", "is", null) : null,
     vePrivado ? supabase.from("eventos_chamada").select("horas").eq("usuario_id", id) : null,
     vePrivado ? supabase.from("horas_lancadas").select("horas").eq("usuario_id", id) : null,
+    // 043: todo membro lê as comprovações; é a base da Avaliação Técnica
+    supabase
+      .from("progresso")
+      .select("id, concluido_em, legado, modulo:modulos (codigo, titulo, pontos, area, nivel)")
+      .eq("usuario_id", id)
+      .eq("estado", "Aprovada")
+      .order("concluido_em", { ascending: false }),
   ])
+  const competencias = (aprovadas.data ?? []) as unknown as {
+    id: string
+    concluido_em: string | null
+    legado: boolean
+    modulo: { codigo: string | null; titulo: string; pontos: number; area: string | null; nivel: string } | null
+  }[]
+  const pontos = competencias.reduce((soma, c) => soma + (c.modulo?.pontos ?? 0), 0)
 
   const listaTarefas = (tarefas.data ?? []) as unknown as {
     id: string
@@ -135,6 +149,28 @@ export default async function PessoaPage({ params }: { params: Promise<{ id: str
                 <span className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
                   {t.sprint?.titulo}{t.prazo && ` · ${dataDoDia(t.prazo)}`}
                 </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Secao>
+
+      <Secao titulo={`Academia · competências aprovadas · ${pontos} pts`}>
+        {competencias.length === 0 ? (
+          <p className={vazio}>Nenhuma competência aprovada ainda.</p>
+        ) : (
+          <ul className="border border-linha">
+            {competencias.map((c) => (
+              <li key={c.id} className={linha}>
+                <span className="font-mono text-[11px] text-[var(--gear-amber)]">{c.modulo?.codigo ?? "legado"}</span>
+                <span className="flex-1 font-sans text-sm">
+                  {c.modulo?.titulo}
+                  <span className="ml-2 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                    {[c.modulo?.area, c.modulo?.nivel].filter(Boolean).join(" · ")}
+                    {c.concluido_em && ` · ${dataDoDia(c.concluido_em.slice(0, 10))}`}
+                  </span>
+                </span>
+                <span className="font-mono text-[11px] tabular-nums">{c.modulo?.pontos ?? 0} pts</span>
               </li>
             ))}
           </ul>

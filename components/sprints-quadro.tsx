@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import { SprintCartao } from "@/components/sprint-cartao"
 import { campoBase } from "@/lib/ui"
 import { STATUS_SPRINT, type StatusSprint } from "@/lib/administracao"
+import type { QuemVe } from "@/lib/tarefas"
 import { FILTROS_STATUS, corresponde, type Atualizacao, type PessoaResumo, type Sprint } from "@/lib/sprints"
 
 type Props = {
@@ -15,6 +16,7 @@ type Props = {
   /** Quem vê é membro aprovado desta trilha (040). */
   daTrilha: boolean
   usuarioId: string
+  quem: QuemVe
   pessoas: NonNullable<PessoaResumo>[]
 }
 
@@ -31,7 +33,7 @@ type Props = {
  * "Concluído · 0" é a resposta certa, e um "Concluído · 7" que não leva a nada
  * seria só um chip mentindo.
  */
-export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, daTrilha, usuarioId, pessoas }: Props) {
+export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, daTrilha, usuarioId, quem, pessoas }: Props) {
   const [busca, setBusca] = useState("")
   const [status, setStatus] = useState<StatusSprint | null>(null)
   // Abre em "Meus" só se a pessoa tem sprint aqui: senão a frente parece vazia.
@@ -174,6 +176,7 @@ export function SprintsQuadro({ sprints, atualizacoes, podeEscrever, daTrilha, u
                       podeEscrever={podeEscrever}
                       daTrilha={daTrilha}
                       usuarioId={usuarioId}
+                      quem={quem}
                       pessoas={pessoas}
                     />
                   ))}

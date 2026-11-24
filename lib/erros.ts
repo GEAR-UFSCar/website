@@ -62,11 +62,30 @@ const POR_CODIGO: Record<string, string> = {
   GE003: "O código de um item é a etiqueta dele e não muda. Para corrigir, baixe o item e cadastre outro.",
   // 032: retirar item que não está Disponível, ou devolver o que não está com você
   GE004: "Este item mudou de situação: alguém já retirou ou ele não está com você. Recarregue a página.",
+  // 042: fluxo de tarefa. Cada frase diz o que fazer, não só o que deu errado.
+  GE010: "Diga quando a tarefa fica pronta: o campo \"Pronto quando…\" é obrigatório.",
+  GE011: "Para enviar à revisão, cole o link da evidência (repositório, vídeo ou relatório).",
+  GE012: "Ninguém revisa o próprio trabalho. Outra pessoa revisora precisa fazer isto.",
+  GE013: "A tarefa mudou de estado enquanto você olhava. Recarregue a página.",
+  GE014: "Revisar é de quem tem formação Principal ou Avançada.",
+  GE015: "Para pedir ajustes, escreva o que precisa mudar.",
+  // 043: Academia e fila de revisão.
+  GE016: "Competência precisa de código (ex.: EMB-01) e critério de aceite.",
+  GE017: "Outra pessoa revisora já pegou este item. Ele libera para você quando passar de 48 h na fila.",
+  // 044: assumir, bloqueio e gastos. GE018/GE019 mostram o texto do banco (ver abaixo).
+  GE018: "Esta tarefa já tem responsável.",
+  GE019: "Você já tem uma tarefa desse tipo em andamento.",
+  GE020: "Para marcar bloqueio, diga o que está bloqueando.",
+  GE021: "Informe o valor do gasto.",
+  GE022: "Anexe o comprovante do gasto (link ou arquivo).",
   // PostgREST.
   PGRST116: "Registro não encontrado.",
   PGRST301: "Sua sessão expirou. Entre novamente.",
   PGRST204: "O formulário mandou um campo que o banco não conhece.",
 }
+
+/** Códigos cujo texto vem do próprio banco (044). */
+const TEXTO_DO_BANCO = new Set(["GE018", "GE019"])
 
 /** Último recurso: nem código conhecido, nem nada a dizer de específico. */
 const GENERICA = "Não foi possível carregar agora. Tente de novo em instantes."
@@ -80,6 +99,9 @@ const GENERICA = "Não foi possível carregar agora. Tente de novo em instantes.
  */
 export function mensagemSegura(erro: ErroDeDados | null | undefined): string {
   if (!erro) return GENERICA
+  // Frases escritas por nós na 044, com o nome de quem tem a tarefa ou o título da
+  // outra tarefa: é o que a pessoa precisa saber e não expõe esquema nenhum.
+  if (erro.code && TEXTO_DO_BANCO.has(erro.code) && erro.message) return erro.message
   if (erro.code && POR_CODIGO[erro.code]) return POR_CODIGO[erro.code]
 
   /*

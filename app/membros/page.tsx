@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 
 import { Aviso } from "@/components/aviso"
 import { PageHeader } from "@/components/membros/page-header"
+import { PainelOrganizacao } from "@/components/painel-organizacao"
 import {
   BlocoAcademia,
   BlocoAgora,
@@ -120,7 +121,7 @@ export default async function HojePage() {
           .in("modelo", MODELOS.filter((m) => m.aprovacao).map((m) => m.id))
       : Promise.resolve({ count: null, error: null }),
     decideCompras
-      ? supabase.from("pedidos_compra").select("id", { count: "exact", head: true }).eq("status", "Pendente")
+      ? supabase.from("pedidos_compra").select("id", { count: "exact", head: true }).eq("status", "Aguardando aprovação")
       : Promise.resolve({ count: null, error: null }),
     // Primeiros passos: Termo enviado e primeiro registro no diário de um sprint.
     supabase
@@ -242,6 +243,9 @@ export default async function HojePage() {
       <PageHeader titulo={`${saudacao()}, ${primeiroNome(perfil?.nome_completo)}`}>
         {frente ? `Trilha ${frente}.` : "Você ainda não tem uma trilha definida."} O que pede a sua atenção agora.
       </PageHeader>
+
+      {/* 044: principal, reserva, Academia no ciclo e alertas que me envolvem. */}
+      <PainelOrganizacao usuarioId={user.id} perfil={perfil} />
 
       {/* Primeiro a resposta; depois o contexto. */}
       <ProximaAcaoCard acao={acao} hoje={hoje} hrefSprint={hrefSprint} rotaFrente={rotaFrente} />

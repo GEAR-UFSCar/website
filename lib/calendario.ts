@@ -137,6 +137,8 @@ export type EventoCal = {
   data_fim: string | null
   frente_vinculada: string | null
   criado_por?: string | null
+  /** 042: Interno ou Externo. Ausente = banco sem a 042. */
+  escopo?: string | null
   local?: string | null
   link?: string | null
   dia_inteiro?: boolean | null
@@ -519,7 +521,7 @@ function linhasDoEvento(e: EventoCal, agora: string, lembreteMin: number | null)
   if (e.local) linhas.push(`LOCATION:${escaparICS(e.local)}`)
   if (link) linhas.push(`URL:${link}`)
   // Cada categoria é escapada sozinha; a vírgula que as separa é a do formato.
-  linhas.push(`CATEGORIES:${[e.tipo, e.frente_vinculada].filter(Boolean).map((c) => escaparICS(c as string)).join(",")}`)
+  linhas.push(`CATEGORIES:${[e.tipo, e.escopo === "Externo" ? "Externo" : null, e.frente_vinculada].filter(Boolean).map((c) => escaparICS(c as string)).join(",")}`)
 
   if (lembreteMin != null && !o.diaInteiro) {
     linhas.push(
