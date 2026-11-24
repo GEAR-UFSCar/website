@@ -9,7 +9,7 @@ import { maisDias } from "@/lib/hoje"
 import { hojeISO } from "@/lib/datas"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
-import { eDiretoria, temCargo, type FrenteNome } from "@/lib/administracao"
+import { eDiretoria, quemVe, temCargo, type FrenteNome } from "@/lib/administracao"
 import {
   COLUNAS_ATUALIZACAO,
   COLUNAS_SPRINT,
@@ -96,7 +96,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
   return (
     <section className={paginaMembros}>
       <PageHeader titulo={frente}>
-        Os sprints da trilha {frente}. Qualquer membro acompanha as três. Quem é da trilha, ou
+        Os sprints da trilha {frente}. Qualquer membro acompanha as quatro. Quem é da trilha, ou
         responsável por um sprint, registra o que fez, o próximo passo e o progresso; criar,
         concluir e apagar sprint é de quem tem cargo na trilha ou da Presidência.
         {eMinhaFrente
@@ -146,6 +146,7 @@ export async function FrentePainel({ frente }: { frente: FrenteNome }) {
           podeEscrever={podeEscrever}
           daTrilha={eMinhaFrente}
           usuarioId={user.id}
+          quem={quemVe(user.id, perfil)}
           pessoas={pessoas}
         />
       )}

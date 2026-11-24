@@ -21,6 +21,8 @@ export type Sprint = {
   /** 0–100, declarado por quem toca o sprint. Ver 021. */
   progresso: number
   proximo_passo: string | null
+  /** Contrato entre subsistemas (042). */
+  documento_interfaces: string | null
   data_inicio: string | null
   data_fim: string | null
   updated_at: string
@@ -45,7 +47,7 @@ export type Atualizacao = {
  * uma segunda FK entre as duas tabelas.
  */
 export const COLUNAS_SPRINT =
-  "id, frente, titulo, descricao, status, progresso, proximo_passo, data_inicio, data_fim, updated_at, " +
+  "id, frente, titulo, descricao, status, progresso, proximo_passo, documento_interfaces, data_inicio, data_fim, updated_at, " +
   "responsavel:perfis!sprints_responsavel_id_fkey (id, nome_completo)"
 
 export const COLUNAS_ATUALIZACAO =

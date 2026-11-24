@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { CargoSelect } from "@/components/cargo-select"
 import { FrenteSelect } from "@/components/frente-select"
+import { FormacaoSelect } from "@/components/formacao-select"
 import { CategoriaSelect } from "@/components/categoria-select"
 import { AprovacaoToggle } from "@/components/aprovacao-toggle"
 import { AprovacaoPendentes, type Pendente } from "@/components/aprovacao-pendentes"
@@ -30,6 +31,8 @@ type Perfil = {
   cargo: string | null
   aprovado: boolean
   categoria: string
+  nivel_formacao: string
+  ativo: boolean
   cargo_atualizado_em: string | null
   created_at: string
 }
@@ -58,7 +61,7 @@ export default async function CargosPage() {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("perfis")
-    .select("id, nome_completo, curso, frente, cargo, aprovado, categoria, cargo_atualizado_em, created_at")
+    .select("id, nome_completo, curso, frente, cargo, aprovado, categoria, nivel_formacao, ativo, cargo_atualizado_em, created_at")
     // pendentes primeiro: é o que a diretoria vem resolver nesta tela
     .order("aprovado", { ascending: true })
     .order("nome_completo", { nullsFirst: false })
@@ -109,16 +112,16 @@ export default async function CargosPage() {
       <div className="mt-16 border-t border-linha pt-8">
         <h2 className="font-sans text-xl font-normal tracking-tight md:text-2xl">Todos os perfis</h2>
         <p className="mt-3 font-sans text-sm font-light text-muted-foreground">
-          Cargo, trilha e histórico de alteração. Aprovados e pendentes, na mesma lista. Defina a trilha
+          Cargo, trilha, formação e histórico de alteração. Formação Principal ou Avançada revisa o trabalho de outras pessoas. Aprovados e pendentes, na mesma lista. Defina a trilha
           de cada pessoa aqui: sem trilha, ela lê os quadros mas não escreve em nenhum.
         </p>
       </div>
 
       <div className="mt-8 overflow-x-auto">
-        <table className="w-full min-w-[54rem] border-collapse">
+        <table className="w-full min-w-[62rem] border-collapse">
           <thead>
             <tr className="border-b border-linha-forte text-left">
-              {["Membro", "Curso", "Trilha", "Aprovação", "Categoria", "Cargo", "Alterado em"].map((h) => (
+              {["Membro", "Curso", "Trilha", "Aprovação", "Formação", "Categoria", "Cargo", "Alterado em"].map((h) => (
                 <th key={h} className="py-3 pr-4 font-mono text-[10px] md:text-[9px] tracking-[0.25em] uppercase text-muted-foreground font-normal">
                   {h}
                 </th>
@@ -127,7 +130,7 @@ export default async function CargosPage() {
           </thead>
           <tbody>
             {perfis.length === 0 && !error && (
-              <tr><td colSpan={7} className="py-8 font-sans text-sm font-light text-muted-foreground">
+              <tr><td colSpan={8} className="py-8 font-sans text-sm font-light text-muted-foreground">
                 Nenhum perfil cadastrado.
               </td></tr>
             )}
@@ -144,6 +147,7 @@ export default async function CargosPage() {
                 <td className="py-4 pr-4 w-44">
                   <AprovacaoToggle perfilId={p.id} aprovado={p.aprovado} ehVoce={p.id === user.id} nome={p.nome_completo} />
                 </td>
+                <td className="py-4 pr-4 w-40"><FormacaoSelect perfilId={p.id} nivel={p.nivel_formacao} ativo={p.ativo} nome={p.nome_completo} /></td>
                 <td className="py-4 pr-4 w-40"><CategoriaSelect perfilId={p.id} valor={p.categoria} nome={p.nome_completo} /></td>
                 <td className="py-4 pr-4 w-52"><CargoSelect perfilId={p.id} valor={p.cargo} /></td>
                 <td className="py-4 pr-4 font-mono text-[11px] text-muted-foreground">

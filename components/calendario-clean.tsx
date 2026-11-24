@@ -436,6 +436,7 @@ function Chip({ item, estado, className }: { item: ItemAgenda; estado: EstadoCal
       className={className}
       style={corDa(item.frente)}
       data-origem={item.origem}
+      data-externo={item.externo || undefined}
       data-concluida={item.concluida || undefined}
       data-atrasada={item.atrasada || undefined}
       data-resposta={item.resposta ?? undefined}
@@ -570,6 +571,7 @@ function GradeHoras({
                     className={s.bloco}
                     style={{ ...corDa(item.frente), top: topo, height: h, left: `${(p?.coluna ?? 0) * larg}%`, width: `calc(${larg}% - 3px)` }}
                     data-curto={h < 44 || undefined}
+                    data-externo={item.externo || undefined}
                     data-resposta={item.resposta ?? undefined}
                     data-continua-ontem={item.continuaDeOntem || undefined}
                     data-continua-amanha={item.continuaAmanha || undefined}
@@ -683,6 +685,7 @@ function ListaAgenda({
                       className={s.linha}
                       style={corDa(item.frente)}
                       data-origem={item.origem}
+      data-externo={item.externo || undefined}
                       data-concluida={item.concluida || undefined}
                       aria-label={rotuloAcessivel(item)}
                     >

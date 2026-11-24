@@ -1,7 +1,7 @@
 # Migrações
 
-Não há Supabase CLI neste projeto. Cada arquivo é rodado **à mão, na ordem, no
-SQL Editor do painel** — o que significa que a única garantia de que uma
+Em produção, cada arquivo é rodado **à mão, na ordem, no
+SQL Editor do painel** (o `config.toml` do Supabase CLI serve só ao ambiente local: `npm run dev:banco`) — o que significa que a única garantia de que uma
 migração foi aplicada é alguém ter conferido. Este arquivo existe para tornar
 essa conferência rápida em vez de arqueológica.
 
@@ -57,6 +57,9 @@ a anterior não rodou.
 | 039 | `chamada_sem_escrita_anonima.sql` | tira de `anon` o privilégio de escrever em `eventos_chamada`: o gatilho da 034 respondia antes da RLS (23503) e `test:rls` não conseguia provar que a autorização barrava. Não apaga dado | 034 |
 | 040 | `membros_participam.sql` | `participa_do_sprint()`: o responsável e os membros da trilha escrevem no diário, criam tarefa e atualizam o andamento do sprint (progresso, próximo passo e status, menos concluir), com gatilho que recusa as outras colunas; atas lidas por todo membro aprovado (Regimento art. 35, § 1º); registro enviado só muda de conteúdo pelo autor; conta não aprovada não grava metas nem progresso; `entrar_na_lista_de_espera()` com advisory lock e teto de 40/h e 3000 no total (erro GE007). Não apaga dado | 021, 033, 035, 039 |
 | 041 | `frente_pelo_cargo.sql` | `trilha_do_cargo()` e gatilho `perfis_trilha_pelo_cargo`: Diretor/Vice-diretor de X fica com `frente = X` (na gravação e nos dados atuais). Sem isso `pode_editar_sprint()` barrava o próprio diretor da trilha, porque ninguém preenchia a frente de quem tem cargo. Não apaga dado | 021, 023, 036 |
+| 042 | `organizacao_fase1.sql` | **quatro trilhas**: todo CHECK com `Projetos` vira `Desenvolvimento e Projetos` + `Extensão` (dados traduzidos, cargos de diretor/vice de Extensão); `perfis` ganha `nivel_formacao`, `areas_interesse`, `ativo` e `e_revisor()` (Principal/Avançada); `sprints.documento_interfaces` (o time edita); `sprint_tarefas` ganha projeto opcional, `estado`, `pronto_quando` obrigatório ao criar (GE010), evidência para revisão (GE011), revisor diferente do responsável (GE012), `rodadas_ajustes`; `feita` vira coluna gerada; fluxo só por `enviar_tarefa_para_revisao()` e `revisar_tarefa()`; `eventos.escopo` (Interno/Externo); `artigos` em Markdown com a página 00 (`como-funciona`) preenchida. **Deploy junto com o código**: o site novo lê as colunas novas. Não apaga dado | 041 |
+| 043 | `organizacao_fase2.sql` | Academia por **competências**: `modulos` ganha código único, área, pontos, critério de aceite (GE016) e guia (`artigos`); a trava de ordem da 005/007 sai (gatilhos removidos, funções ficam porque a 028 as cita). `progresso` vira **comprovação** (evidência, estado Enviada/Em revisão/Ajustes/Aprovada, revisor, comentário, datas, rodadas); o membro não grava mais direto, só por `enviar_comprovacao()`, `pegar_comprovacao()` e `revisar_comprovacao()`; concluído antigo vira Aprovada com `legado`; todo membro lê as comprovações. **Fila de revisão**: view `fila_revisao` (security_invoker), `pegar_tarefa_para_revisar()` e `revisar_tarefa()` respeitando quem pegou, liberado a outro revisor depois de 48 h (GE017). Inventário: `devolucao_prevista` e os 4 kits iniciais (sem duplicar). Não apaga dado | 042 |
+| 044 | `organizacao_fase3.sql` | **Ciclos** (`ciclos`, `ciclo_atual()`; meta de pontos só da Academia). Tarefa ganha **principal/reserva** (uma de cada por pessoa, índice único), **bloqueio** com motivo e data, roteiro, nível, área e ciclo; `assumir_tarefa()` em um clique, sem aprovação, recusando com o nome do dono (GE018) ou se já tem principal/reserva (GE019); `definir_tipo_tarefa()`, `marcar_bloqueio()` (GE020), `tirar_bloqueio()`. **Gastos**: `pedidos_compra` com `data_gasto` e comprovante (link ou arquivo no bucket privado `comprovantes`, GE022); até `parametros.limite_gasto` (R$ 50) nasce Registrado, acima Aguardando aprovação ("Pendente" vira isso); ninguém aprova o próprio; todo membro lê. View **`alertas`** (security_invoker). Os cinco artigos-modelo da base de conhecimento. Não apaga dado | 043 |
 
 Duas armadilhas conhecidas:
 
@@ -228,3 +231,12 @@ não quebra nada.
 `if not exists`, que é o único jeito de escrever CHECK nomeado em Postgres —
 uma segunda execução falha com `constraint já existe`. Isso é ruído, não
 estrago: significa que ela já rodou.
+
+## Resumo semanal por e-mail (ainda não existe)
+
+Os alertas são calculados na hora pela view `alertas` e aparecem no painel e em
+/membros/alertas. O resumo semanal por e-mail **não foi feito**: o projeto não
+tem provedor de e-mail transacional nem tarefa agendada. O caminho mais curto
+quando quiserem: Vercel Cron (1×/semana) chamando uma rota que lê `alertas`
+com a chave de serviço e envia por um provedor (Resend tem plano gratuito),
+agrupando por `pessoa_id`.

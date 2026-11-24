@@ -74,6 +74,7 @@ export function EventoPainel({ ocorrencia: o, estado, usuarioId, podeEscrever, p
       <div>
         <div className={s.painelEtiquetas} style={{ marginBottom: 10 }}>
           <span className={s.pill}>{e.tipo}</span>
+          {e.escopo === "Externo" && <span className={s.pill}>Externo</span>}
           <span className={s.pill}>{e.frente_vinculada ?? "Geral"}</span>
         </div>
         <h2 className={s.painelTitulo}>{e.titulo}</h2>

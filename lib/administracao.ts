@@ -20,8 +20,8 @@ export const STATUS_SPRINT = ["Planejado", "Em andamento", "Bloqueado", "Conclu�
 
 export type StatusSprint = (typeof STATUS_SPRINT)[number]
 
-/** Valores aceitos pelo CHECK da coluna `frente` em 001_perfis.sql; vazio vira null. */
-export const FRENTES = ["Competição", "Pesquisa", "Projetos"] as const
+/** Valores aceitos pelo CHECK da coluna `frente` (quatro trilhas desde a 042); vazio vira null. */
+export const FRENTES = ["Competição", "Pesquisa", "Desenvolvimento e Projetos", "Extensão"] as const
 
 /**
  * Frentes e suas rotas. O slug é o da URL (sem acento nem cedilha); o nome é
@@ -31,7 +31,8 @@ export const FRENTES = ["Competição", "Pesquisa", "Projetos"] as const
 export const FRENTES_ROTAS = [
   { slug: "competicao", nome: "Competição" },
   { slug: "pesquisa", nome: "Pesquisa" },
-  { slug: "projetos", nome: "Projetos" },
+  { slug: "projetos", nome: "Desenvolvimento e Projetos" },
+  { slug: "extensao", nome: "Extensão" },
 ] as const
 
 export type FrenteNome = (typeof FRENTES_ROTAS)[number]["nome"]
@@ -107,11 +108,13 @@ export const CARGOS = [
   "Vice-Presidente",
   "Diretor de Competição",
   "Diretor de Pesquisa",
-  "Diretor de Projetos",
+  "Diretor de Desenvolvimento e Projetos",
+  "Diretor de Extensão",
   // vices das trilhas, definidos pela Presidência em nov/2026 (036)
   "Vice-diretor de Competição",
   "Vice-diretor de Pesquisa",
-  "Vice-diretor de Projetos",
+  "Vice-diretor de Desenvolvimento e Projetos",
+  "Vice-diretor de Extensão",
   "Tesouraria",
   "Comunicação",
   // áreas da Diretoria no Regimento (art. 20), somadas às que já existiam (035)
@@ -136,6 +139,24 @@ export const DIRETORIA = ["Presidente", "Vice-Presidente"] as const
 
 export function eDiretoria(cargo: string | null | undefined) {
   return DIRETORIA.includes((cargo ?? "").trim() as (typeof DIRETORIA)[number])
+}
+
+/** Níveis de formação (042). Principal e Avançada revisam o trabalho de outras pessoas. */
+export const NIVEIS_FORMACAO = ["Fundamental", "Principal", "Avançada"] as const
+
+/** Espelha e_revisor() (042): membro aprovado, ativo, com formação Principal ou Avançada. */
+export function eRevisor(p: { aprovado?: boolean | null; ativo?: boolean | null; nivel_formacao?: string | null } | null | undefined) {
+  return Boolean(p?.aprovado && p.ativo !== false && (p.nivel_formacao === "Principal" || p.nivel_formacao === "Avançada"))
+}
+
+/** Quem está vendo, reduzido ao que os botões de tarefa precisam (lib/tarefas.ts). */
+export type QuemVe = { usuarioId: string; revisor: boolean; diretoria: boolean; temCargo: boolean; frente: string | null }
+
+export function quemVe(
+  usuarioId: string,
+  p: { cargo?: string | null; frente?: string | null; aprovado?: boolean | null; ativo?: boolean | null; nivel_formacao?: string | null } | null | undefined,
+): QuemVe {
+  return { usuarioId, revisor: eRevisor(p), diretoria: eDiretoria(p?.cargo), temCargo: temCargo(p?.cargo), frente: p?.frente?.trim() || null }
 }
 
 /** Quem lança no caixa e decide pedido de compra — espelha e_financeiro() (033). */

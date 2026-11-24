@@ -161,6 +161,14 @@ const tenta = async (sql) => {
   }
 }
 
+const tentaEm = async (banco, sql) => {
+  try {
+    return { ok: true, rows: (await banco.query(sql)).rows }
+  } catch (e) {
+    return { ok: false, rows: [], erro: String(e.message).split("\n")[0], codigo: e.code }
+  }
+}
+
 /** Como o PostgREST: troca para o papel, fixa o `sub` do JWT, executa, devolve ao dono. */
 async function comoPapel(papel, uid, sql) {
   await db.exec(`set role ${papel}; select set_config('request.jwt.claim.sub','${uid ?? ""}',false);`)
@@ -229,7 +237,7 @@ for (const [id, email] of [
 }
 await db.exec(`
   update public.perfis set nome_completo='Presidente', aprovado=true, cargo='Presidente' where id='${P}';
-  update public.perfis set nome_completo='Tesouraria', aprovado=true, cargo='Tesouraria', frente='Projetos' where id='${CARGO}';
+  update public.perfis set nome_completo='Tesouraria', aprovado=true, cargo='Tesouraria', frente='Desenvolvimento e Projetos' where id='${CARGO}';
   update public.perfis set nome_completo='Membro', aprovado=true where id='${MEMBRO}';
   update public.perfis set nome_completo='Novo' where id='${NOVO}';
   update public.perfis set nome_completo='Dir Pesquisa', aprovado=true, cargo='Diretor de Pesquisa', frente='Pesquisa' where id='${PESQ}';
@@ -362,32 +370,13 @@ checar(
 )
 await db.exec(`update public.perfis set nome_completo = 'Novo' where id = '${NOVO}'`)
 
+// 043: a trava de ordem saiu (decisão de 24/11/2026) e o membro não marca mais
+// "concluído": comprovar passa por enviar_comprovacao() e por um revisor.
 const modulo = async (ordem) =>
   (await db.query(`select id from public.modulos where nivel = 'Fundamental' and ordem = ${ordem}`)).rows[0]?.id
-const [m1, m2] = [await modulo(1), await modulo(2)]
-const fora = await como(
-  MEMBRO,
-  `insert into public.progresso (usuario_id, modulo_id, concluido_em) values ('${MEMBRO}','${m2}', now()) returning 1`,
-)
-checar("validar_ordem_progresso disparou: módulo 2 sem o 1 é recusado", !fora.ok && fora.codigo === "23514", fora.erro)
-const em1 = await como(
-  MEMBRO,
-  `insert into public.progresso (usuario_id, modulo_id, concluido_em) values ('${MEMBRO}','${m1}', now()) returning 1`,
-)
-const em2 = await como(
-  MEMBRO,
-  `insert into public.progresso (usuario_id, modulo_id, concluido_em) values ('${MEMBRO}','${m2}', now()) returning 1`,
-)
-checar("…e em ordem é aceito", passa(em1) && passa(em2), em1.erro ?? em2.erro)
-await como(MEMBRO, `update public.progresso set concluido_em = null where usuario_id = '${MEMBRO}' and modulo_id = '${m1}'`)
-const cascata = await tenta(
-  `select concluido_em from public.progresso where usuario_id = '${MEMBRO}' and modulo_id = '${m2}'`,
-)
-checar(
-  "cascatear_desconclusao disparou: desmarcar o 1 desmarca o 2",
-  cascata.rows.length === 1 && cascata.rows[0].concluido_em === null,
-  JSON.stringify(cascata.rows),
-)
+const m2 = await modulo(2)
+checar("membro não marca competência como concluída sozinho",
+  bloqueado(await como(MEMBRO, `insert into public.progresso (usuario_id, modulo_id, concluido_em) values ('${MEMBRO}','${m2}', now()) returning 1`)), "MARCOU")
 
 const docCargo = await como(
   CARGO,
@@ -634,10 +623,12 @@ checar(
 )
 
 const semente = await tenta(`select codigo from public.patrimonio where item = 'Osciloscópio'`)
-checar("item que já estava na tabela ganhou código", semente.rows[0]?.codigo === "GEAR-001", semente.erro ?? semente.rows[0]?.codigo)
+// os quatro kits da 043 já ocupam os primeiros códigos; o que importa é ter código e o próximo ser o seguinte
+const numSemente = Number(semente.rows[0]?.codigo?.match(/^GEAR-(\d{3})$/)?.[1])
+checar("item que já estava na tabela ganhou código", numSemente > 0, semente.erro ?? semente.rows[0]?.codigo)
 
 const gerado = await insereItem(CARGO)
-checar("cargo cadastra sem informar código e recebe o seguinte", gerado.rows[0]?.codigo === "GEAR-002", gerado.erro ?? gerado.rows[0]?.codigo)
+checar("cargo cadastra sem informar código e recebe o seguinte", gerado.rows[0]?.codigo === `GEAR-${String(numSemente + 1).padStart(3, "0")}`, gerado.erro ?? gerado.rows[0]?.codigo)
 const explicito = await insereItem(CARGO, { codigo: " gear-010 " })
 checar("código informado é normalizado (maiúsculas, sem espaço)", explicito.rows[0]?.codigo === "GEAR-010", explicito.erro ?? explicito.rows[0]?.codigo)
 const depoisDoSalto = await insereItem(CARGO)
@@ -901,7 +892,7 @@ await db.exec(`
   update public.perfis set frente='Pesquisa' where id='${MEMBRO}';
 `)
 const sp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','Sprint 038','x','Planejado') returning id`)).rows[0].id
-const spResp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status, responsavel_id) values ('Projetos','Sprint com responsável','x','Planejado','${FORA}') returning id`)).rows[0].id
+const spResp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status, responsavel_id) values ('Desenvolvimento e Projetos','Sprint com responsável','x','Planejado','${FORA}') returning id`)).rows[0].id
 
 const diario = await como(MEMBRO, `insert into public.sprint_atualizacoes (sprint_id, texto) values ('${sp}','fiz o teste') returning autor_id`)
 checar("membro da trilha escreve no diário, assinado por ele", passa(diario) && diario.rows[0].autor_id === MEMBRO, diario.erro)
@@ -915,7 +906,7 @@ checar("membro da trilha marca bloqueado", passa(await como(MEMBRO, `update publ
 for (const [rotulo, set] of [
   ["o título", `titulo = 'tomado'`],
   ["o responsável", `responsavel_id = '${MEMBRO}'`],
-  ["a trilha", `frente = 'Projetos'`],
+  ["a trilha", `frente = 'Desenvolvimento e Projetos'`],
   ["as datas", `data_fim = current_date`],
 ]) {
   const r = await como(MEMBRO, `update public.sprints set ${set} where id = '${sp}' returning 1`)
@@ -928,9 +919,9 @@ checar("membro da trilha não apaga o sprint", bloqueado(await como(MEMBRO, `del
 checar("diretor da trilha continua editando tudo e conclui", passa(await como(PESQ, `update public.sprints set titulo = 'Sprint 038 revisto', status = 'Concluído' where id = '${sp}' returning 1`)))
 checar("sprint concluído não é reaberto por membro", !(await como(MEMBRO, `update public.sprints set status = 'Em andamento' where id = '${sp}' returning 1`)).ok)
 
-const tarefa = await como(MEMBRO, `insert into public.sprint_tarefas (sprint_id, titulo, responsavel_id) values ('${sp}','medir a bateria','${MEMBRO}') returning criado_por`)
+const tarefa = await como(MEMBRO, `insert into public.sprint_tarefas (sprint_id, titulo, responsavel_id, pronto_quando) values ('${sp}','medir a bateria','${MEMBRO}','tensão anotada') returning criado_por`)
 checar("membro da trilha cria tarefa", passa(tarefa) && tarefa.rows[0].criado_por === MEMBRO, tarefa.erro)
-checar("membro de outra trilha não cria tarefa", bloqueado(await como(FORA, `insert into public.sprint_tarefas (sprint_id, titulo) values ('${sp}','x') returning 1`)), "CRIOU")
+checar("membro de outra trilha não cria tarefa", bloqueado(await como(FORA, `insert into public.sprint_tarefas (sprint_id, titulo, pronto_quando) values ('${sp}','x','y') returning 1`)), "CRIOU")
 
 secao("040. FORMULÁRIO ENVIADO — só o autor muda o conteúdo")
 const reg = (await como(MEMBRO, `insert into public.registros (modelo, titulo, dados, status) values ('pitch_projeto','Pitch','{"a":1}','enviado') returning id`)).rows[0]?.id
@@ -955,18 +946,328 @@ secao("041. TRILHA PELO CARGO — diretor e vice ganham a frente do cargo")
 const DIR41 = "41414141-4141-4141-8141-414141414141" // vira Diretor de Projetos sem frente
 await db.exec(`insert into auth.users (id, email) values ('${DIR41}', 'dir@estudante.ufscar.br')`)
 await db.exec(`update public.perfis set nome_completo='Dir', aprovado=true, frente=null where id='${DIR41}'`)
-const virouDiretor = await como(P, `update public.perfis set cargo = 'Diretor de Projetos' where id = '${DIR41}' returning frente`)
-checar("Presidente dá cargo de diretor e a frente vem junto", passa(virouDiretor) && virouDiretor.rows[0]?.frente === "Projetos", virouDiretor.erro ?? JSON.stringify(virouDiretor.rows))
-const spDir = await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','Sprint do diretor','x','Planejado') returning id`)
+const virouDiretor = await como(P, `update public.perfis set cargo = 'Diretor de Desenvolvimento e Projetos' where id = '${DIR41}' returning frente`)
+checar("Presidente dá cargo de diretor e a frente vem junto", passa(virouDiretor) && virouDiretor.rows[0]?.frente === "Desenvolvimento e Projetos", virouDiretor.erro ?? JSON.stringify(virouDiretor.rows))
+const spDir = await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Desenvolvimento e Projetos','Sprint do diretor','x','Planejado') returning id`)
 checar("diretor cria sprint na própria trilha sem ninguém preencher a frente", passa(spDir), spDir.erro)
 checar("diretor continua sem criar sprint em outra trilha", bloqueado(await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','intruso','x','Planejado') returning id`)), "CRIOU")
 const tentaTrocar = await como(P, `update public.perfis set frente = 'Pesquisa' where id = '${DIR41}' returning frente`)
-checar("frente de diretor não diverge do cargo", passa(tentaTrocar) && tentaTrocar.rows[0]?.frente === "Projetos", tentaTrocar.erro ?? JSON.stringify(tentaTrocar.rows))
+checar("frente de diretor não diverge do cargo", passa(tentaTrocar) && tentaTrocar.rows[0]?.frente === "Desenvolvimento e Projetos", tentaTrocar.erro ?? JSON.stringify(tentaTrocar.rows))
 const vice = await como(P, `update public.perfis set cargo = 'Vice-diretor de Competição' where id = '${DIR41}' returning frente`)
 checar("vice-diretor também carrega a trilha", passa(vice) && vice.rows[0]?.frente === "Competição", vice.erro)
 const outro = await como(P, `update public.perfis set cargo = 'Marketing' where id = '${DIR41}' returning frente`)
 checar("cargo que não é de trilha mantém a frente que estava", passa(outro) && outro.rows[0]?.frente === "Competição", outro.erro)
 checar("trilha_do_cargo ignora cargos fora de trilha", (await tenta(`select public.trilha_do_cargo('Presidente') is null as ok`)).rows[0]?.ok === true)
+
+// --- 042: organização, fase 1 ----------------------------------------------------
+secao("042. QUATRO TRILHAS — Projetos vira Desenvolvimento e Projetos sem perder dado")
+
+{
+  const antigo = new PGlite()
+  await antigo.exec(PREAMBULO)
+  for (const arquivo of arquivos.filter((f) => f.slice(0, 3) < "042")) {
+    await antigo.exec(readFileSync(path.join(DIR, arquivo), "utf8"))
+  }
+  const ANT = "42424242-4242-4242-8242-424242424242"
+  await antigo.exec(`
+    insert into auth.users (id, email) values ('${ANT}', 'antigo@estudante.ufscar.br');
+    update public.perfis set aprovado = true, cargo = 'Vice-diretor de Projetos' where id = '${ANT}';
+    insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','Sprint antigo','x','Em andamento');
+    insert into public.sprint_tarefas (sprint_id, titulo, feita, responsavel_id)
+      select id, 'tarefa feita', true, '${ANT}' from public.sprints;
+    insert into public.sprint_tarefas (sprint_id, titulo, responsavel_id)
+      select id, 'tarefa com dono', '${ANT}' from public.sprints;
+    insert into public.sprint_tarefas (sprint_id, titulo) select id, 'tarefa sem dono' from public.sprints;
+  `)
+  const m42 = readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("042"))), "utf8")
+  let erro = ""
+  try { await antigo.exec(m42); await antigo.exec(m42) } catch (e) { erro = String(e.message).split("\n")[0] }
+  checar("a 042 aplica (duas vezes) sobre dados com a trilha antiga", erro === "", erro)
+  const p = (await antigo.query(`select cargo, frente from public.perfis where id = '${ANT}'`)).rows[0]
+  checar("cargo e frente do vice migram juntos", p?.cargo === "Vice-diretor de Desenvolvimento e Projetos" && p?.frente === "Desenvolvimento e Projetos", JSON.stringify(p))
+  const s = (await antigo.query(`select frente from public.sprints`)).rows[0]
+  checar("sprint migra de trilha", s?.frente === "Desenvolvimento e Projetos", JSON.stringify(s))
+  const t = (await antigo.query(`select titulo, estado, feita from public.sprint_tarefas order by titulo`)).rows
+  checar(
+    "feita vira estado (Concluída / Em andamento / Aberta) e só na primeira execução",
+    t.map((x) => `${x.titulo}=${x.estado}:${x.feita}`).join("|") ===
+      "tarefa com dono=Em andamento:false|tarefa feita=Concluída:true|tarefa sem dono=Aberta:false",
+    JSON.stringify(t),
+  )
+  checar("o nome antigo deixa de ser aceito", !(await tentaEm(antigo, `insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','x','x','Planejado')`)).ok)
+  checar("Extensão passa a ser aceita", (await tentaEm(antigo, `insert into public.sprints (frente, titulo, descricao, status) values ('Extensão','x','x','Planejado')`)).ok)
+  checar("Diretor de Extensão vira cargo válido e carrega a trilha", (await tentaEm(antigo, `update public.perfis set cargo = 'Diretor de Extensão' where id = '${ANT}' returning frente`)).rows[0]?.frente === "Extensão")
+  await antigo.close()
+}
+
+secao("042. PAPÉIS — nível de formação define quem revisa")
+
+const nivelProprio = await como(MEMBRO, `update public.perfis set nivel_formacao = 'Avançada' where id = '${MEMBRO}' returning 1`)
+checar("membro não sobe o próprio nível", !nivelProprio.ok && nivelProprio.codigo === "42501", nivelProprio.ok ? "SUBIU" : nivelProprio.erro)
+checar("membro não muda a própria situação (ativo)", !(await como(MEMBRO, `update public.perfis set ativo = false where id = '${MEMBRO}' returning 1`)).ok)
+checar("Presidente define o nível de outra pessoa", passa(await como(P, `update public.perfis set nivel_formacao = 'Principal' where id in ('${FORA}', '${PESQ}') returning 1`)))
+checar("formação Principal é revisor", (await como(FORA, `select public.e_revisor() as r`)).rows[0]?.r === true)
+checar("formação Fundamental não é revisor", (await como(MEMBRO, `select public.e_revisor() as r`)).rows[0]?.r === false)
+checar("anônimo não chama e_revisor()", !(await anon(`select public.e_revisor()`)).ok)
+await db.exec(`update public.perfis set ativo = false where id = '${PESQ}'`)
+checar("revisor inativo deixa de revisar", (await como(PESQ, `select public.e_revisor() as r`)).rows[0]?.r === false)
+await db.exec(`update public.perfis set ativo = true where id = '${PESQ}'`)
+
+secao("042. TAREFAS — Pronto quando, responsável único, evidência, revisão por outra pessoa")
+
+const semPronto = await como(MEMBRO, `insert into public.sprint_tarefas (titulo) values ('sem critério') returning 1`)
+checar("tarefa sem \"Pronto quando\" é recusada", !semPronto.ok && semPronto.codigo === "GE010", semPronto.ok ? "CRIOU" : semPronto.erro)
+const prontoVazio = await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando) values ('x', '   ') returning 1`)
+checar("\"Pronto quando\" só com espaço também", !prontoVazio.ok && prontoVazio.codigo === "GE010")
+
+const pauta = await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando, estado) values ('pauta sem projeto', 'README publicado', 'Concluída') returning id, estado`)
+checar("membro cria tarefa sem projeto, que nasce Aberta mesmo pedindo Concluída", passa(pauta) && pauta.rows[0].estado === "Aberta", pauta.erro ?? JSON.stringify(pauta.rows))
+const tid = pauta.rows[0]?.id
+checar("outra pessoa não edita a tarefa sem projeto alheia", bloqueado(await como(FORA, `update public.sprint_tarefas set titulo = 'tomada' where id = '${tid}' returning 1`)), "EDITOU")
+const spOutra = (await tenta(`insert into public.sprints (frente, titulo, descricao, status) values ('Competição','de outra trilha','x','Planejado') returning id`)).rows[0].id
+checar("autor não move a pauta para projeto de outra trilha", bloqueado(await como(MEMBRO, `update public.sprint_tarefas set sprint_id = '${spOutra}' where id = '${tid}' returning 1`)), "MOVEU")
+checar("autor move a pauta para projeto da própria trilha", passa(await como(MEMBRO, `update public.sprint_tarefas set sprint_id = '${sp}' where id = '${tid}' returning 1`)))
+await db.exec(`update public.sprint_tarefas set sprint_id = null where id = '${tid}'`)
+const pulaFluxo = await como(MEMBRO, `update public.sprint_tarefas set estado = 'Concluída' where id = '${tid}' returning 1`)
+checar("autor não marca Concluída direto", !pulaFluxo.ok && pulaFluxo.codigo === "GE013", pulaFluxo.ok ? "CONCLUIU" : pulaFluxo.erro)
+const virouDono = await como(MEMBRO, `update public.sprint_tarefas set responsavel_id = '${MEMBRO}' where id = '${tid}' returning estado`)
+checar("criada sem sessão com responsável já nasce Em andamento",
+  (await tenta(`insert into public.sprint_tarefas (titulo, pronto_quando, responsavel_id) values ('pelo SQL Editor', 'ok', '${MEMBRO}') returning estado`)).rows[0]?.estado === "Em andamento")
+checar("ganhar responsável põe a tarefa Em andamento", passa(virouDono) && virouDono.rows[0].estado === "Em andamento", virouDono.erro)
+checar("responsável é um só (uma coluna, sem tabela de vários donos)", (await tenta(`select count(*)::int as n from information_schema.columns where table_name = 'sprint_tarefas' and column_name like 'responsave%'`)).rows[0]?.n === 1)
+
+const semEvid = await como(MEMBRO, `select public.enviar_tarefa_para_revisao('${tid}', '  ')`)
+checar("enviar para revisão sem evidência é recusado", !semEvid.ok && semEvid.codigo === "GE011", semEvid.ok ? "ENVIOU" : semEvid.erro)
+checar("evidência que não é link é recusada", (await como(MEMBRO, `select public.enviar_tarefa_para_revisao('${tid}', 'fiz')`)).codigo === "GE011")
+const alheio = await como(FORA, `select public.enviar_tarefa_para_revisao('${tid}', 'https://github.com/x')`)
+checar("só o responsável envia para revisão", !alheio.ok && alheio.codigo === "42501", alheio.ok ? "ENVIOU" : alheio.erro)
+checar("responsável envia com evidência", (await como(MEMBRO, `select public.enviar_tarefa_para_revisao('${tid}', 'https://github.com/GEAR-UFSCar/x')`)).ok)
+checar("tarefa em revisão não troca de responsável", (await como(MEMBRO, `update public.sprint_tarefas set responsavel_id = '${FORA}' where id = '${tid}' returning 1`)).codigo === "GE013")
+
+const naoRevisor = await como(CARGO, `select public.revisar_tarefa('${tid}', true)`)
+checar("quem não é revisor não revisa (nem com cargo)", !naoRevisor.ok && naoRevisor.codigo === "GE014", naoRevisor.ok ? "REVISOU" : naoRevisor.erro)
+const semNota = await como(FORA, `select public.revisar_tarefa('${tid}', false, '')`)
+checar("pedir ajustes sem comentário é recusado", !semNota.ok && semNota.codigo === "GE015", semNota.ok ? "PEDIU" : semNota.erro)
+checar("revisor pede ajustes com comentário", (await como(FORA, `select public.revisar_tarefa('${tid}', false, 'faltou o diagrama')`)).ok)
+let st = (await tenta(`select estado, rodadas_ajustes, revisor_id from public.sprint_tarefas where id = '${tid}'`)).rows[0]
+checar("ajustes soma 1 rodada e registra o revisor", st?.estado === "Ajustes" && st?.rodadas_ajustes === 1 && st?.revisor_id === FORA, JSON.stringify(st))
+checar("revisar de novo sem reenvio é recusado", (await como(FORA, `select public.revisar_tarefa('${tid}', true)`)).codigo === "GE013")
+checar("responsável reenvia depois dos ajustes", (await como(MEMBRO, `select public.enviar_tarefa_para_revisao('${tid}', 'https://github.com/GEAR-UFSCar/x/pull/2')`)).ok)
+checar("revisor aprova", (await como(FORA, `select public.revisar_tarefa('${tid}', true)`)).ok)
+st = (await tenta(`select estado, feita, concluida_em is not null as quando, rodadas_ajustes from public.sprint_tarefas where id = '${tid}'`)).rows[0]
+checar("aprovada fica Concluída, feita e datada", st?.estado === "Concluída" && st?.feita === true && st?.quando === true && st?.rodadas_ajustes === 1, JSON.stringify(st))
+
+const propria = (await como(FORA, `insert into public.sprint_tarefas (titulo, pronto_quando, responsavel_id) values ('minha', 'ok', '${FORA}') returning id`)).rows[0]?.id
+await como(FORA, `select public.enviar_tarefa_para_revisao('${propria}', 'https://example.org/video')`)
+const autoRevisao = await como(FORA, `select public.revisar_tarefa('${propria}', true)`)
+checar("ninguém revisa o próprio trabalho", !autoRevisao.ok && autoRevisao.codigo === "GE012", autoRevisao.ok ? "SE APROVOU" : autoRevisao.erro)
+checar("outro revisor revisa", (await como(PESQ, `select public.revisar_tarefa('${propria}', true)`)).ok)
+checar("anônimo não chama as funções de fluxo", !(await anon(`select public.revisar_tarefa('${propria}', true)`)).ok)
+checar(
+  "tarefa não tem pontos (pontos só na Academia)",
+  (await tenta(`select count(*)::int as n from information_schema.columns where table_name = 'sprint_tarefas' and column_name ilike '%ponto%'`)).rows[0]?.n === 0,
+)
+
+secao("042. PROJETO, AGENDA E PÁGINA 00")
+
+const contrato = await como(MEMBRO, `update public.sprints set documento_interfaces = '/cmd_vel geometry_msgs/Twist' where id = '${sp}' returning 1`)
+checar("membro da trilha edita o documento de interfaces", passa(contrato), contrato.erro)
+checar("membro de outra trilha não edita", bloqueado(await como(FORA, `update public.sprints set documento_interfaces = 'x' where id = '${sp}' returning 1`)), "EDITOU")
+const ev = await tenta(`insert into public.eventos (titulo, tipo, data_inicio) values ('CBR 2027','Prazo', now()) returning escopo`)
+checar("evento nasce Interno", ev.rows[0]?.escopo === "Interno", ev.erro)
+checar("escopo aceita Externo e recusa outro valor",
+  (await tenta(`insert into public.eventos (titulo, tipo, data_inicio, escopo) values ('Edital','Prazo', now(), 'Externo') returning 1`)).ok &&
+  !(await tenta(`insert into public.eventos (titulo, tipo, data_inicio, escopo) values ('x','Prazo', now(), 'Outro')`)).ok)
+
+const p00 = await como(MEMBRO, `select conteudo from public.artigos where slug = 'como-funciona'`)
+checar("página 00 vem preenchida e o membro lê", passa(p00) && p00.rows[0].conteudo.includes("Precisa de aprovação"), p00.erro)
+checar("visitante não lê a página 00", bloqueado(await anon(`select 1 from public.artigos`)), "LEU")
+checar("membro sem cargo não edita a página 00", bloqueado(await como(MEMBRO, `update public.artigos set conteudo = 'x' where slug = 'como-funciona' returning 1`)), "EDITOU")
+checar("quem tem cargo edita a página 00", passa(await como(CARGO, `update public.artigos set conteudo = conteudo || ' ' where slug = 'como-funciona' returning 1`)))
+checar("membro não cria artigo fixo", bloqueado(await como(MEMBRO, `insert into public.artigos (slug, titulo) values ('regras', 'falsas') returning 1`)), "CRIOU")
+const art = await como(MEMBRO, `insert into public.artigos (titulo, area, conteudo, autor_id) values ('Gravar ESP32', 'Sistemas Embarcados', '# passo 1', '${FORA}') returning autor_id`)
+checar("membro escreve na base de conhecimento, assinado por ele", passa(art) && art.rows[0].autor_id === MEMBRO, art.erro)
+
+// --- 043: organização, fase 2 ----------------------------------------------------
+secao("043. LEGADO — concluído antigo vira Aprovada, kits entram uma vez só")
+
+{
+  const antigo = new PGlite()
+  await antigo.exec(PREAMBULO)
+  for (const arquivo of arquivos.filter((f) => f.slice(0, 3) < "043")) {
+    await antigo.exec(readFileSync(path.join(DIR, arquivo), "utf8"))
+  }
+  const ANT = "43434343-4343-4343-8343-434343434343"
+  await antigo.exec(`
+    insert into auth.users (id, email) values ('${ANT}', 'antigo43@estudante.ufscar.br');
+    insert into public.progresso (usuario_id, modulo_id, concluido_em)
+      select '${ANT}', id, case when ordem = 1 then now() end from public.modulos where nivel = 'Fundamental' and ordem <= 2;
+  `)
+  const m43 = readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("043"))), "utf8")
+  let erro = ""
+  try { await antigo.exec(m43); await antigo.exec(m43) } catch (e) { erro = String(e.message).split("\n")[0] }
+  checar("a 043 aplica (duas vezes) sobre progresso antigo", erro === "", erro)
+  const p = (await antigo.query(`select m.ordem, p.estado, p.legado from public.progresso p join public.modulos m on m.id = p.modulo_id order by m.ordem`)).rows
+  checar("concluído vira Aprovada (legado); só iniciado fica sem estado", p[0]?.estado === "Aprovada" && p[0]?.legado === true && p[1]?.estado === null, JSON.stringify(p))
+  const kits = (await antigo.query(`select count(*)::int as n from public.patrimonio where fabricante in ('LAFVIN', 'OSOYOO')`)).rows[0].n
+  checar("quatro kits iniciais (2 LAFVIN + 2 OSOYOO), sem duplicar ao reexecutar", kits === 4, `${kits}`)
+  await antigo.close()
+}
+
+secao("043. COMPETÊNCIAS — código e critério de aceite obrigatórios")
+
+const semCriterio = await como(CARGO, `insert into public.modulos (nivel, titulo, codigo) values ('Fundamental', 'Gravar firmware', 'EMB-01') returning 1`)
+checar("competência sem critério de aceite é recusada", !semCriterio.ok && semCriterio.codigo === "GE016", semCriterio.ok ? "CRIOU" : semCriterio.erro)
+const comp = await como(CARGO, `insert into public.modulos (nivel, titulo, codigo, area, pontos, criterio_aceite) values ('Fundamental', 'Gravar firmware no ESP32', ' emb-01 ', 'Sistemas Embarcados', 10, 'LED piscando a 1 Hz, vídeo no link') returning id, codigo, ordem`)
+checar("cargo cria competência; código normalizado e ordem automática", passa(comp) && comp.rows[0].codigo === "EMB-01" && comp.rows[0].ordem > 3, comp.erro ?? JSON.stringify(comp.rows))
+const C1 = comp.rows[0]?.id
+checar("código é único", !(await como(CARGO, `insert into public.modulos (nivel, titulo, codigo, criterio_aceite) values ('Principal', 'x', 'EMB-01', 'y') returning 1`)).ok)
+checar("membro sem cargo não cria competência", bloqueado(await como(MEMBRO, `insert into public.modulos (nivel, titulo, codigo, criterio_aceite) values ('Fundamental', 'x', 'XX-01', 'y') returning 1`)), "CRIOU")
+checar("critério não volta a ficar vazio", (await como(CARGO, `update public.modulos set criterio_aceite = ' ' where id = '${C1}' returning 1`)).codigo === "GE016")
+
+secao("043. COMPROVAÇÕES — evidência, revisão por outra pessoa, pontos só quando aprovada")
+
+checar("comprovação sem evidência é recusada", (await como(MEMBRO, `select public.enviar_comprovacao('${C1}', '')`)).codigo === "GE011")
+checar("membro envia comprovação com evidência", (await como(MEMBRO, `select public.enviar_comprovacao('${C1}', 'https://youtu.be/led')`)).ok)
+const cid = (await tenta(`select id, estado from public.progresso where usuario_id = '${MEMBRO}' and modulo_id = '${C1}'`)).rows[0]
+checar("nasce Enviada", cid?.estado === "Enviada", JSON.stringify(cid))
+checar("membro não se aprova direto", bloqueado(await como(MEMBRO, `update public.progresso set estado = 'Aprovada', concluido_em = now() where id = '${cid.id}' returning 1`)), "APROVOU")
+checar("outro membro lê a comprovação (base da Avaliação Técnica)", passa(await como(FORA, `select 1 from public.progresso where id = '${cid.id}'`)))
+checar("visitante não lê comprovações", bloqueado(await anon(`select 1 from public.progresso`)), "LEU")
+
+checar("quem não é revisor não pega", (await como(MEMBRO, `select public.pegar_comprovacao('${cid.id}')`)).codigo === "GE014")
+checar("revisora pega (vira Em revisão)", (await como(FORA, `select public.pegar_comprovacao('${cid.id}')`)).ok &&
+  (await tenta(`select estado from public.progresso where id = '${cid.id}'`)).rows[0]?.estado === "Em revisão")
+checar("outro revisor não pega antes de 48 h", (await como(PESQ, `select public.pegar_comprovacao('${cid.id}')`)).codigo === "GE017")
+checar("nem revisa no lugar de quem pegou", (await como(PESQ, `select public.revisar_comprovacao('${cid.id}', true)`)).codigo === "GE017")
+await db.exec(`update public.progresso set enviada_em = now() - interval '49 hours' where id = '${cid.id}'`)
+checar("passadas 48 h na fila, outro revisor pega", (await como(PESQ, `select public.pegar_comprovacao('${cid.id}')`)).ok)
+checar("pedir ajustes sem comentário é recusado", (await como(PESQ, `select public.revisar_comprovacao('${cid.id}', false, '')`)).codigo === "GE015")
+checar("revisor pede ajustes", (await como(PESQ, `select public.revisar_comprovacao('${cid.id}', false, 'o vídeo não mostra o LED')`)).ok)
+let cst = (await tenta(`select estado, rodadas_ajustes, concluido_em from public.progresso where id = '${cid.id}'`)).rows[0]
+checar("Ajustes, 1 rodada, sem pontos", cst?.estado === "Ajustes" && cst?.rodadas_ajustes === 1 && cst?.concluido_em === null, JSON.stringify(cst))
+checar("membro reenvia", (await como(MEMBRO, `select public.enviar_comprovacao('${C1}', 'https://youtu.be/led2')`)).ok)
+checar("revisor aprova direto da fila (sem pegar antes)", (await como(FORA, `select public.revisar_comprovacao('${cid.id}', true)`)).ok)
+cst = (await tenta(`select estado, concluido_em is not null as conta from public.progresso where id = '${cid.id}'`)).rows[0]
+checar("Aprovada conta (concluido_em preenchido)", cst?.estado === "Aprovada" && cst?.conta === true, JSON.stringify(cst))
+checar("aprovada não é reenviada", (await como(MEMBRO, `select public.enviar_comprovacao('${C1}', 'https://x.org')`)).codigo === "GE013")
+checar("aprovada não é apagada pelo dono", bloqueado(await como(MEMBRO, `delete from public.progresso where id = '${cid.id}' returning 1`)), "APAGOU")
+
+await como(FORA, `select public.enviar_comprovacao('${C1}', 'https://github.com/fora')`)
+const deFora = (await tenta(`select id from public.progresso where usuario_id = '${FORA}' and modulo_id = '${C1}'`)).rows[0]?.id
+checar("ninguém revisa a própria comprovação", (await como(FORA, `select public.revisar_comprovacao('${deFora}', true)`)).codigo === "GE012")
+checar("nem pega a própria", (await como(FORA, `select public.pegar_comprovacao('${deFora}')`)).codigo === "GE012")
+
+secao("043. FILA DE REVISÃO — tarefas e comprovações, mais antigas primeiro")
+
+const tFila = (await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando, responsavel_id) values ('fila', 'ok', '${MEMBRO}') returning id`)).rows[0]?.id
+await como(MEMBRO, `select public.enviar_tarefa_para_revisao('${tFila}', 'https://github.com/x')`)
+await db.exec(`update public.sprint_tarefas set enviada_revisao_em = now() - interval '3 days' where id = '${tFila}'`)
+const fila = await como(MEMBRO, `select tipo, id from public.fila_revisao order by enviada_em`)
+checar("a fila junta tarefa e comprovação, a mais antiga primeiro", passa(fila) && fila.rows[0]?.id === tFila && fila.rows.some((r) => r.tipo === "comprovacao"), fila.erro ?? JSON.stringify(fila.rows))
+checar("visitante não lê a fila", !(await anon(`select 1 from public.fila_revisao`)).ok)
+checar("revisora pega a tarefa", (await como(FORA, `select public.pegar_tarefa_para_revisar('${tFila}')`)).ok)
+checar("com mais de 48 h na fila, outro revisor pode pegar a tarefa", (await como(PESQ, `select public.pegar_tarefa_para_revisar('${tFila}')`)).ok)
+await db.exec(`update public.sprint_tarefas set enviada_revisao_em = now() where id = '${tFila}'`)
+checar("com menos de 48 h, quem não pegou não revisa a tarefa", (await como(FORA, `select public.revisar_tarefa('${tFila}', true)`)).codigo === "GE017")
+checar("quem pegou revisa", (await como(PESQ, `select public.revisar_tarefa('${tFila}', true)`)).ok)
+
+secao("043. INVENTÁRIO — retirar sem pedir, devolução prevista visível")
+
+const kit = (await tenta(`select id from public.patrimonio where fabricante = 'OSOYOO' order by codigo limit 1`)).rows[0]?.id
+const prazo = (await tenta(`select (current_date + 7)::text as d`)).rows[0].d
+checar("membro retira o kit sem aprovação, com prazo", (await como(MEMBRO, `select public.retirar_item('${kit}', '${prazo}')`)).ok)
+let item = (await como(FORA, `select emprestado_para, devolucao_prevista::text as d, responsavel_atual from public.patrimonio where id = '${kit}'`)).rows[0]
+checar("todo membro vê com quem está e até quando", item?.emprestado_para === MEMBRO && item?.d === prazo, JSON.stringify(item))
+checar("outro membro não retira o mesmo kit", (await como(FORA, `select public.retirar_item('${kit}', null)`)).codigo === "GE004")
+checar("quem retirou devolve", (await como(MEMBRO, `select public.devolver_item('${kit}')`)).ok)
+item = (await tenta(`select status, devolucao_prevista from public.patrimonio where id = '${kit}'`)).rows[0]
+checar("devolvido volta Disponível, sem prazo", item?.status === "Disponível" && item?.devolucao_prevista === null, JSON.stringify(item))
+checar("histórico guarda a retirada e a devolução", (await como(FORA, `select count(*)::int as n from public.emprestimos where item_id = '${kit}' and devolvido_em is not null`)).rows[0]?.n === 1)
+
+// --- 044: organização, fase 3 ----------------------------------------------------
+secao("044. CICLOS — diretoria cria, ciclo atual entra na tarefa assumida")
+
+const cicloT = await como(CARGO, `insert into public.ciclos (nome, inicio, fim, meta_pontos) values ('Ciclo teste', current_date - 3, current_date + 10, 30) returning id`)
+checar("quem tem cargo cria ciclo", passa(cicloT), cicloT.erro)
+checar("membro sem cargo não cria ciclo", bloqueado(await como(MEMBRO, `insert into public.ciclos (nome, inicio, fim) values ('x', current_date, current_date + 13) returning 1`)), "CRIOU")
+checar("ciclo_atual() é o que cobre hoje", (await como(MEMBRO, `select public.ciclo_atual() as c`)).rows[0]?.c === cicloT.rows[0]?.id)
+
+secao("044. ASSUMIR — um clique, sem aprovação, um único dono, principal e reserva")
+
+const pautaId = (await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando, roteiro, nivel, area) values ('Pauta aberta', 'PR aceito', '1. clone o repo', 'Fundamental', 'ROS 2') returning id`)).rows[0]?.id
+checar("assumir sem dizer principal/reserva é recusado", !(await como(FORA, `select public.assumir_tarefa('${pautaId}', null)`)).ok)
+checar("membro assume a pauta como principal", (await como(FORA, `select public.assumir_tarefa('${pautaId}', 'principal')`)).ok)
+let ass = (await tenta(`select responsavel_id, tipo, estado, ciclo_id from public.sprint_tarefas where id = '${pautaId}'`)).rows[0]
+checar("vira responsável, Em andamento, no ciclo atual", ass?.responsavel_id === FORA && ass?.tipo === "principal" && ass?.estado === "Em andamento" && ass?.ciclo_id === cicloT.rows[0]?.id, JSON.stringify(ass))
+const tomada = await como(MEMBRO, `select public.assumir_tarefa('${pautaId}', 'principal')`)
+checar("tarefa com dono não é assumida, e o erro diz de quem é", !tomada.ok && tomada.codigo === "GE018" && /Fora/.test(tomada.erro ?? ""), tomada.erro)
+const p2 = (await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando) values ('Segunda pauta', 'ok') returning id`)).rows[0]?.id
+checar("segunda principal da mesma pessoa é recusada", (await como(FORA, `select public.assumir_tarefa('${p2}', 'principal')`)).codigo === "GE019")
+checar("mas entra como reserva", (await como(FORA, `select public.assumir_tarefa('${p2}', 'reserva')`)).ok)
+const p3 = (await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando) values ('Terceira pauta', 'ok') returning id`)).rows[0]?.id
+checar("terceira (já tem principal e reserva) é recusada", (await como(FORA, `select public.assumir_tarefa('${p3}', 'reserva')`)).codigo === "GE019")
+checar("passar a reserva para principal troca as duas de lugar", (await como(FORA, `select public.definir_tipo_tarefa('${p2}', 'principal')`)).ok &&
+  (await tenta(`select string_agg(tipo, ',' order by titulo) as t from public.sprint_tarefas where id in ('${pautaId}', '${p2}')`)).rows[0]?.t === "reserva,principal")
+checar("tipo não muda por edição direta", (await como(MEMBRO, `update public.sprint_tarefas set tipo = 'principal' where id = '${p3}' returning 1`)).codigo === "GE013")
+
+secao("044. BLOQUEIO — motivo obrigatório, alerta depois de 2 dias")
+
+checar("bloqueio sem motivo é recusado", (await como(FORA, `select public.marcar_bloqueio('${p2}', ' ')`)).codigo === "GE020")
+checar("só o responsável marca bloqueio", (await como(MEMBRO, `select public.marcar_bloqueio('${p2}', 'x')`)).codigo === "42501")
+checar("responsável marca bloqueio com motivo", (await como(FORA, `select public.marcar_bloqueio('${p2}', 'esperando a peça chegar')`)).ok)
+await db.exec(`update public.sprint_tarefas set bloqueada_em = now() - interval '3 days' where id = '${p2}'`)
+const alBloq = await como(FORA, `select titulo from public.alertas where tipo = 'tarefa_bloqueada' and pessoa_id = '${FORA}'`)
+checar("bloqueada há mais de 2 dias vira alerta sugerindo a reserva", passa(alBloq) && /reserva/.test(alBloq.rows[0].titulo), alBloq.erro ?? JSON.stringify(alBloq.rows))
+checar("responsável tira o bloqueio", (await como(FORA, `select public.tirar_bloqueio('${p2}')`)).ok)
+
+secao("044. ALERTAS — calculados para quem está envolvido")
+
+await como(MEMBRO, `update public.sprint_tarefas set prazo = current_date - 1 where id = '${p3}'`)
+checar("tarefa atrasada (sem dono) aparece na visão geral", passa(await como(P, `select 1 from public.alertas where tipo = 'tarefa_atrasada' and detalhe = 'Terceira pauta'`)))
+checar("membro ativo sem principal tem alerta", passa(await como(MEMBRO, `select 1 from public.alertas where tipo = 'sem_principal' and pessoa_id = '${MEMBRO}'`)))
+checar("quem tem principal e reserva não tem esses alertas", bloqueado(await como(FORA, `select 1 from public.alertas where tipo in ('sem_principal', 'sem_reserva') and pessoa_id = '${FORA}'`)), "TEM")
+await db.exec(`update public.perfis set ativo = false where id = '${NOVO}'`)
+checar("inativo não entra no alerta de sem tarefa", bloqueado(await como(P, `select 1 from public.alertas where pessoa_id = '${NOVO}'`)), "ENTROU")
+const kit2 = (await tenta(`select id from public.patrimonio where fabricante = 'LAFVIN' order by codigo limit 1`)).rows[0]?.id
+await como(MEMBRO, `select public.retirar_item('${kit2}', current_date)`)
+await db.exec(`update public.patrimonio set devolucao_prevista = current_date - 2 where id = '${kit2}'`)
+checar("material com devolução atrasada vira alerta de quem está com ele", passa(await como(MEMBRO, `select 1 from public.alertas where tipo = 'material_atrasado' and pessoa_id = '${MEMBRO}'`)))
+await como(MEMBRO, `select public.devolver_item('${kit2}')`)
+checar("visitante não lê alertas", !(await anon(`select 1 from public.alertas`)).ok)
+
+secao("044. GASTOS — abaixo do limite registra direto, acima espera aprovação")
+
+const g1 = await como(MEMBRO, `insert into public.pedidos_compra (item, valor_estimado, status, comprovante_url) values ('Jumpers', 30, 'Aprovado', 'https://loja.example/nf') returning status`)
+checar("até R$ 50 nasce Registrado (mesmo pedindo outro estado)", passa(g1) && g1.rows[0].status === "Registrado", g1.erro ?? JSON.stringify(g1.rows))
+const g2 = await como(MEMBRO, `insert into public.pedidos_compra (item, valor_estimado, comprovante_url) values ('Lidar', 120, 'https://nf.example/1') returning id, status`)
+checar("acima do limite nasce Aguardando aprovação", passa(g2) && g2.rows[0].status === "Aguardando aprovação", g2.erro)
+checar("gasto sem comprovante é recusado", (await como(MEMBRO, `insert into public.pedidos_compra (item, valor_estimado) values ('Fita', 10) returning 1`)).codigo === "GE022")
+checar("gasto sem valor é recusado", (await como(MEMBRO, `insert into public.pedidos_compra (item, comprovante_url) values ('x', 'https://nf.example/3') returning 1`)).codigo === "GE021")
+checar("gasto aguardando aparece para o financeiro e para quem gastou",
+  passa(await como(CARGO, `select 1 from public.alertas where tipo = 'gasto_aguardando' and grupo = 'financeiro' and pessoa_id = '${MEMBRO}'`)))
+checar("membro sem cargo não aprova", bloqueado(await como(MEMBRO, `update public.pedidos_compra set status = 'Aprovado' where id = '${g2.rows[0]?.id}' returning 1`)), "APROVOU")
+const aprov = await como(CARGO, `update public.pedidos_compra set status = 'Aprovado' where id = '${g2.rows[0]?.id}' returning decidido_por`)
+checar("financeiro aprova, com decisão carimbada", passa(aprov) && aprov.rows[0].decidido_por === CARGO, aprov.erro)
+const proprio = (await como(CARGO, `insert into public.pedidos_compra (item, valor_estimado, comprovante_arquivo) values ('Osciloscópio', 900, '${CARGO}/nf.pdf') returning id`)).rows[0]?.id
+checar("ninguém aprova o próprio gasto", (await como(CARGO, `update public.pedidos_compra set status = 'Aprovado' where id = '${proprio}' returning 1`)).codigo === "GE012")
+const gReg = (await tenta(`select id from public.pedidos_compra where item = 'Jumpers'`)).rows[0]?.id
+checar("gasto Registrado não passa por aprovação", (await como(P, `update public.pedidos_compra set status = 'Aprovado' where id = '${gReg}' returning 1`)).codigo === "GE013")
+checar("financeiro não infla o próprio gasto registrado depois", (await como(CARGO, `update public.pedidos_compra set valor_estimado = 5000 where id = '${proprio}' returning 1`)).codigo === "GE013")
+checar("nem o de outra pessoa", (await como(P, `update public.pedidos_compra set valor_estimado = 5000 where id = '${gReg}' returning 1`)).codigo === "GE013")
+checar("todo membro lê os gastos (prestação de contas)", passa(await como(FORA, `select 1 from public.pedidos_compra where id = '${gReg}'`)))
+checar("visitante não lê gastos", bloqueado(await anon(`select 1 from public.pedidos_compra`)), "LEU")
+checar("membro não muda o limite", bloqueado(await como(MEMBRO, `update public.parametros set limite_gasto = 1000 returning 1`)), "MUDOU")
+checar("Presidência muda o limite", passa(await como(P, `update public.parametros set limite_gasto = 100 returning 1`)))
+checar("com limite R$ 100, R$ 80 registra direto", (await como(MEMBRO, `insert into public.pedidos_compra (item, valor_estimado, comprovante_url) values ('Motor', 80, 'https://nf.example/2') returning status`)).rows[0]?.status === "Registrado")
+checar("membro envia comprovante na própria pasta", passa(await como(MEMBRO, `insert into storage.objects (bucket_id, name) values ('comprovantes', '${MEMBRO}/nf.pdf') returning 1`)))
+checar("mas não na pasta de outra pessoa", !(await como(MEMBRO, `insert into storage.objects (bucket_id, name) values ('comprovantes', '${FORA}/nf.pdf') returning 1`)).ok)
+
+secao("044. BASE DE CONHECIMENTO — artigos-modelo")
+checar("os cinco artigos-modelo existem", (await como(MEMBRO, `select count(*)::int as n from public.artigos where titulo in ('Como gravar firmware no ESP32', 'Como instalar o ROS 2', 'Como usar a impressora 3D', 'Como pedir uma peça', 'Modelo de README de projeto')`)).rows[0]?.n === 5)
+let erro44 = ""
+try { await db.exec(readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("044"))), "utf8")) } catch (e) { erro44 = String(e.message).split("\n")[0] }
+checar("a 044 pode ser reexecutada (sem duplicar artigos)", erro44 === "" && (await tenta(`select count(*)::int as n from public.artigos where titulo = 'Como instalar o ROS 2'`)).rows[0]?.n === 1, erro44)
 
 // --- placar ------------------------------------------------------------------
 await db.close()

@@ -263,7 +263,7 @@ export function BlocoPendencias({
         )}
         {compras !== undefined && (
           <li className={linha}>
-            <Link href="/membros/compras" className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
+            <Link href="/membros/gastos" className="flex-1 font-sans text-base hover:text-[var(--gear-amber)]">
               Pedidos de compra pendentes
             </Link>
             <Pilula tom={compras ? "alerta" : "neutro"}>{compras ?? "?"}</Pilula>

@@ -502,3 +502,8 @@
   .linhaHora { width: 84px; }
   .painel { padding: 20px 16px 48px; }
 }
+
+/* 042: evento externo (CBR, editais, hackathons) se separa do interno pelo
+   traço: borda âmbar tracejada no chip e no bloco, barra âmbar na lista. */
+.chip[data-externo], .mesChip[data-externo], .bloco[data-externo] { border: 1.5px dashed var(--gear-amber); }
+.linha[data-externo] .linhaBarra { background: var(--gear-amber); }

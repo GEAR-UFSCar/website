@@ -118,7 +118,9 @@ export function itensDeEventos(eventos: EventoCal[], presencas: Presenca[], ctx:
         dia: seg.dia,
         hora: seg.inicioMin == null ? null : rotuloDeMinutos(seg.inicioMin),
         descricao: e.descricao,
-        rotulo: e.tipo,
+        // o texto também diz "Externo": a separação não fica só na cor
+        rotulo: e.escopo === "Externo" ? `Externo · ${e.tipo}` : e.tipo,
+        externo: e.escopo === "Externo",
         frente: e.frente_vinculada,
         tipo: e.tipo,
         eventoId: e.id,

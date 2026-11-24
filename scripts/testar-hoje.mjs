@@ -51,7 +51,7 @@ assert.deepEqual(g.concluidas.map((m) => m.id), [2])
 
 // Achado do revisor: o link de um sprint leva à frente DO SPRINT, não à do perfil.
 assert.equal(hrefDoSprint("Pesquisa", "abc"), "/membros/sprints/pesquisa#sprint-abc")
-assert.equal(hrefDoSprint("Projetos", "x"), "/membros/sprints/projetos#sprint-x")
+assert.equal(hrefDoSprint("Desenvolvimento e Projetos", "x"), "/membros/sprints/projetos#sprint-x")
 assert.equal(hrefDoSprint("Competição", "y"), "/membros/sprints/competicao#sprint-y")
 // Frente desconhecida ou vazia cai no seletor, nunca em Competição por acidente.
 assert.equal(hrefDoSprint(null, "x"), "/membros/frente")

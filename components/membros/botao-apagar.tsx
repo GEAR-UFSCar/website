@@ -19,12 +19,15 @@ export function BotaoApagar({
   id,
   rotulo = "Apagar",
   descricao,
+  depois,
 }: {
-  tabela: "eventos_chamada" | "horas_lancadas" | "caixa_lancamentos" | "pedidos_compra" | "registros"
+  tabela: "eventos_chamada" | "horas_lancadas" | "caixa_lancamentos" | "pedidos_compra" | "registros" | "artigos" | "ciclos"
   id: string
   rotulo?: string
   /** Para o leitor de tela saber O QUE vai ser apagado. */
   descricao: string
+  /** Para onde ir depois de apagar (a página do próprio registro deixa de existir). */
+  depois?: string
 }) {
   const router = useRouter()
   const [confirmando, setConfirmando] = useState(false)
@@ -41,7 +44,7 @@ export function BotaoApagar({
     if (error) return setErro(mensagemSegura(error))
     if (!data?.length) return setErro("Nada foi apagado, a política de acesso recusou.")
     setConfirmando(false)
-    iniciar(() => router.refresh())
+    iniciar(() => (depois ? router.push(depois) : router.refresh()))
   }
 
   return (

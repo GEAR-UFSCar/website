@@ -24,6 +24,8 @@ export type ItemAgenda = {
   /** Único na tela: evento e dia entram na chave, porque o mesmo evento repete. */
   id: string
   origem: OrigemItem
+  /** 042: evento de fora (CBR, edital, hackathon). Só eventos têm. */
+  externo?: boolean
   titulo: string
   /** "YYYY-MM-DD" em Brasília — a célula em que o item cai. */
   dia: string

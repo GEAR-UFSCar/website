@@ -253,7 +253,8 @@ export function InventarioLista({
               {visiveis.map((i) => {
                 const aberto = abertos.has(i.id)
                 const idDetalhe = `inv-${i.id}`
-                const onde = [i.localizacao, i.responsavel_atual].filter(Boolean).join(" · ")
+                const atrasado = i.status === "Emprestado" && !!i.devolucao_prevista && i.devolucao_prevista < hojeISO()
+                const onde = [i.localizacao, i.responsavel_atual, i.devolucao_prevista && `${atrasado ? "atrasado, era até" : "até"} ${i.devolucao_prevista.split("-").reverse().join("/")}`].filter(Boolean).join(" · ")
                 return (
                   <Fragment key={i.id}>
                     <tr
@@ -312,7 +313,7 @@ export function InventarioLista({
                       <td
                         role="cell"
                         data-rotulo="Local"
-                        className={`py-3 pr-4 font-mono text-[11px] text-muted-foreground max-lg:order-7 max-lg:col-span-2 max-lg:p-0 max-lg:before:mr-2 max-lg:before:text-[10px] max-lg:before:uppercase max-lg:before:tracking-[0.2em] max-lg:before:content-[attr(data-rotulo)] ${
+                        className={`py-3 pr-4 font-mono text-[11px] ${atrasado ? "text-[var(--gear-amber)]" : "text-muted-foreground"} max-lg:order-7 max-lg:col-span-2 max-lg:p-0 max-lg:before:mr-2 max-lg:before:text-[10px] max-lg:before:uppercase max-lg:before:tracking-[0.2em] max-lg:before:content-[attr(data-rotulo)] ${
                           onde ? "" : "max-lg:hidden"
                         }`}
                       >
@@ -405,6 +406,7 @@ function Detalhe({ item: i, aoEditar, acoes }: { item: ItemInventario; aoEditar?
         </Campo>
         <Campo rotulo="Localização">{i.localizacao ?? "—"}</Campo>
         <Campo rotulo="Responsável atual">{i.responsavel_atual ?? "—"}</Campo>
+        {i.devolucao_prevista && <Campo rotulo="Devolução prevista">{i.devolucao_prevista.split("-").reverse().join("/")}</Campo>}
         {i.datasheet_url && (
           <Campo rotulo="Datasheet">
             {link ? (
