@@ -256,6 +256,38 @@ $$;
 revoke execute on function public.tirar_bloqueio(uuid) from public, anon;
 grant  execute on function public.tirar_bloqueio(uuid) to authenticated, service_role;
 
+-- preparar_tarefa (042) também zera tipo e bloqueio: tarefa nova não nasce
+-- principal, reserva ou bloqueada; isso é pelos botões (assumir, bloquear).
+create or replace function public.preparar_tarefa()
+returns trigger
+language plpgsql
+set search_path = ''
+as $$
+begin
+  if nullif(btrim(coalesce(new.pronto_quando, '')), '') is null then
+    raise exception 'Toda tarefa nasce dizendo quando fica pronta ("Pronto quando…").' using errcode = 'GE010';
+  end if;
+  new.pronto_quando := btrim(new.pronto_quando);
+  if (select auth.uid()) is not null or new.estado = 'Aberta' then
+    new.estado := case when new.responsavel_id is null then 'Aberta' else 'Em andamento' end;
+  end if;
+  if (select auth.uid()) is not null then
+    new.evidencia_url      := null;
+    new.revisor_id         := null;
+    new.rodadas_ajustes    := 0;
+    new.comentario_revisao := null;
+    new.enviada_revisao_em := null;
+    new.concluida_em       := null;
+    new.tipo               := null;
+    new.bloqueada          := false;
+    new.motivo_bloqueio    := null;
+    new.bloqueada_em       := null;
+  end if;
+  return new;
+end;
+$$;
+revoke execute on function public.preparar_tarefa() from public, anon, authenticated;
+
 -- Enviar para revisão (042) também desfaz o bloqueio: se andou até o fim, não está parada.
 create or replace function public.enviar_tarefa_para_revisao(tarefa uuid, evidencia text)
 returns void
@@ -336,6 +368,13 @@ begin
   end if;
   if new.comprovante_url is null and new.comprovante_arquivo is null then
     raise exception 'Anexe o comprovante (link ou arquivo).' using errcode = 'GE022';
+  end if;
+  -- arquivo só vale se for da própria pasta e existir de fato no bucket
+  if new.comprovante_arquivo is not null and (
+       split_part(new.comprovante_arquivo, '/', 1) <> (select auth.uid())::text
+       or not exists (select 1 from storage.objects o
+                       where o.bucket_id = 'comprovantes' and o.name = new.comprovante_arquivo)) then
+    raise exception 'Comprovante não encontrado entre os seus arquivos.' using errcode = 'GE022';
   end if;
   -- até o limite não pede aprovação; acima, espera o financeiro
   new.status := case when new.valor_estimado <= (select limite_gasto from public.parametros) then 'Registrado'

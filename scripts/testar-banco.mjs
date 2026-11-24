@@ -1195,6 +1195,9 @@ checar("ciclo_atual() é o que cobre hoje", (await como(MEMBRO, `select public.c
 
 secao("044. ASSUMIR — um clique, sem aprovação, um único dono, principal e reserva")
 
+const forjada = (await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando, responsavel_id, tipo, bloqueada, motivo_bloqueio) values ('forjada', 'ok', '${MEMBRO}', 'principal', true, 'x') returning tipo, bloqueada`)).rows[0]
+checar("tarefa nova não nasce principal nem bloqueada", forjada?.tipo === null && forjada?.bloqueada === false, JSON.stringify(forjada))
+await db.exec(`delete from public.sprint_tarefas where titulo = 'forjada'`)
 const pautaId = (await como(MEMBRO, `insert into public.sprint_tarefas (titulo, pronto_quando, roteiro, nivel, area) values ('Pauta aberta', 'PR aceito', '1. clone o repo', 'Fundamental', 'ROS 2') returning id`)).rows[0]?.id
 checar("assumir sem dizer principal/reserva é recusado", !(await como(FORA, `select public.assumir_tarefa('${pautaId}', null)`)).ok)
 checar("membro assume a pauta como principal", (await como(FORA, `select public.assumir_tarefa('${pautaId}', 'principal')`)).ok)
@@ -1249,6 +1252,9 @@ checar("gasto aguardando aparece para o financeiro e para quem gastou",
 checar("membro sem cargo não aprova", bloqueado(await como(MEMBRO, `update public.pedidos_compra set status = 'Aprovado' where id = '${g2.rows[0]?.id}' returning 1`)), "APROVOU")
 const aprov = await como(CARGO, `update public.pedidos_compra set status = 'Aprovado' where id = '${g2.rows[0]?.id}' returning decidido_por`)
 checar("financeiro aprova, com decisão carimbada", passa(aprov) && aprov.rows[0].decidido_por === CARGO, aprov.erro)
+checar("comprovante em arquivo que não existe é recusado", (await como(CARGO, `insert into public.pedidos_compra (item, valor_estimado, comprovante_arquivo) values ('x', 10, '${CARGO}/fantasma.pdf') returning 1`)).codigo === "GE022")
+await db.exec(`insert into storage.objects (bucket_id, name) values ('comprovantes', '${CARGO}/nf.pdf'), ('comprovantes', '${MEMBRO}/alheio.pdf')`)
+checar("comprovante em arquivo de outra pessoa é recusado", (await como(CARGO, `insert into public.pedidos_compra (item, valor_estimado, comprovante_arquivo) values ('x', 10, '${MEMBRO}/alheio.pdf') returning 1`)).codigo === "GE022")
 const proprio = (await como(CARGO, `insert into public.pedidos_compra (item, valor_estimado, comprovante_arquivo) values ('Osciloscópio', 900, '${CARGO}/nf.pdf') returning id`)).rows[0]?.id
 checar("ninguém aprova o próprio gasto", (await como(CARGO, `update public.pedidos_compra set status = 'Aprovado' where id = '${proprio}' returning 1`)).codigo === "GE012")
 const gReg = (await tenta(`select id from public.pedidos_compra where item = 'Jumpers'`)).rows[0]?.id
