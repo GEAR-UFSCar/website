@@ -10,6 +10,7 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
+    "dev:banco": "node scripts/dev-banco.mjs",
     "test:rls": "node scripts/testar-rls.mjs",
     "test:banco": "node --no-warnings --experimental-strip-types scripts/testar-banco.mjs",
     "test:nav": "node --no-warnings --experimental-strip-types scripts/testar-navegacao.mjs",
@@ -18,6 +19,9 @@
     "test:calendario": "node --no-warnings --experimental-strip-types scripts/testar-calendario.mjs",
     "test:documentos": "node --no-warnings --experimental-strip-types scripts/testar-documentos.mjs",
     "test:seguranca": "node --no-warnings --experimental-strip-types scripts/testar-seguranca.mjs",
+    "test:alertas": "node --no-warnings --experimental-strip-types scripts/testar-alertas.mjs",
+    "test:revisao": "node --no-warnings --experimental-strip-types scripts/testar-revisao.mjs",
+    "test:tarefas": "node --no-warnings --experimental-strip-types scripts/testar-tarefas.mjs",
     "test:inventario": "node --no-warnings --experimental-strip-types scripts/testar-inventario.mjs",
     "inventario:sql": "node --no-warnings --experimental-strip-types scripts/gerar-sql-inventario.mjs",
     "catalogo:sql": "node --no-warnings --experimental-strip-types scripts/gerar-sql-catalogo.mjs"
@@ -33,6 +37,8 @@
     "next": "^16.4.6",
     "react": "19.3.1",
     "react-dom": "19.3.1",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1",
     "three": "0.187.0"
   },
   "devDependencies": {

@@ -64,7 +64,7 @@ export const LIMITES = {
 export const COLUNAS_ITEM =
   "id, codigo, item, categoria, subcategoria, fabricante, modelo, part_number, descricao, datasheet_url, " +
   "quantidade, valor_estimado, estado, status, observacoes, origem, localizacao, responsavel_atual, frente_vinculada, " +
-  "emprestado_para"
+  "emprestado_para, devolucao_prevista"
 
 export type ItemInventario = {
   id: string
@@ -88,10 +88,12 @@ export type ItemInventario = {
   frente_vinculada: string | null
   /** Quem retirou pelo site (032). Só vale com status "Emprestado". */
   emprestado_para: string | null
+  /** Até quando, carimbado por retirar_item() (043). */
+  devolucao_prevista: string | null
 }
 
 /** O que a importação grava: tudo menos o que o banco decide (id) e o que a planilha não tem (valor). */
-export type ItemParaImportar = Omit<ItemInventario, "id" | "valor_estimado" | "frente_vinculada" | "emprestado_para">
+export type ItemParaImportar = Omit<ItemInventario, "id" | "valor_estimado" | "frente_vinculada" | "emprestado_para" | "devolucao_prevista">
 
 // ---------------------------------------------------------------------------
 // Texto

@@ -49,7 +49,7 @@ function camposIniciais(inicial: EventoCal | undefined, diaPadrao: string) {
     return {
       titulo: "", descricao: "", tipo: TIPOS_EVENTO[0] as string, frente: "", diaInteiro: false,
       diaIni: diaPadrao, horaIni: HORA_PADRAO, diaFim: "", horaFim: "",
-      local: "", link: "", recorrencia: "", ate: "", publico: false,
+      local: "", link: "", recorrencia: "", ate: "", publico: false, escopo: "Interno",
     }
   }
   const ini = partesGear(inicial.data_inicio)
@@ -59,6 +59,7 @@ function camposIniciais(inicial: EventoCal | undefined, diaPadrao: string) {
     titulo: inicial.titulo,
     descricao: inicial.descricao ?? "",
     tipo: inicial.tipo,
+    escopo: inicial.escopo ?? "Interno",
     frente: inicial.frente_vinculada ?? "",
     diaInteiro,
     diaIni: ini.dia,
@@ -153,6 +154,8 @@ export function EventoForm({ usuarioId, estado, diaPadrao, inicial, migrado }: P
 
     // A coluna `publico` só existe com a 038: vai no corpo quando foi marcada ou já veio do banco.
     if (campos.publico || inicial?.publico != null) Object.assign(novos, { publico: campos.publico })
+    // `escopo` só existe com a 042: mesmo cuidado de `publico`.
+    if (campos.escopo === "Externo" || inicial?.escopo != null) Object.assign(novos, { escopo: campos.escopo })
 
     setSalvando(true)
     const supabase = createClient()
@@ -234,6 +237,14 @@ export function EventoForm({ usuarioId, estado, diaPadrao, inicial, migrado }: P
             {TIPOS_EVENTO.map((t) => (
               <option key={t} value={t} className="bg-[var(--gear-ink)]">{t}</option>
             ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="ev-escopo" className={rotuloBase}>Interno ou externo</label>
+          <select id="ev-escopo" value={campos.escopo} onChange={set("escopo")} disabled={salvando} className={campoBase}>
+            <option value="Interno" className="bg-[var(--gear-ink)]">Interno (da GEAR)</option>
+            <option value="Externo" className="bg-[var(--gear-ink)]">Externo (CBR, edital, hackathon…)</option>
           </select>
         </div>
 

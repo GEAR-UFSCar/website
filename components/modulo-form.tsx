@@ -5,14 +5,19 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { NIVEIS_ACADEMIA, type Modulo } from "@/lib/academia"
+import { AREAS_COMPETENCIA, NIVEIS_ACADEMIA, type Modulo } from "@/lib/academia"
 import { campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
 
-const vazio = (proximaOrdem: number) => ({
+const vazio = () => ({
   nivel: NIVEIS_ACADEMIA[0] as string,
-  ordem: String(proximaOrdem),
+  ordem: "",
+  codigo: "",
+  area: "",
+  pontos: "10",
+  criterio_aceite: "",
+  guia_id: "",
   titulo: "",
   descricao: "",
   conteudo_url: "",
@@ -21,10 +26,11 @@ const vazio = (proximaOrdem: number) => ({
 })
 
 /**
- * Sem `modulo` cadastra um novo; com `modulo` corrige aquele.
- * `proximaOrdem` sugere o fim do primeiro nível; a pessoa ajusta.
+ * Competência da Academia (043). Sem `modulo` cadastra uma nova; com `modulo`
+ * corrige aquela. Código e critério de aceite são obrigatórios (GE016); a
+ * ordem, se ficar vazia, o banco põe no fim do nível.
  */
-export function ModuloForm({ modulo, proximaOrdem = 1 }: { modulo?: Modulo; proximaOrdem?: number }) {
+export function ModuloForm({ modulo, guias = [] }: { modulo?: Modulo; guias?: { id: string; titulo: string }[] }) {
   const router = useRouter()
   const encerrar = useEncerrarEdicao()
   const sufixo = modulo?.id ?? "novo"
@@ -33,13 +39,18 @@ export function ModuloForm({ modulo, proximaOrdem = 1 }: { modulo?: Modulo; prox
       ? {
           nivel: modulo.nivel,
           ordem: String(modulo.ordem),
+          codigo: modulo.codigo ?? "",
+          area: modulo.area ?? "",
+          pontos: String(modulo.pontos ?? 0),
+          criterio_aceite: modulo.criterio_aceite ?? "",
+          guia_id: modulo.guia_id ?? "",
           titulo: modulo.titulo,
           descricao: modulo.descricao ?? "",
           conteudo_url: modulo.conteudo_url ?? "",
           prazo_conclusao: modulo.prazo_conclusao ?? "",
           duracao_estimada: modulo.duracao_estimada ? String(modulo.duracao_estimada) : "",
         }
-      : vazio(proximaOrdem),
+      : vazio(),
   )
   const [salvando, setSalvando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -54,7 +65,12 @@ export function ModuloForm({ modulo, proximaOrdem = 1 }: { modulo?: Modulo; prox
 
     const valores = {
       nivel: campos.nivel,
-      ordem: Number(campos.ordem),
+      ...(campos.ordem ? { ordem: Number(campos.ordem) } : {}),
+      codigo: campos.codigo.trim().toUpperCase(),
+      area: campos.area || null,
+      pontos: Number(campos.pontos) || 0,
+      criterio_aceite: campos.criterio_aceite.trim(),
+      guia_id: campos.guia_id || null,
       titulo: campos.titulo.trim(),
       descricao: campos.descricao.trim() || null,
       conteudo_url: campos.conteudo_url.trim() || null,
@@ -70,18 +86,18 @@ export function ModuloForm({ modulo, proximaOrdem = 1 }: { modulo?: Modulo; prox
     setSalvando(false)
     if (error) {
       // a única unicidade de modulos é (nivel, ordem): dizer qual é ajuda mais que a frase genérica
-      return setErro(error.code === "23505" ? `Já existe um módulo ${valores.ordem} no nível ${valores.nivel}.` : mensagemSegura(error))
+      return setErro(error.code === "23505" ? "Já existe uma competência com esse código (ou com essa ordem no nível)." : mensagemSegura(error))
     }
     if (!data?.length) return setErro("Nada foi salvo, a política de acesso recusou.")
 
     if (modulo) encerrar?.()
-    else setCampos(vazio(valores.ordem + 1))
+    else setCampos(vazio())
     router.refresh()
   }
 
   return (
     <form onSubmit={enviar} className="border border-linha p-6 space-y-5">
-      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">{modulo ? "CORRIGINDO MÓDULO" : "NOVO MÓDULO"}</p>
+      <p className="font-mono text-[10px] md:text-[9px] tracking-[0.3em] text-[var(--gear-amber)]">{modulo ? "CORRIGINDO COMPETÊNCIA" : "NOVA COMPETÊNCIA"}</p>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <div>
@@ -92,8 +108,39 @@ export function ModuloForm({ modulo, proximaOrdem = 1 }: { modulo?: Modulo; prox
         </div>
 
         <div>
-          <label htmlFor={`ordem-${sufixo}`} className={rotuloBase}>Ordem no nível</label>
-          <input id={`ordem-${sufixo}`} type="number" min={1} step={1} required value={campos.ordem} onChange={set("ordem")} disabled={salvando} className={campoBase} />
+          <label htmlFor={`codigo-${sufixo}`} className={rotuloBase}>Código (ex.: EMB-01)</label>
+          <input id={`codigo-${sufixo}`} required pattern="[A-Za-z0-9]{2,6}-[0-9]{2,3}" maxLength={10} value={campos.codigo} onChange={set("codigo")} disabled={salvando} className={`${campoBase} font-mono uppercase`} />
+        </div>
+
+        <div>
+          <label htmlFor={`area-${sufixo}`} className={rotuloBase}>Área</label>
+          <select id={`area-${sufixo}`} required value={campos.area} onChange={set("area")} disabled={salvando} className={campoBase}>
+            <option value="" className="bg-[var(--gear-ink)]">Escolha…</option>
+            {AREAS_COMPETENCIA.map((a) => <option key={a} value={a} className="bg-[var(--gear-ink)]">{a}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor={`pontos-${sufixo}`} className={rotuloBase}>Pontos</label>
+          <input id={`pontos-${sufixo}`} type="number" min={0} max={1000} step={1} required value={campos.pontos} onChange={set("pontos")} disabled={salvando} className={`${campoBase} font-mono`} />
+        </div>
+
+        <div className="md:col-span-2">
+          <label htmlFor={`criterio-${sufixo}`} className={rotuloBase}>Critério de aceite (o que a evidência precisa mostrar)</label>
+          <textarea id={`criterio-${sufixo}`} required rows={3} maxLength={2000} value={campos.criterio_aceite} onChange={set("criterio_aceite")} disabled={salvando} className={`${campoBase} resize-y`} />
+        </div>
+
+        <div>
+          <label htmlFor={`guia-${sufixo}`} className={rotuloBase}>Guia na base de conhecimento</label>
+          <select id={`guia-${sufixo}`} value={campos.guia_id} onChange={set("guia_id")} disabled={salvando} className={campoBase}>
+            <option value="" className="bg-[var(--gear-ink)]">Sem guia</option>
+            {guias.map((g) => <option key={g.id} value={g.id} className="bg-[var(--gear-ink)]">{g.titulo}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor={`ordem-${sufixo}`} className={rotuloBase}>Ordem no nível (opcional)</label>
+          <input id={`ordem-${sufixo}`} type="number" min={1} step={1} value={campos.ordem} onChange={set("ordem")} disabled={salvando} className={campoBase} />
         </div>
 
         <div className="md:col-span-2">
@@ -130,7 +177,7 @@ export function ModuloForm({ modulo, proximaOrdem = 1 }: { modulo?: Modulo; prox
 
       <button type="submit" disabled={salvando} data-cursor-hover
         className="border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50">
-        {salvando ? "Salvando…" : modulo ? "Salvar correção" : "Cadastrar módulo"}
+        {salvando ? "Salvando…" : modulo ? "Salvar correção" : "Cadastrar competência"}
       </button>
     </form>
   )

@@ -44,13 +44,16 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      - name: Regras puras (navegação, hoje, calendário, documentos, inventário)
+      - name: Regras puras (navegação, hoje, calendário, documentos, inventário, tarefas, revisão, alertas)
         run: |
           npm run test:nav
           npm run test:hoje
           npm run test:calendario
           npm run test:documentos
           npm run test:inventario
+          npm run test:tarefas
+          npm run test:revisao
+          npm run test:alertas
 
       # Aplica supabase/001…NNN num Postgres em memória e ataca o resultado com
       # os papéis reais (anon, authenticated, supabase_auth_admin). É o que pega

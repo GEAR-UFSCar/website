@@ -5,12 +5,14 @@ import { SprintProgresso } from "@/components/sprint-progresso"
 import { SprintProximoPasso } from "@/components/sprint-proximo-passo"
 import { SprintDiario } from "@/components/sprint-diario"
 import { SprintTarefas } from "@/components/sprint-tarefas"
+import { SprintInterfaces } from "@/components/sprint-interfaces"
 import { SprintForm } from "@/components/sprint-form"
 import { RegistroEditavel } from "@/components/membros/registro-editavel"
 import type { FrenteNome } from "@/lib/administracao"
 import { iniciais } from "@/lib/administracao"
 import { dataLonga } from "@/lib/datas"
 import { aparenciaDoStatus, type Atualizacao, type PessoaResumo, type Sprint } from "@/lib/sprints"
+import type { QuemVe } from "@/lib/tarefas"
 
 type Props = {
   sprint: Sprint
@@ -20,6 +22,8 @@ type Props = {
   /** Membro aprovado da trilha desta página; espelha participa_do_sprint() (040). */
   daTrilha: boolean
   usuarioId: string
+  /** Quem vê, para os botões de fluxo das tarefas (042). */
+  quem: QuemVe
   /** Responsáveis possíveis, para o formulário de edição. */
   pessoas: NonNullable<PessoaResumo>[]
 }
@@ -42,7 +46,7 @@ const dataSimples = (iso: string) => {
  * navegador, então os cartões que ele monta e desmonta também. Os dados já
  * vieram prontos do servidor; aqui não há consulta nenhuma até alguém editar.
  */
-export function SprintCartao({ sprint, atualizacoes, podeEscrever, daTrilha, usuarioId, pessoas }: Props) {
+export function SprintCartao({ sprint, atualizacoes, podeEscrever, daTrilha, usuarioId, quem, pessoas }: Props) {
   /*
    * Participar (040): quem edita o sprint, quem é da trilha e o responsável
    * escrevem diário, tarefa e andamento. Sprint concluído fica parado para
@@ -172,11 +176,17 @@ export function SprintCartao({ sprint, atualizacoes, podeEscrever, daTrilha, usu
         />
       )}
 
+      <SprintInterfaces
+        key={sprint.documento_interfaces ?? ""}
+        id={sprint.id}
+        valor={sprint.documento_interfaces}
+        podeEditar={mexeNoAndamento}
+      />
+
       <SprintTarefas
         sprintId={sprint.id}
-        podeEscrever={podeEscrever}
         podeCriar={podeParticipar}
-        usuarioId={usuarioId}
+        quem={quem}
         pessoas={pessoas}
       />
 

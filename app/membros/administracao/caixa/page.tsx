@@ -40,7 +40,7 @@ export default async function CaixaPage() {
 
   const [lancR, pedidosR] = await Promise.all([
     supabase.from("caixa_lancamentos").select("id, data, tipo, valor, descricao, categoria, comprovante_url").order("data", { ascending: false }),
-    supabase.from("pedidos_compra").select(COLUNAS_PEDIDO).in("status", ["Pendente", "Aprovado"]).order("created_at"),
+    supabase.from("pedidos_compra").select(COLUNAS_PEDIDO).in("status", ["Aguardando aprovação", "Aprovado"]).order("created_at"),
   ])
   const erro = lancR.error ?? pedidosR.error
   const lancamentos = (lancR.data ?? []) as Lancamento[]
