@@ -9,14 +9,15 @@ export type Alerta = {
   detalhe: string | null
   href: string
   pessoa_id: string | null
-  grupo: "revisores" | "financeiro" | null
+  grupo: "revisores" | "financeiro" | "diretoria" | null
   desde: string | null
 }
 
 /** Os que envolvem quem vê: é a pessoa, ou está no grupo que deve agir. */
-export function alertasDe(lista: Alerta[], q: { usuarioId: string; revisor: boolean; financeiro: boolean }) {
+export function alertasDe(lista: Alerta[], q: { usuarioId: string; revisor: boolean; financeiro: boolean; diretoria: boolean }) {
   return lista.filter(
-    (a) => a.pessoa_id === q.usuarioId || (a.grupo === "revisores" && q.revisor) || (a.grupo === "financeiro" && q.financeiro),
+    (a) => a.pessoa_id === q.usuarioId || (a.grupo === "revisores" && q.revisor) || (a.grupo === "financeiro" && q.financeiro) ||
+      (a.grupo === "diretoria" && q.diretoria),
   )
 }
 
