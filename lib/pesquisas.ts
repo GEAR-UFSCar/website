@@ -37,7 +37,7 @@ export const MODELOS_PESQUISA: readonly ModeloPesquisa[] = [
       { id: "atrapalha", texto: "O que mais atrapalha o seu trabalho ou a sua experiência?", tipo: "aberta" },
       { id: "mudaria", texto: "Se pudesse mudar uma coisa, qual seria?", tipo: "aberta" },
       { id: "contar", texto: "Há algo que você gostaria de contar, e não sabe a quem?", tipo: "aberta" },
-      { id: "trilha", texto: "Trilha principal (opcional)", tipo: "opcao", opcoes: ["Academia", "Pesquisa", "Competição", "Desenvolvimento e Projetos", "Extensão"] },
+      { id: "trilha", texto: "Trilha principal (opcional)", tipo: "opcao", opcoes: ["Academia", "Pesquisa", "Competição", "Projetos"] },
       { id: "tempo", texto: "Tempo no Grupo (opcional)", tipo: "opcao", opcoes: ["Até 3 meses", "3 a 6 meses", "Mais de 6 meses"] },
     ],
   },

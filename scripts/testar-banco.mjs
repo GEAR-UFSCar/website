@@ -237,7 +237,7 @@ for (const [id, email] of [
 }
 await db.exec(`
   update public.perfis set nome_completo='Presidente', aprovado=true, cargo='Presidente' where id='${P}';
-  update public.perfis set nome_completo='Tesouraria', aprovado=true, cargo='Tesouraria', frente='Desenvolvimento e Projetos' where id='${CARGO}';
+  update public.perfis set nome_completo='Tesouraria', aprovado=true, cargo='Tesouraria', frente='Projetos' where id='${CARGO}';
   update public.perfis set nome_completo='Membro', aprovado=true where id='${MEMBRO}';
   update public.perfis set nome_completo='Novo' where id='${NOVO}';
   update public.perfis set nome_completo='Dir Pesquisa', aprovado=true, cargo='Diretor de Pesquisa', frente='Pesquisa' where id='${PESQ}';
@@ -892,7 +892,7 @@ await db.exec(`
   update public.perfis set frente='Pesquisa' where id='${MEMBRO}';
 `)
 const sp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','Sprint 038','x','Planejado') returning id`)).rows[0].id
-const spResp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status, responsavel_id) values ('Desenvolvimento e Projetos','Sprint com responsável','x','Planejado','${FORA}') returning id`)).rows[0].id
+const spResp = (await tenta(`insert into public.sprints (frente, titulo, descricao, status, responsavel_id) values ('Projetos','Sprint com responsável','x','Planejado','${FORA}') returning id`)).rows[0].id
 
 const diario = await como(MEMBRO, `insert into public.sprint_atualizacoes (sprint_id, texto) values ('${sp}','fiz o teste') returning autor_id`)
 checar("membro da trilha escreve no diário, assinado por ele", passa(diario) && diario.rows[0].autor_id === MEMBRO, diario.erro)
@@ -906,7 +906,7 @@ checar("membro da trilha marca bloqueado", passa(await como(MEMBRO, `update publ
 for (const [rotulo, set] of [
   ["o título", `titulo = 'tomado'`],
   ["o responsável", `responsavel_id = '${MEMBRO}'`],
-  ["a trilha", `frente = 'Desenvolvimento e Projetos'`],
+  ["a trilha", `frente = 'Projetos'`],
   ["as datas", `data_fim = current_date`],
 ]) {
   const r = await como(MEMBRO, `update public.sprints set ${set} where id = '${sp}' returning 1`)
@@ -946,13 +946,13 @@ secao("041. TRILHA PELO CARGO — diretor e vice ganham a frente do cargo")
 const DIR41 = "41414141-4141-4141-8141-414141414141" // vira Diretor de Projetos sem frente
 await db.exec(`insert into auth.users (id, email) values ('${DIR41}', 'dir@estudante.ufscar.br')`)
 await db.exec(`update public.perfis set nome_completo='Dir', aprovado=true, frente=null where id='${DIR41}'`)
-const virouDiretor = await como(P, `update public.perfis set cargo = 'Diretor de Desenvolvimento e Projetos' where id = '${DIR41}' returning frente`)
-checar("Presidente dá cargo de diretor e a frente vem junto", passa(virouDiretor) && virouDiretor.rows[0]?.frente === "Desenvolvimento e Projetos", virouDiretor.erro ?? JSON.stringify(virouDiretor.rows))
-const spDir = await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Desenvolvimento e Projetos','Sprint do diretor','x','Planejado') returning id`)
+const virouDiretor = await como(P, `update public.perfis set cargo = 'Diretor de Projetos' where id = '${DIR41}' returning frente`)
+checar("Presidente dá cargo de diretor e a frente vem junto", passa(virouDiretor) && virouDiretor.rows[0]?.frente === "Projetos", virouDiretor.erro ?? JSON.stringify(virouDiretor.rows))
+const spDir = await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','Sprint do diretor','x','Planejado') returning id`)
 checar("diretor cria sprint na própria trilha sem ninguém preencher a frente", passa(spDir), spDir.erro)
 checar("diretor continua sem criar sprint em outra trilha", bloqueado(await como(DIR41, `insert into public.sprints (frente, titulo, descricao, status) values ('Pesquisa','intruso','x','Planejado') returning id`)), "CRIOU")
 const tentaTrocar = await como(P, `update public.perfis set frente = 'Pesquisa' where id = '${DIR41}' returning frente`)
-checar("frente de diretor não diverge do cargo", passa(tentaTrocar) && tentaTrocar.rows[0]?.frente === "Desenvolvimento e Projetos", tentaTrocar.erro ?? JSON.stringify(tentaTrocar.rows))
+checar("frente de diretor não diverge do cargo", passa(tentaTrocar) && tentaTrocar.rows[0]?.frente === "Projetos", tentaTrocar.erro ?? JSON.stringify(tentaTrocar.rows))
 const vice = await como(P, `update public.perfis set cargo = 'Vice-diretor de Competição' where id = '${DIR41}' returning frente`)
 checar("vice-diretor também carrega a trilha", passa(vice) && vice.rows[0]?.frente === "Competição", vice.erro)
 const outro = await como(P, `update public.perfis set cargo = 'Marketing' where id = '${DIR41}' returning frente`)
@@ -997,6 +997,25 @@ secao("042. QUATRO TRILHAS — Projetos vira Desenvolvimento e Projetos sem perd
   checar("o nome antigo deixa de ser aceito", !(await tentaEm(antigo, `insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','x','x','Planejado')`)).ok)
   checar("Extensão passa a ser aceita", (await tentaEm(antigo, `insert into public.sprints (frente, titulo, descricao, status) values ('Extensão','x','x','Planejado')`)).ok)
   checar("Diretor de Extensão vira cargo válido e carrega a trilha", (await tentaEm(antigo, `update public.perfis set cargo = 'Diretor de Extensão' where id = '${ANT}' returning frente`)).rows[0]?.frente === "Extensão")
+
+  // 045: volta para três trilhas
+  const m45 = readFileSync(path.join(DIR, arquivos.find((f) => f.startsWith("045"))), "utf8")
+  let recusa = ""
+  try { await antigo.exec(m45) } catch (e) { recusa = String(e.message) }
+  checar("a 045 para sem mexer em nada se alguém já usa Extensão", recusa.includes("Extensão"), recusa || "APLICOU")
+  await antigo.exec(`
+    delete from public.sprints where frente = 'Extensão';
+    update public.perfis set cargo = 'Vice-diretor de Desenvolvimento e Projetos' where id = '${ANT}';
+  `)
+  let erro45 = ""
+  try { await antigo.exec(m45); await antigo.exec(m45) } catch (e) { erro45 = String(e.message).split("\n")[0] }
+  checar("a 045 aplica (duas vezes) depois da 042", erro45 === "", erro45)
+  const p45 = (await antigo.query(`select cargo, frente from public.perfis where id = '${ANT}'`)).rows[0]
+  checar("cargo e frente voltam para Projetos", p45?.cargo === "Vice-diretor de Projetos" && p45?.frente === "Projetos", JSON.stringify(p45))
+  checar("sprints voltam para Projetos", (await antigo.query(`select count(*)::int n from public.sprints where frente <> 'Projetos'`)).rows[0]?.n === 0)
+  checar("Extensão deixa de ser aceita", !(await tentaEm(antigo, `insert into public.sprints (frente, titulo, descricao, status) values ('Extensão','x','x','Planejado')`)).ok)
+  checar("Projetos volta a ser aceito", (await tentaEm(antigo, `insert into public.sprints (frente, titulo, descricao, status) values ('Projetos','x','x','Planejado')`)).ok)
+  checar("página 00 lista três trilhas", (await antigo.query(`select conteudo from public.artigos where slug = 'como-funciona'`)).rows[0]?.conteudo.includes("Competições, Pesquisa ou Projetos"))
   await antigo.close()
 }
 
