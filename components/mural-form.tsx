@@ -5,7 +5,7 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { campoBase, rotuloBase } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
 
@@ -127,7 +127,7 @@ export function MuralForm({ usuarioId, aviso }: { usuarioId: string; aviso?: Avi
         type="submit"
         disabled={salvando}
         data-cursor-hover
-        className="border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50"
+        className={botaoEnviar}
       >
         {salvando ? "Salvando…" : aviso ? "Salvar" : "Publicar aviso"}
       </button>

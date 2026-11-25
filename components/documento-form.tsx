@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { CATEGORIAS, TIPOS_ACEITOS, eExterno, enviarArquivo, validarArquivo, type Documento } from "@/lib/documentos"
-import { campoBase, rotuloBase, botaoDesabilitavel } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
 
@@ -297,7 +297,7 @@ export function DocumentoForm({ documento }: { documento?: Documento } = {}) {
         type="submit"
         disabled={salvando}
         data-cursor-hover
-        className={`border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] ${botaoDesabilitavel}`}
+        className={botaoEnviar}
       >
         {salvando ? "Salvando…" : documento ? "Salvar" : "Cadastrar documento"}
       </button>

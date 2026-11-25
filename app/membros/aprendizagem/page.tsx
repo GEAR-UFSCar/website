@@ -14,7 +14,7 @@ import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
-  title: "01 · Academia GEAR | GEAR",
+  title: "Academia GEAR | GEAR",
   robots: { index: false, follow: false },
 }
 
@@ -61,7 +61,7 @@ export default async function AcademiaPage() {
 
   return (
     <section className={paginaMembros}>
-      <PageHeader titulo="01 · Academia GEAR">
+      <PageHeader titulo="Academia GEAR">
         Escolha uma competência, siga as lições e comprove com uma evidência. Pontos só contam quando uma pessoa
         revisora (formação Principal ou Avançada) aprova, e são eles que embasam a Avaliação Técnica antes da
         escolha de trilha.

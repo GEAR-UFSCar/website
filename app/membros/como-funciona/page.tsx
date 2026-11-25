@@ -11,7 +11,7 @@ import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
-  title: "00 · Como funciona a GEAR | GEAR",
+  title: "Como funciona a GEAR | GEAR",
   robots: { index: false, follow: false },
 }
 
@@ -27,7 +27,7 @@ export default async function ComoFuncionaPage() {
 
   return (
     <section className={paginaMembros}>
-      <PageHeader titulo={`00 · ${data?.titulo ?? "Como funciona a GEAR"}`}>
+      <PageHeader titulo={data?.titulo ?? "Como funciona a GEAR"}>
         {data ? `Atualizada em ${dataLonga(data.updated_at)}.` : "As regras do grupo."}
       </PageHeader>
       {error || !data ? (

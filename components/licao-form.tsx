@@ -8,7 +8,7 @@ import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
 import { escreverQuiz, lerQuiz, TIPOS_LICAO, type Licao, type TipoLicao } from "@/lib/academia"
 import { mensagemSegura } from "@/lib/erros"
 import { createClient } from "@/lib/supabase/client"
-import { campoBase, rotuloBase } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 
 const NOME_TIPO: Record<TipoLicao, string> = { texto: "Texto", video: "Vídeo", quiz: "Quiz" }
 
@@ -122,7 +122,7 @@ export function LicaoForm({ moduloId, licao, proximaOrdem = 1 }: { moduloId: str
       {erro && <p role="alert" className="border border-[var(--gear-amber)] p-3 font-sans text-sm font-light">{erro}</p>}
 
       <button type="submit" disabled={salvando} data-cursor-hover
-        className="border border-[var(--gear-amber)] px-8 py-3 font-mono text-sm uppercase tracking-widest text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50">
+        className={botaoEnviar}>
         {salvando ? "Salvando…" : licao ? "Salvar correção" : "Adicionar lição"}
       </button>
     </form>

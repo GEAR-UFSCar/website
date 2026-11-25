@@ -98,7 +98,7 @@ export default async function HorasGestaoPage() {
     <section className={paginaMembros}>
       <PageHeader titulo="Horas e presença">
         Faça a chamada das reuniões e eventos e lance horas fora deles. Cada membro vê as próprias horas e gera a
-        declaração em Minha frente › Horas.
+        declaração em Projetos › Horas.
       </PageHeader>
 
       {erro ? (

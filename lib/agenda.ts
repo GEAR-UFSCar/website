@@ -10,7 +10,6 @@
  * "Chave de mês" segue a mesma ideia: "YYYY-MM".
  */
 
-import { diaGear } from "@/lib/datas"
 import { MESES, diaPorExtenso as diaPorExtensoGear, type RespostaPresenca } from "@/lib/calendario"
 
 export type OrigemItem = "evento" | "meta" | "sprint" | "modulo"
@@ -77,12 +76,6 @@ export function dataDaChave(chave: string) {
   const [ano, mes, dia] = chave.slice(0, 10).split("-").map(Number)
   return new Date(ano, mes - 1, dia)
 }
-
-/**
- * Timestamp do Postgres → chave de dia em Brasília. NÃO no fuso do servidor:
- * na Vercel ele é UTC, e um evento das 22h cairia na célula do dia seguinte.
- */
-export const chaveDoTimestamp = (iso: string) => diaGear(iso)
 
 /** "YYYY-MM" válido, ou o mês de `alternativa` quando vier lixo pela URL. */
 export function chaveDeMesValida(bruta: string | undefined, alternativa: string) {
