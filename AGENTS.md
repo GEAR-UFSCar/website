@@ -15,6 +15,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Tipografia: Chakra Petch (títulos e texto, com itálico nas chamadas editoriais) + Space Mono (labels/dados técnicos) — carregadas em `app/layout.tsx`.
 - Direção estética: brutalista dark + editorial cinematográfico, baseado no template "Brutalist Void Portfolio" (Next.js + Framer Motion + Three.js)
 - Stack: Next.js, Tailwind, Supabase (auth/DB), Vercel (deploy)
-- 4 trilhas na área de membros (042): Competição, Pesquisa, Desenvolvimento e Projetos, Extensão. O site público ainda fala em três (Competição, Pesquisa, Projetos) até alguém pedir para mudar.
+- 3 trilhas em todo o site: Competição, Pesquisa, Projetos. A 042 tinha renomeado Projetos e criado Extensão; a 045 desfez isso a pedido (25/11/2026). Não reintroduzir sem pedido.
 - Nunca usar linguagem corporativa genérica; manter tom direto e honesto até sobre limitações técnicas
 - Referência visual completa: `GEAR_identidade.html`

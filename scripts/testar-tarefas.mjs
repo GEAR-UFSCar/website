@@ -29,7 +29,7 @@ assert.equal(podeEditarTarefa(doProjeto, membro(ANA)), false)
 assert.equal(podeEditarTarefa(doProjeto, membro(BIA)), true)
 assert.equal(podeEditarTarefa(doProjeto, membro(ANA, { cargo: "Presidente" })), true)
 assert.equal(podeEditarTarefa(doProjeto, membro(ANA, { cargo: "Diretor de Pesquisa", frente: "Pesquisa" })), true)
-assert.equal(podeEditarTarefa(doProjeto, membro(ANA, { cargo: "Diretor de Extensão", frente: "Extensão" })), false)
+assert.equal(podeEditarTarefa(doProjeto, membro(ANA, { cargo: "Diretor de Competição", frente: "Competição" })), false)
 assert.equal(podeEditarTarefa(tarefa({ criado_por: BIA }), membro(ANA, { cargo: "Marketing" })), false)
 
 // revisor: aprovado, ativo, Principal ou Avançada

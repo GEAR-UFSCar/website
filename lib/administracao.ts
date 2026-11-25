@@ -20,8 +20,8 @@ export const STATUS_SPRINT = ["Planejado", "Em andamento", "Bloqueado", "Conclu�
 
 export type StatusSprint = (typeof STATUS_SPRINT)[number]
 
-/** Valores aceitos pelo CHECK da coluna `frente` (quatro trilhas desde a 042); vazio vira null. */
-export const FRENTES = ["Competição", "Pesquisa", "Desenvolvimento e Projetos", "Extensão"] as const
+/** Valores aceitos pelo CHECK da coluna `frente` (três trilhas; a 045 desfez a quarta); vazio vira null. */
+export const FRENTES = ["Competição", "Pesquisa", "Projetos"] as const
 
 /**
  * Frentes e suas rotas. O slug é o da URL (sem acento nem cedilha); o nome é
@@ -31,8 +31,7 @@ export const FRENTES = ["Competição", "Pesquisa", "Desenvolvimento e Projetos"
 export const FRENTES_ROTAS = [
   { slug: "competicao", nome: "Competição" },
   { slug: "pesquisa", nome: "Pesquisa" },
-  { slug: "projetos", nome: "Desenvolvimento e Projetos" },
-  { slug: "extensao", nome: "Extensão" },
+  { slug: "projetos", nome: "Projetos" },
 ] as const
 
 export type FrenteNome = (typeof FRENTES_ROTAS)[number]["nome"]
@@ -108,13 +107,11 @@ export const CARGOS = [
   "Vice-Presidente",
   "Diretor de Competição",
   "Diretor de Pesquisa",
-  "Diretor de Desenvolvimento e Projetos",
-  "Diretor de Extensão",
+  "Diretor de Projetos",
   // vices das trilhas, definidos pela Presidência em nov/2026 (036)
   "Vice-diretor de Competição",
   "Vice-diretor de Pesquisa",
-  "Vice-diretor de Desenvolvimento e Projetos",
-  "Vice-diretor de Extensão",
+  "Vice-diretor de Projetos",
   "Tesouraria",
   "Comunicação",
   // áreas da Diretoria no Regimento (art. 20), somadas às que já existiam (035)

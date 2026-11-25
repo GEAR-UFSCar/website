@@ -41,7 +41,7 @@ export const GRUPOS_FORMULARIO = [
 ] as const
 export type Grupo = (typeof GRUPOS_FORMULARIO)[number]
 
-const TRILHAS = ["Academia", "Pesquisa", "Competição", "Desenvolvimento e Projetos", "Extensão"] as const
+const TRILHAS = ["Academia", "Pesquisa", "Competição", "Projetos"] as const
 const ORIENTADOR = "Professor orientador (ciência)"
 
 export const MODELOS: readonly Modelo[] = [
@@ -107,7 +107,7 @@ export const MODELOS: readonly Modelo[] = [
     descricao:
       "Pedido de fora do GEAR, registrado antes de aceitar. Em tecnologia assistiva, identifique o caso por código e colete só o necessário: esta ficha é restrita.",
     visibilidade: "restrito",
-    aprovacao: "Presidência e diretor de Desenvolvimento e Projetos",
+    aprovacao: "Presidência e diretor de Projetos",
     assinaturas: ["Responsável do projeto", "Presidência"],
     secoes: [
       {

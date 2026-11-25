@@ -23,8 +23,7 @@ export const metadata: Metadata = {
 const GRUPOS = [
   { chave: "Competição", rotulo: "Competição" },
   { chave: "Pesquisa", rotulo: "Pesquisa" },
-  { chave: "Desenvolvimento e Projetos", rotulo: "Desenvolvimento e Projetos" },
-  { chave: "Extensão", rotulo: "Extensão" },
+  { chave: "Projetos", rotulo: "Projetos" },
   { chave: "Diretoria", rotulo: "Diretoria" },
   { chave: "Em formação", rotulo: "Em formação" },
 ] as const
