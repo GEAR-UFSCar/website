@@ -62,6 +62,7 @@ a anterior não rodou.
 | 044 | `organizacao_fase3.sql` | **Ciclos** (`ciclos`, `ciclo_atual()`; meta de pontos só da Academia). Tarefa ganha **principal/reserva** (uma de cada por pessoa, índice único), **bloqueio** com motivo e data, roteiro, nível, área e ciclo; `assumir_tarefa()` em um clique, sem aprovação, recusando com o nome do dono (GE018) ou se já tem principal/reserva (GE019); `definir_tipo_tarefa()`, `marcar_bloqueio()` (GE020), `tirar_bloqueio()`. **Gastos**: `pedidos_compra` com `data_gasto` e comprovante (link ou arquivo no bucket privado `comprovantes`, GE022); até `parametros.limite_gasto` (R$ 50) nasce Registrado, acima Aguardando aprovação ("Pendente" vira isso); ninguém aprova o próprio; todo membro lê. View **`alertas`** (security_invoker). Os cinco artigos-modelo da base de conhecimento. Não apaga dado | 043 |
 | 045 | `tres_trilhas.sql` | **volta para três trilhas**: desfaz a parte 1 da 042 (`Desenvolvimento e Projetos` → `Projetos`, sem `Extensão`); para sem mexer se já houver dado em Extensão |
 | 046 | `avisos_de_partida.sql` | alertas `sem_revisor` e `sem_ciclo` para a diretoria; `modulos` e `sprint_tarefas` respondem 42501 a visitante antes de validar |
+| 047 | `licoes.sql` | **Lições** dentro da competência (`licoes`: texto em markdown, vídeo, quiz em jsonb; membro lê, cargo escreve) e **`licoes_feitas`** (cada um marca/desmarca a sua, sem reescrever a data; cargo lê todas). `modulos.requisito_id`: competência recomendada antes, sem trava. Não apaga dado | 046 |
 
 Duas armadilhas conhecidas:
 

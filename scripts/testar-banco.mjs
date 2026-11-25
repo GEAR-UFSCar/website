@@ -139,7 +139,7 @@ checar(
 )
 
 // Reexecutar é prometido nos cabeçalhos; para as três mais recentes, é testado.
-for (const prefixo of ["027", "028", "029", "038"]) {
+for (const prefixo of ["027", "028", "029", "038", "047"]) {
   const arquivo = arquivos.find((f) => f.startsWith(prefixo))
   if (!arquivo || sem.has(prefixo)) continue
   let erro = ""
@@ -1277,6 +1277,38 @@ const anonMod = await anon(`insert into public.modulos (titulo) values ('x') ret
 checar("visitante que escreve em modulos recebe 42501 (não erro de validação)", !anonMod.ok && anonMod.codigo === "42501", anonMod.codigo ?? "GRAVOU")
 const anonTar = await anon(`insert into public.sprint_tarefas (titulo) values ('x') returning 1`)
 checar("visitante que escreve em sprint_tarefas recebe 42501", !anonTar.ok && anonTar.codigo === "42501", anonTar.codigo ?? "GRAVOU")
+
+secao("047. LIÇÕES — conteúdo dentro da competência, progresso de cada um")
+
+const modL = (await db.query(`select id from public.modulos where codigo is not null order by codigo limit 1`)).rows[0].id
+const novaLicao = (uid, extra = "") =>
+  como(uid, `insert into public.licoes (modulo_id, titulo, tipo, corpo${extra ? ", " + extra.split("=")[0] : ""}) values ('${modL}', 'Lição', ${extra.includes("tipo") ? "'quiz'" : "'texto'"}, 'oi'${extra ? ", " + extra.split("=").slice(1).join("=") : ""}) returning id`)
+checar("membro sem cargo não cria lição", bloqueado(await novaLicao(MEMBRO)))
+const li = await novaLicao(P)
+checar("cargo cria lição de texto", passa(li), li.erro)
+const L = li.rows[0]?.id
+checar("membro aprovado lê a lição", passa(await como(MEMBRO, `select 1 from public.licoes where id = '${L}'`)))
+checar("não aprovado não lê a lição", bloqueado(await como(NOVO, `select 1 from public.licoes where id = '${L}'`)))
+checar("visitante não lê a lição", bloqueado(await anon(`select 1 from public.licoes`)))
+const vidSem = await como(P, `insert into public.licoes (modulo_id, titulo, tipo) values ('${modL}', 'V', 'video') returning 1`)
+checar("vídeo sem link é recusado", !vidSem.ok, "GRAVOU")
+const quizVazio = await como(P, `insert into public.licoes (modulo_id, titulo, tipo) values ('${modL}', 'Q', 'quiz') returning 1`)
+checar("quiz sem questão é recusado", !quizVazio.ok, "GRAVOU")
+const vidHttp = await como(P, `insert into public.licoes (modulo_id, titulo, tipo, video_url) values ('${modL}', 'V', 'video', 'javascript:alert(1)') returning 1`)
+checar("link de vídeo que não é https é recusado", !vidHttp.ok, "GRAVOU")
+
+const marca = await como(MEMBRO, `insert into public.licoes_feitas (licao_id) values ('${L}') returning usuario_id`)
+checar("membro marca lição feita (vira dele)", passa(marca) && marca.rows[0].usuario_id === MEMBRO, marca.erro)
+checar("não marca em nome de outra pessoa", bloqueado(await como(MEMBRO, `insert into public.licoes_feitas (usuario_id, licao_id) values ('${CARGO}', '${L}') returning 1`)))
+checar("não aprovado não marca", bloqueado(await como(NOVO, `insert into public.licoes_feitas (licao_id) values ('${L}') returning 1`)))
+checar("ninguém reescreve a data de conclusão", !(await como(MEMBRO, `update public.licoes_feitas set feita_em = now() - interval '9 days' returning 1`)).ok)
+checar("outro membro não vê as lições feitas dele", bloqueado(await como(FORA, `select 1 from public.licoes_feitas where usuario_id = '${MEMBRO}'`)))
+checar("cargo vê as lições feitas de todos", passa(await como(P, `select 1 from public.licoes_feitas where usuario_id = '${MEMBRO}'`)))
+checar("visitante não marca lição", !(await anon(`insert into public.licoes_feitas (usuario_id, licao_id) values ('${MEMBRO}', '${L}')`)).ok)
+checar("membro desmarca a própria", passa(await como(MEMBRO, `delete from public.licoes_feitas where licao_id = '${L}' returning 1`)))
+
+const req = await como(P, `update public.modulos set requisito_id = id where id = '${modL}' returning 1`)
+checar("competência não é requisito de si mesma", !req.ok, "GRAVOU")
 
 secao("044. GASTOS — abaixo do limite registra direto, acima espera aprovação")
 

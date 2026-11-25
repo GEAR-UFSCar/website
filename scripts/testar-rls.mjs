@@ -107,6 +107,9 @@ const TABELAS = [
   // 037–038
   "lista_de_espera",
   "ciclos_selecao",
+  // 047
+  "licoes",
+  "licoes_feitas",
 ]
 
 /** Predicados de autorização — não deveriam ser chamáveis sem sessão (SEC-07). */

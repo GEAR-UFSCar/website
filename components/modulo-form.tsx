@@ -18,6 +18,7 @@ const vazio = () => ({
   pontos: "10",
   criterio_aceite: "",
   guia_id: "",
+  requisito_id: "",
   titulo: "",
   descricao: "",
   conteudo_url: "",
@@ -30,7 +31,7 @@ const vazio = () => ({
  * corrige aquela. Código e critério de aceite são obrigatórios (GE016); a
  * ordem, se ficar vazia, o banco põe no fim do nível.
  */
-export function ModuloForm({ modulo, guias = [] }: { modulo?: Modulo; guias?: { id: string; titulo: string }[] }) {
+export function ModuloForm({ modulo, guias = [], competencias = [] }: { modulo?: Modulo; guias?: { id: string; titulo: string }[]; competencias?: Pick<Modulo, "id" | "codigo" | "titulo">[] }) {
   const router = useRouter()
   const encerrar = useEncerrarEdicao()
   const sufixo = modulo?.id ?? "novo"
@@ -44,6 +45,7 @@ export function ModuloForm({ modulo, guias = [] }: { modulo?: Modulo; guias?: { 
           pontos: String(modulo.pontos ?? 0),
           criterio_aceite: modulo.criterio_aceite ?? "",
           guia_id: modulo.guia_id ?? "",
+          requisito_id: modulo.requisito_id ?? "",
           titulo: modulo.titulo,
           descricao: modulo.descricao ?? "",
           conteudo_url: modulo.conteudo_url ?? "",
@@ -71,6 +73,7 @@ export function ModuloForm({ modulo, guias = [] }: { modulo?: Modulo; guias?: { 
       pontos: Number(campos.pontos) || 0,
       criterio_aceite: campos.criterio_aceite.trim(),
       guia_id: campos.guia_id || null,
+      requisito_id: campos.requisito_id || null,
       titulo: campos.titulo.trim(),
       descricao: campos.descricao.trim() || null,
       conteudo_url: campos.conteudo_url.trim() || null,
@@ -135,6 +138,16 @@ export function ModuloForm({ modulo, guias = [] }: { modulo?: Modulo; guias?: { 
           <select id={`guia-${sufixo}`} value={campos.guia_id} onChange={set("guia_id")} disabled={salvando} className={campoBase}>
             <option value="" className="bg-[var(--gear-ink)]">Sem guia</option>
             {guias.map((g) => <option key={g.id} value={g.id} className="bg-[var(--gear-ink)]">{g.titulo}</option>)}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor={`requisito-${sufixo}`} className={rotuloBase}>Recomendado antes (sem trava)</label>
+          <select id={`requisito-${sufixo}`} value={campos.requisito_id} onChange={set("requisito_id")} disabled={salvando} className={campoBase}>
+            <option value="" className="bg-[var(--gear-ink)]">Nenhuma</option>
+            {competencias.filter((c) => c.id !== modulo?.id).map((c) => (
+              <option key={c.id} value={c.id} className="bg-[var(--gear-ink)]">{c.codigo ? `${c.codigo} · ` : ""}{c.titulo}</option>
+            ))}
           </select>
         </div>
 

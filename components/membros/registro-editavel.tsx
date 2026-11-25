@@ -11,7 +11,7 @@ const EncerrarEdicao = createContext<(() => void) | null>(null)
 export const useEncerrarEdicao = () => useContext(EncerrarEdicao)
 
 type Props = {
-  tabela: "avisos" | "eventos" | "sprints" | "atas" | "documentos" | "modulos"
+  tabela: "avisos" | "eventos" | "sprints" | "atas" | "documentos" | "modulos" | "licoes"
   id: string
   /** Formulário já preenchido com o registro, montado só ao clicar em Editar. */
   formulario: ReactNode

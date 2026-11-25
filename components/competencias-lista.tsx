@@ -29,18 +29,21 @@ const TOM: Record<EstadoComprovacao, "neutro" | "ativo" | "alerta"> = {
 type Props = {
   competencias: Modulo[]
   minhas: Comprovacao[]
+  /** 047: lições feitas/total por competência. */
+  progresso: Record<string, { feitas: number; total: number }>
   guias: { id: string; titulo: string }[]
   gerencia: boolean
   apaga: boolean
 }
 
 /** Competências filtráveis por área e nível, com o estado da comprovação de quem vê (043). */
-export function CompetenciasLista({ competencias, minhas, guias, gerencia, apaga }: Props) {
+export function CompetenciasLista({ competencias, minhas, progresso, guias, gerencia, apaga }: Props) {
   const [area, setArea] = useState("")
   const [nivel, setNivel] = useState("")
   const [situacao, setSituacao] = useState<"" | "aprovadas" | "pendentes">("")
   const minha = useMemo(() => new Map(minhas.map((c) => [c.modulo_id, c])), [minhas])
   const titulos = useMemo(() => new Map(guias.map((g) => [g.id, g.titulo])), [guias])
+  const titulosComp = useMemo(() => new Map(competencias.map((m) => [m.id, `${m.codigo ? m.codigo + " " : ""}${m.titulo}`])), [competencias])
 
   const lista = competencias.filter((m) => {
     const aprovada = minha.get(m.id)?.estado === "Aprovada"
@@ -79,10 +82,23 @@ export function CompetenciasLista({ competencias, minhas, guias, gerencia, apaga
               </p>
               {minha.get(m.id)?.estado && <Pilula tom={TOM[minha.get(m.id)!.estado!]}>{minha.get(m.id)!.estado}</Pilula>}
             </div>
-            <h3 className="mt-2 font-sans text-base">{m.titulo}</h3>
+            <h3 className="mt-2 font-sans text-base">
+              <a href={`/membros/aprendizagem/${m.id}`} className="hover:text-[var(--gear-amber)]">{m.titulo} →</a>
+            </h3>
             <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
-              {[m.area, m.nivel].filter(Boolean).join(" · ")}
+              {[m.area, m.nivel, progresso[m.id]?.total ? `${progresso[m.id].feitas}/${progresso[m.id].total} lições` : null].filter(Boolean).join(" · ")}
             </p>
+            {progresso[m.id]?.total > 0 && (
+              <div className="mt-2 h-1 bg-linha" aria-hidden>
+                <div className="h-1 bg-[var(--gear-amber)]" style={{ width: `${Math.round((progresso[m.id].feitas / progresso[m.id].total) * 100)}%` }} />
+              </div>
+            )}
+            {m.requisito_id && titulosComp.get(m.requisito_id) && (
+              <p className="mt-2 font-sans text-xs font-light text-muted-foreground">
+                <span className="font-mono text-[10px] uppercase tracking-[0.15em]">Recomendado antes · </span>
+                {titulosComp.get(m.requisito_id)}
+              </p>
+            )}
             {m.criterio_aceite && (
               <p className="mt-3 font-sans text-xs font-light text-muted-foreground">
                 <span className="font-mono text-[10px] uppercase tracking-[0.15em]">Aceite quando · </span>
@@ -101,7 +117,7 @@ export function CompetenciasLista({ competencias, minhas, guias, gerencia, apaga
             )}
             <Comprovar competencia={m} atual={minha.get(m.id)} />
             {gerencia && (
-              <RegistroEditavel tabela="modulos" id={m.id} apagavel={apaga} formulario={<ModuloForm modulo={m} guias={guias} />} />
+              <RegistroEditavel tabela="modulos" id={m.id} apagavel={apaga} formulario={<ModuloForm modulo={m} guias={guias} competencias={competencias} />} />
             )}
           </li>
         ))}
@@ -110,7 +126,7 @@ export function CompetenciasLista({ competencias, minhas, guias, gerencia, apaga
   )
 }
 
-function Comprovar({ competencia, atual }: { competencia: Modulo; atual?: Comprovacao }) {
+export function Comprovar({ competencia, atual }: { competencia: Modulo; atual?: Comprovacao }) {
   const router = useRouter()
   const [aberto, setAberto] = useState(false)
   const [link, setLink] = useState("")

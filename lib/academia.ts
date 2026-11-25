@@ -32,6 +32,8 @@ export type Modulo = {
   pontos: number
   criterio_aceite: string | null
   guia_id: string | null
+  /** 047: competência recomendada antes (sem trava). */
+  requisito_id: string | null
 }
 
 export type Progresso = {
@@ -41,7 +43,7 @@ export type Progresso = {
 
 /** Colunas que toda consulta de módulo pede. Uma lista, um lugar. */
 export const COLUNAS_MODULO =
-  "id, nivel, ordem, titulo, descricao, conteudo_url, prazo_conclusao, duracao_estimada, codigo, area, pontos, criterio_aceite, guia_id"
+  "id, nivel, ordem, titulo, descricao, conteudo_url, prazo_conclusao, duracao_estimada, codigo, area, pontos, criterio_aceite, guia_id, requisito_id"
 
 /**
  * Minutos → "2h30min". É a contrapartida na tela da decisão da 022 de guardar
@@ -136,3 +138,123 @@ export const podeEnviarComprovacao = (estado: EstadoComprovacao | null | undefin
 
 /** Áreas da base de conhecimento: as das competências mais "Geral" (044). */
 export const AREAS_ARTIGO = ["Geral", ...AREAS_COMPETENCIA] as const
+
+// --- 047: lições -------------------------------------------------------------
+
+export const TIPOS_LICAO = ["texto", "video", "quiz"] as const
+export type TipoLicao = (typeof TIPOS_LICAO)[number]
+
+export type Questao = { pergunta: string; opcoes: string[]; correta: number; explicacao?: string }
+
+export type Licao = {
+  id: string
+  modulo_id: string
+  ordem: number
+  titulo: string
+  tipo: TipoLicao
+  corpo: string
+  video_url: string | null
+  questoes: Questao[]
+  duracao_min: number | null
+}
+
+export const COLUNAS_LICAO = "id, modulo_id, ordem, titulo, tipo, corpo, video_url, questoes, duracao_min"
+
+export const ordenarLicoes = (a: Pick<Licao, "ordem" | "titulo">, b: Pick<Licao, "ordem" | "titulo">) =>
+  a.ordem - b.ordem || a.titulo.localeCompare(b.titulo)
+
+/**
+ * Quiz em texto, para quem escreve não precisar de JSON:
+ *
+ *   ? Qual comando lista os tópicos?
+ *   - ros2 node list
+ *   * ros2 topic list        ← "*" marca a certa (exatamente uma)
+ *   > Explicação opcional, mostrada depois de responder.
+ *
+ * Questões separadas por linha em branco ou por um novo "?". Devolve as
+ * questões ou a mensagem do primeiro problema achado.
+ */
+export function lerQuiz(texto: string): { questoes: Questao[] } | { erro: string } {
+  const questoes: Questao[] = []
+  let atual: { pergunta: string; opcoes: string[]; certas: number[]; explicacao: string[] } | null = null
+
+  const fechar = () => {
+    if (!atual) return null
+    const n = questoes.length + 1
+    if (atual.opcoes.length < 2) return `Questão ${n} precisa de pelo menos duas opções.`
+    if (atual.certas.length !== 1) return `Questão ${n} precisa de exatamente uma opção marcada com "*".`
+    const explicacao = atual.explicacao.join(" ").trim()
+    questoes.push({ pergunta: atual.pergunta, opcoes: atual.opcoes, correta: atual.certas[0], ...(explicacao ? { explicacao } : {}) })
+    atual = null
+    return null
+  }
+
+  for (const bruta of texto.split("\n")) {
+    const linha = bruta.trim()
+    if (!linha) continue
+    const marca = linha[0]
+    const resto = linha.slice(1).trim()
+    if (marca === "?") {
+      const erro = fechar()
+      if (erro) return { erro }
+      if (!resto) return { erro: `Questão ${questoes.length + 1} sem pergunta.` }
+      atual = { pergunta: resto, opcoes: [], certas: [], explicacao: [] }
+    } else if (!atual) {
+      return { erro: `Comece cada questão com "?". Linha: ${linha}` }
+    } else if (marca === "-" || marca === "*") {
+      if (marca === "*") atual.certas.push(atual.opcoes.length)
+      atual.opcoes.push(resto)
+    } else if (marca === ">") {
+      atual.explicacao.push(resto)
+    } else {
+      return { erro: `Linha sem marca (?, -, * ou >): ${linha}` }
+    }
+  }
+  const erro = fechar()
+  if (erro) return { erro }
+  if (questoes.length === 0) return { erro: "O quiz precisa de pelo menos uma questão." }
+  return { questoes }
+}
+
+/** Inverso de lerQuiz, para abrir o quiz salvo no formulário. */
+export const escreverQuiz = (questoes: Questao[]) =>
+  questoes
+    .map((q) => [`? ${q.pergunta}`, ...q.opcoes.map((o, i) => `${i === q.correta ? "*" : "-"} ${o}`), ...(q.explicacao ? [`> ${q.explicacao}`] : [])].join("\n"))
+    .join("\n\n")
+
+/** Link do YouTube → player sem cookies; outro link → null (a tela mostra o link). */
+export function embedDoVideo(url: string | null) {
+  if (!url) return null
+  try {
+    const u = new URL(url)
+    const host = u.hostname.replace(/^www\.|^m\./, "")
+    const id =
+      host === "youtu.be" ? u.pathname.slice(1) :
+      host === "youtube.com" ? (u.pathname.startsWith("/watch") ? u.searchParams.get("v") : u.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)/)?.[1]) :
+      null
+    return id && /^[\w-]{6,20}$/.test(id) ? `https://www.youtube-nocookie.com/embed/${id}` : null
+  } catch {
+    return null
+  }
+}
+
+/**
+ * Dias seguidos estudando, terminando hoje ou ontem (estudar hoje mantém, não
+ * é obrigatório para não zerar até o dia acabar), como no Duolingo.
+ * `dias` e `hoje` são "YYYY-MM-DD" já no fuso da GEAR (diaGear / hojeISO).
+ */
+export function sequenciaDias(dias: string[], hoje: string) {
+  const tem = new Set(dias)
+  const menos1 = (d: string) => new Date(Date.parse(`${d}T12:00:00Z`) - 86_400_000).toISOString().slice(0, 10)
+  let dia = tem.has(hoje) ? hoje : menos1(hoje)
+  let n = 0
+  while (tem.has(dia)) {
+    n++
+    dia = menos1(dia)
+  }
+  return n
+}
+
+/** Primeira lição não feita, na ordem; null quando todas estão feitas (ou não há lição). */
+export const proximaLicao = <L extends Pick<Licao, "id">>(licoes: L[], feitas: Set<string>) =>
+  licoes.find((l) => !feitas.has(l.id)) ?? null

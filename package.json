@@ -19,6 +19,7 @@
     "test:calendario": "node --no-warnings --experimental-strip-types scripts/testar-calendario.mjs",
     "test:documentos": "node --no-warnings --experimental-strip-types scripts/testar-documentos.mjs",
     "test:seguranca": "node --no-warnings --experimental-strip-types scripts/testar-seguranca.mjs",
+    "test:academia": "node --no-warnings --experimental-strip-types scripts/testar-academia.mjs",
     "test:alertas": "node --no-warnings --experimental-strip-types scripts/testar-alertas.mjs",
     "test:revisao": "node --no-warnings --experimental-strip-types scripts/testar-revisao.mjs",
     "test:tarefas": "node --no-warnings --experimental-strip-types scripts/testar-tarefas.mjs",
