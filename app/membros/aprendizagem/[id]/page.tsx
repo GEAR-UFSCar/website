@@ -2,14 +2,15 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
-import { Comprovar } from "@/components/competencias-lista"
+import { Comprovar } from "@/components/comprovar"
 import { LicaoForm } from "@/components/licao-form"
+import { ModuloForm } from "@/components/modulo-form"
 import { ConcluirLicao, QuizLicao } from "@/components/licao-interativa"
 import { Markdown } from "@/components/markdown"
 import { PageHeader } from "@/components/membros/page-header"
 import { Recolhivel } from "@/components/membros/recolhivel"
 import { RegistroEditavel } from "@/components/membros/registro-editavel"
-import { temCargo } from "@/lib/administracao"
+import { eDiretoria, temCargo } from "@/lib/administracao"
 import {
   COLUNAS_COMPROVACAO,
   COLUNAS_LICAO,
@@ -26,13 +27,15 @@ import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
-export const metadata: Metadata = {
-  title: "Competência · Academia GEAR | GEAR",
-  robots: { index: false, follow: false },
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params
+  const { data } = await (await createClient()).from("modulos").select("titulo").eq("id", id).maybeSingle()
+  return { title: `${data?.titulo ?? "Competência"} · Academia GEAR | GEAR`, robots: { index: false, follow: false } }
 }
 
 const rotulo = "font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground"
 const ICONE: Record<Licao["tipo"], string> = { texto: "▤", video: "▶", quiz: "?" }
+const conta = (n: number, um: string, varios: string) => `${n} ${n === 1 ? um : varios}`
 
 /**
  * Uma competência como curso (047): lições em ordem à esquerda, a aberta à
@@ -59,14 +62,24 @@ export default async function CompetenciaPage({
   const m = mR.data as Modulo | null
   if (!m) notFound()
 
-  const [requisitoR, guiaR] = await Promise.all([
+  const gerencia = temCargo(perfil?.cargo)
+  const licoes = ((licoesR.data ?? []) as Licao[]).sort(ordenarLicoes)
+  const ids = licoes.map((l) => l.id)
+
+  const [requisitoR, guiaR, depoisR, turmaR, comprovR, guiasR, todasR] = await Promise.all([
     m.requisito_id ? supabase.from("modulos").select("id, codigo, titulo").eq("id", m.requisito_id).maybeSingle() : null,
     m.guia_id ? supabase.from("artigos").select("id, titulo").eq("id", m.guia_id).maybeSingle() : null,
+    supabase.from("modulos").select("id, codigo, titulo").eq("requisito_id", id),
+    // painel da turma: cargo lê as lições feitas e as comprovações de todos (047, 031)
+    gerencia && ids.length ? supabase.from("licoes_feitas").select("licao_id, usuario_id").in("licao_id", ids) : null,
+    gerencia ? supabase.from("progresso").select("estado").eq("modulo_id", id) : null,
+    gerencia ? supabase.from("artigos").select("id, titulo").is("slug", null).order("titulo") : null,
+    gerencia ? supabase.from("modulos").select("id, codigo, titulo").order("titulo") : null,
   ])
   const requisito = requisitoR?.data
   const guia = guiaR?.data
+  const depois = depoisR.data ?? []
 
-  const licoes = ((licoesR.data ?? []) as Licao[]).sort(ordenarLicoes)
   const feitas = new Set((feitasR.data ?? []).map((f) => f.licao_id))
   const feitasAqui = licoes.filter((l) => feitas.has(l.id)).length
   const atual = licoes.find((l) => l.id === pedida) ?? proximaLicao(licoes, feitas) ?? licoes[0] ?? null
@@ -74,8 +87,12 @@ export default async function CompetenciaPage({
   const seguinte = indice >= 0 ? licoes[indice + 1] : undefined
   const proximaHref = seguinte ? `/membros/aprendizagem/${id}?licao=${seguinte.id}` : null
   const minutos = licoes.reduce((s, l) => s + (l.duracao_min ?? 0), 0) || m.duracao_estimada
-  const gerencia = temCargo(perfil?.cargo)
   const pct = licoes.length ? Math.round((feitasAqui / licoes.length) * 100) : 0
+  const anterior = indice > 0 ? licoes[indice - 1] : undefined
+  const turma = turmaR?.data ?? []
+  const porLicao = new Map(ids.map((lid) => [lid, turma.filter((t) => t.licao_id === lid).length]))
+  const comecaram = new Set(turma.map((t) => t.usuario_id)).size
+  const estados = (comprovR?.data ?? []).map((c) => c.estado)
 
   return (
     <section className={paginaMembros}>
@@ -158,8 +175,14 @@ export default async function CompetenciaPage({
               ) : (
                 <ConcluirLicao licaoId={atual.id} feita={feitas.has(atual.id)} proximaHref={proximaHref} />
               )}
+              {anterior && (
+                <Link href={`/membros/aprendizagem/${id}?licao=${anterior.id}`} className="mt-4 inline-block font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">
+                  ← {anterior.titulo}
+                </Link>
+              )}
+              {gerencia && <p className={`${rotulo} mt-6`}>Esta lição</p>}
               {gerencia && (
-                <RegistroEditavel tabela="licoes" id={atual.id} className="mt-6" formulario={<LicaoForm moduloId={id} licao={atual} />} />
+                <RegistroEditavel tabela="licoes" id={atual.id} depois={`/membros/aprendizagem/${id}`} className="mt-2" formulario={<LicaoForm moduloId={id} licao={atual} />} />
               )}
             </article>
           )}
@@ -176,6 +199,61 @@ export default async function CompetenciaPage({
             {minhaR.data?.estado && <p className={`${rotulo} mt-2`}>Situação: {minhaR.data.estado}</p>}
             <Comprovar competencia={m} atual={(minhaR.data ?? undefined) as Comprovacao | undefined} />
           </div>
+
+          {depois.length > 0 && (
+            <div className="mt-8">
+              <p className={rotulo}>Depois desta</p>
+              <ul className="mt-2 flex flex-wrap gap-2">
+                {depois.map((d) => (
+                  <li key={d.id}>
+                    <Link href={`/membros/aprendizagem/${d.id}`} className="inline-flex min-h-11 items-center border border-linha px-3 font-sans text-sm font-light hover:border-[var(--gear-amber)]">
+                      {d.codigo ? `${d.codigo} · ` : ""}{d.titulo} →
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {gerencia && (
+            <section aria-labelledby="turma" className="mt-12 border border-linha p-5">
+              <h2 id="turma" className="font-mono text-[10px] uppercase tracking-[0.25em] text-[var(--gear-amber)]">Turma · só quem tem cargo vê</h2>
+              <p className="mt-2 font-sans text-sm font-light">
+                {[
+                  conta(comecaram, "pessoa começou", "pessoas começaram") + " as lições",
+                  conta(estados.filter((e) => e === "Aprovada").length, "comprovação aprovada", "comprovações aprovadas"),
+                  `${estados.filter((e) => e === "Enviada" || e === "Em revisão").length} na fila de revisão`,
+                  `${estados.filter((e) => e === "Ajustes").length} em ajustes`,
+                ].join(" · ")}
+              </p>
+              {licoes.length > 0 && (
+                <ol className="mt-4 space-y-2">
+                  {licoes.map((l, i) => {
+                    const n = porLicao.get(l.id) ?? 0
+                    return (
+                      <li key={l.id} className="grid grid-cols-[1fr_auto] items-center gap-x-3 font-sans text-xs font-light">
+                        <span className="truncate">{i + 1}. {l.titulo}</span>
+                        <span className="font-mono tabular-nums text-muted-foreground">{n}</span>
+                        <span className="col-span-2 block h-1 bg-linha" aria-hidden>
+                          <span className="block h-1 bg-[var(--gear-amber)]" style={{ width: `${comecaram ? (n / comecaram) * 100 : 0}%` }} />
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ol>
+              )}
+              <p className="mt-3 font-sans text-xs font-light text-muted-foreground">Onde a barra cai é onde a turma trava: vale revisar essa lição.</p>
+              <p className={`${rotulo} mt-6`}>Esta competência</p>
+              <RegistroEditavel
+                tabela="modulos"
+                id={m.id}
+                apagavel={eDiretoria(perfil?.cargo)}
+                depois="/membros/aprendizagem"
+                className="mt-2"
+                formulario={<ModuloForm modulo={m} guias={guiasR?.data ?? []} competencias={todasR?.data ?? []} />}
+              />
+            </section>
+          )}
 
           {gerencia && (
             <Recolhivel rotulo="Nova lição" aberto={licoes.length === 0} className="mt-8">

@@ -1,6 +1,6 @@
 // Lógica pura da Academia (047): quiz em texto, vídeo, sequência, próxima lição.
 import assert from "node:assert/strict"
-import { embedDoVideo, escreverQuiz, lerQuiz, proximaLicao, sequenciaDias } from "../lib/academia.ts"
+import { continuarEstudo, embedDoVideo, escreverQuiz, lerQuiz, proximaLicao, sequenciaDias } from "../lib/academia.ts"
 
 const texto = `? Qual comando lista os tópicos?
 - ros2 node list
@@ -40,5 +40,11 @@ const ls = [{ id: "a" }, { id: "b" }, { id: "c" }]
 assert.equal(proximaLicao(ls, new Set(["a"]))?.id, "b")
 assert.equal(proximaLicao(ls, new Set(["a", "c"]))?.id, "b")
 assert.equal(proximaLicao(ls, new Set(["a", "b", "c"])), null)
+
+const lc = [{ id: "a1", modulo_id: "A" }, { id: "a2", modulo_id: "A" }, { id: "b1", modulo_id: "B" }, { id: "b2", modulo_id: "B" }]
+assert.equal(continuarEstudo(lc, []), null, "sem nada feito, nada a continuar")
+assert.deepEqual(continuarEstudo(lc, [{ licao_id: "b1" }, { licao_id: "a1" }]), { moduloId: "B", licao: lc[3], href: "/membros/aprendizagem/B?licao=b2" }, "a mais recente manda")
+assert.equal(continuarEstudo(lc, [{ licao_id: "b2" }, { licao_id: "b1" }, { licao_id: "a1" }])?.licao.id, "a2", "B terminada, volta para A")
+assert.equal(continuarEstudo(lc, lc.map((l) => ({ licao_id: l.id }))), null, "tudo feito")
 
 console.log("academia: ok")

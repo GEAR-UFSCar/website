@@ -82,7 +82,7 @@ export type ProximaAcao =
   | { tipo: "hoje"; item: ItemPrazo }
   | { tipo: "andamento"; sprint: SprintMinimo }
   | { tipo: "proximo"; item: ItemPrazo }
-  | { tipo: "modulo"; titulo: string }
+  | { tipo: "modulo"; titulo: string; href: string }
   | { tipo: "nada" }
 
 /**
@@ -92,7 +92,7 @@ export type ProximaAcao =
  *   3. o que vence hoje (evento ou meta);
  *   4. sprint em andamento — o trabalho em curso;
  *   5. o próximo prazo da semana;
- *   6. o módulo atual da Academia;
+ *   6. a próxima lição da Academia;
  *   7. nada — e a tela diz isso em vez de inventar tarefa.
  *
  * Recebe sprints já ordenados (ordenarSprints) e prazos já separados
@@ -103,7 +103,7 @@ export function proximaAcao(entrada: {
   atrasados: ItemPrazo[]
   proximos: ItemPrazo[]
   hoje: string
-  moduloAtual: string | null
+  moduloAtual: { titulo: string; href: string } | null
 }): ProximaAcao {
   const { sprints, atrasados, proximos, hoje, moduloAtual } = entrada
 
@@ -119,7 +119,7 @@ export function proximaAcao(entrada: {
   if (andamento) return { tipo: "andamento", sprint: andamento }
 
   if (proximos[0]) return { tipo: "proximo", item: proximos[0] }
-  if (moduloAtual) return { tipo: "modulo", titulo: moduloAtual }
+  if (moduloAtual) return { tipo: "modulo", ...moduloAtual }
   return { tipo: "nada" }
 }
 
@@ -177,7 +177,7 @@ export function primeirosPassos(e: {
       : { id: "termo", texto: "Assinar o Termo de Compromisso", href: "/membros/formularios/novo?modelo=termo_compromisso", feito: e.termo > 0 },
     e.modulosConcluidos === null
       ? null
-      : { id: "modulo", texto: "Concluir o primeiro módulo da formação", href: "/membros/aprendizagem", feito: e.modulosConcluidos > 0 },
+      : { id: "modulo", texto: "Ter a primeira competência aprovada na Academia", href: "/membros/aprendizagem", feito: e.modulosConcluidos > 0 },
     e.registrouNoSprint === null
       ? null
       : { id: "diario", texto: "Registrar no sprint da trilha o que você fez", href: "/membros/frente", feito: e.registrouNoSprint > 0 },

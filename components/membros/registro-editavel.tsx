@@ -20,6 +20,8 @@ type Props = {
    * botão some, e a tela não promete o que o banco vai recusar.
    */
   apagavel?: boolean
+  /** Para onde ir depois de apagar, quando a página atual deixa de existir. */
+  depois?: string
   className?: string
 }
 
@@ -32,7 +34,7 @@ const neutra = "border-linha-forte text-muted-foreground hover:border-foreground
  * de meta-cartao.tsx (dois cliques para apagar, em vez de window.confirm),
  * num componente só, para os cinco tipos não divergirem.
  */
-export function RegistroEditavel({ tabela, id, formulario, apagavel = true, className = "mt-4" }: Props) {
+export function RegistroEditavel({ tabela, id, formulario, apagavel = true, depois, className = "mt-4" }: Props) {
   const router = useRouter()
   const [editando, setEditando] = useState(false)
   const [confirmando, setConfirmando] = useState(false)
@@ -51,7 +53,7 @@ export function RegistroEditavel({ tabela, id, formulario, apagavel = true, clas
     // delete sem erro e sem linha = a RLS recusou
     if (!data || data.length === 0) return setErro("Nada foi apagado, a política de acesso recusou.")
     setConfirmando(false)
-    iniciar(() => router.refresh())
+    iniciar(() => (depois ? router.push(depois) : router.refresh()))
   }
 
   return (

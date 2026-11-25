@@ -23,14 +23,14 @@ import { exigirUsuario, getPerfil } from "@/lib/supabase/sessao"
 import Link from "next/link"
 
 import { Secao } from "@/components/membros/secao"
-import { dataDoDia, hojeISO, saudacao } from "@/lib/datas"
+import { dataDoDia, diaGear, hojeISO, saudacao } from "@/lib/datas"
 import { eFinanceiro, hrefDoSprint, primeiroNome, rotaDaFrente, temCargo } from "@/lib/administracao"
 import { eventoVisivel, maisDias, ordenarSprints, pedidosDeResposta, prazosDaSemana, primeirosPassos, proximaAcao, type ItemPrazo } from "@/lib/hoje"
 import { MODELOS } from "@/lib/formularios"
 import { COLUNAS_SPRINT, type Sprint } from "@/lib/sprints"
 import { COLUNAS_META, type Meta } from "@/lib/metas"
 import { buscarEventos, itensDeEventos } from "@/lib/calendario-dados"
-import { COLUNAS_MODULO, montarEstagios, type Modulo, type Progresso } from "@/lib/academia"
+import { continuarEstudo, diasEstudados, ordenarLicoes, sequenciaDias } from "@/lib/academia"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
@@ -72,7 +72,7 @@ export default async function HojePage() {
   const decideCompras = eFinanceiro(perfil?.cargo)
   const [
     sprintsR, eventosR, metasR, avisosR, modulosR, progressoR, aprovacoesR, bloqueadosR, tarefasR,
-    pesquisasR, respondiR, devolvidosR, emprestimosR, registrosR, comprasR, termoR, diarioR,
+    pesquisasR, respondiR, devolvidosR, emprestimosR, registrosR, comprasR, termoR, diarioR, licoesR, feitasR,
   ] = await Promise.all([
     // Os meus e os da minha trilha: desde a 040 quem é da trilha escreve em todos eles.
     // `frente` vem do CHECK de perfis (três valores fixos); as aspas cobrem o "ç".
@@ -90,8 +90,8 @@ export default async function HojePage() {
       .order("fixado", { ascending: false })
       .order("created_at", { ascending: false })
       .limit(4),
-    supabase.from("modulos").select(COLUNAS_MODULO).order("ordem"),
-    supabase.from("progresso").select("modulo_id, concluido_em").eq("usuario_id", user.id),
+    supabase.from("modulos").select("id, titulo"),
+    supabase.from("progresso").select("concluido_em, enviada_em").eq("usuario_id", user.id),
     comCargo
       ? supabase.from("perfis").select("id", { count: "exact", head: true }).eq("aprovado", false).not("nome_completo", "is", null)
       : Promise.resolve({ count: null, error: null }),
@@ -131,6 +131,9 @@ export default async function HojePage() {
       .eq("modelo", "termo_compromisso")
       .neq("status", "rascunho"),
     supabase.from("sprint_atualizacoes").select("id", { count: "exact", head: true }).eq("autor_id", user.id),
+    // 047: lições, para o "continuar" e a sequência de dias
+    supabase.from("licoes").select("id, modulo_id, ordem, titulo"),
+    supabase.from("licoes_feitas").select("licao_id, feita_em").eq("usuario_id", user.id).order("feita_em", { ascending: false }),
   ])
   const pedidos = pedidosDeResposta({
     agora: Date.parse(agora),
@@ -184,31 +187,27 @@ export default async function HojePage() {
     ...(metasR.error ? [{ titulo: "METAS INDISPONÍVEIS", erro: metasR.error, dica: "Rode supabase/017_metas.sql." }] : []),
   ]
 
-  // Academia: primeiro módulo não concluído da trilha, na ordem da formação.
+  // Academia (047): a próxima lição de onde a pessoa parou, a mesma da página da Academia.
   let moduloAtual: ModuloAtual | null = null
-  // Sem o progresso, "0% da formação" seria dado errado: o bloco some em vez de mentir.
-  if (!modulosR.error && !progressoR.error) {
-    const lista = (modulosR.data ?? []) as Modulo[]
-    const concluidos = new Set(
-      ((progressoR.data ?? []) as Progresso[]).filter((p) => p.concluido_em).map((p) => p.modulo_id),
-    )
-    const estagios = montarEstagios(lista, concluidos).filter((e) => e.total > 0)
-    const trilha = estagios.flatMap((e) => e.modulos)
-    const pendente = trilha.find((m) => !concluidos.has(m.id))
-    if (pendente) {
-      const estagio = estagios.find((e) => e.nivel === pendente.nivel)
-      const posicao = (estagio?.modulos.findIndex((m) => m.id === pendente.id) ?? 0) + 1
-      const feitos = trilha.filter((m) => concluidos.has(m.id)).length
+  if (!licoesR.error && !feitasR.error && !modulosR.error) {
+    const licoes = (licoesR.data ?? []).sort(ordenarLicoes)
+    const seguir = continuarEstudo(licoes, feitasR.data ?? [])
+    if (seguir) {
+      const doModulo = licoes.filter((l) => l.modulo_id === seguir.moduloId)
+      const ids = new Set((feitasR.data ?? []).map((f) => f.licao_id))
       moduloAtual = {
-        titulo: pendente.titulo,
-        nivel: pendente.nivel,
-        posicao: `${posicao} de ${estagio?.total ?? 0}`,
-        prazo: estagio?.prazo ?? null,
-        duracao: pendente.duracao_estimada,
-        percentual: trilha.length ? Math.round((feitos / trilha.length) * 100) : 0,
+        competencia: (modulosR.data ?? []).find((m) => m.id === seguir.moduloId)?.titulo ?? "Competência",
+        licao: seguir.licao.titulo,
+        href: seguir.href,
+        feitas: doModulo.filter((l) => ids.has(l.id)).length,
+        total: doModulo.length,
       }
     }
   }
+  // Sem as consultas, "0 dias" seria dado errado: o número vira "—".
+  const sequencia = feitasR.error || progressoR.error
+    ? null
+    : sequenciaDias(diasEstudados([...(feitasR.data ?? []).map((f) => f.feita_em), ...(progressoR.data ?? []).map((p) => p.enviada_em)], diaGear), hoje)
 
   const hrefSprint = (id: string) => {
     const sprint = sprintsAbertos.find((x) => x.id === id)
@@ -219,15 +218,13 @@ export default async function HojePage() {
     atrasados,
     proximos,
     hoje,
-    moduloAtual: moduloAtual?.titulo ?? null,
+    moduloAtual: moduloAtual ? { titulo: `${moduloAtual.competencia} · ${moduloAtual.licao}`, href: moduloAtual.href } : null,
   })
 
   const passos = primeirosPassos({
     temFrente: Boolean(frente),
     termo: termoR.error ? null : (termoR.count ?? 0),
-    modulosConcluidos: progressoR.error
-      ? null
-      : ((progressoR.data ?? []) as Progresso[]).filter((p) => p.concluido_em).length,
+    modulosConcluidos: progressoR.error ? null : (progressoR.data ?? []).filter((p) => p.concluido_em).length,
     registrouNoSprint: diarioR.error ? null : (diarioR.count ?? 0),
   })
 
@@ -235,7 +232,7 @@ export default async function HojePage() {
     { rotulo: frente ? "Sprints da trilha" : "Sprints abertos", valor: String(sprintsAbertos.length), href: rotaFrente },
     { rotulo: "Prazos em 7 dias", valor: String(proximos.length), href: "/membros/calendario" },
     { rotulo: "Atrasados", valor: String(atrasados.length), href: "/membros/metas", alerta: atrasados.length > 0 },
-    { rotulo: "Formação", valor: moduloAtual ? `${moduloAtual.percentual}%` : "—", href: "/membros/aprendizagem" },
+    { rotulo: "Dias estudando", valor: sequencia === null ? "—" : String(sequencia), href: "/membros/aprendizagem" },
   ]
 
   return (

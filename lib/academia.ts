@@ -1,10 +1,6 @@
 /**
  * Academia GEAR: o que a tela e o banco precisam concordar.
  *
- * Saiu de dentro de app/membros/aprendizagem/page.tsx quando a página passou a
- * ter cartões além da lista — a ordem dos níveis e o cálculo de estágio eram
- * usados em quatro lugares da mesma função, e agora em mais de um arquivo.
- *
  * O nome é `NIVEIS_ACADEMIA` e não `NIVEIS` porque lib/parceiros.ts já exporta
  * um `NIVEIS` (as cotas de patrocínio). São coisas diferentes com o mesmo nome
  * curto, e quem importar as duas num arquivo só não deve precisar de apelido.
@@ -36,11 +32,6 @@ export type Modulo = {
   requisito_id: string | null
 }
 
-export type Progresso = {
-  modulo_id: string
-  concluido_em: string | null
-}
-
 /** Colunas que toda consulta de módulo pede. Uma lista, um lugar. */
 export const COLUNAS_MODULO =
   "id, nivel, ordem, titulo, descricao, conteudo_url, prazo_conclusao, duracao_estimada, codigo, area, pontos, criterio_aceite, guia_id, requisito_id"
@@ -63,44 +54,6 @@ export function formatarDuracao(minutos: number | null | undefined) {
   return `${horas}h${String(resto).padStart(2, "0")}min`
 }
 
-
-export type Estagio = {
-  nivel: NivelAcademia
-  indice: number
-  modulos: Modulo[]
-  feitos: number
-  total: number
-  completo: boolean
-  /** Maior prazo entre os módulos do nível. Null = nenhum módulo tem prazo. */
-  prazo: string | null
-}
-
-/**
- * Os três níveis com progresso e prazo já contabilizados. Sem trava entre
- * níveis nem dentro deles desde a 043: o membro escolhe a competência.
- * "Concluído" aqui é comprovação APROVADA (concluido_em preenchido).
- */
-export function montarEstagios(modulos: Modulo[], concluidos: Set<string>): Estagio[] {
-  const parciais = NIVEIS_ACADEMIA.map((nivel, indice) => {
-    const doNivel = modulos.filter((m) => m.nivel === nivel).sort((a, b) => a.ordem - b.ordem)
-    const feitos = doNivel.filter((m) => concluidos.has(m.id)).length
-    // Maior prazo entre os módulos do nível — ver o comentário da 022.
-    const prazos = doNivel.map((m) => m.prazo_conclusao).filter((p): p is string => Boolean(p))
-
-    return {
-      nivel,
-      indice,
-      modulos: doNivel,
-      feitos,
-      total: doNivel.length,
-      completo: doNivel.length > 0 && feitos === doNivel.length,
-      // strings "YYYY-MM-DD" ordenam por comparação direta; sort() basta
-      prazo: prazos.length > 0 ? prazos.sort().at(-1)! : null,
-    }
-  })
-
-  return parciais
-}
 
 /** Áreas das competências, espelho do CHECK de modulos.area (043). */
 export const AREAS_COMPETENCIA = [
@@ -258,3 +211,23 @@ export function sequenciaDias(dias: string[], hoje: string) {
 /** Primeira lição não feita, na ordem; null quando todas estão feitas (ou não há lição). */
 export const proximaLicao = <L extends Pick<Licao, "id">>(licoes: L[], feitas: Set<string>) =>
   licoes.find((l) => !feitas.has(l.id)) ?? null
+
+/**
+ * "Continuar de onde parou": a competência da lição feita mais recente que
+ * ainda tem lição pela frente, e essa próxima lição. `feitas` vem da mais
+ * recente para a mais antiga; `licoes` já em ordem (ordenarLicoes).
+ * Usado na Academia e no Hoje, para os dois nunca apontarem lugares diferentes.
+ */
+export function continuarEstudo<L extends Pick<Licao, "id" | "modulo_id">>(licoes: L[], feitas: { licao_id: string }[]) {
+  const ids = new Set(feitas.map((f) => f.licao_id))
+  for (const f of feitas) {
+    const mid = licoes.find((l) => l.id === f.licao_id)?.modulo_id
+    const licao = mid ? proximaLicao(licoes.filter((l) => l.modulo_id === mid), ids) : null
+    if (licao) return { moduloId: mid!, licao, href: `/membros/aprendizagem/${mid}?licao=${licao.id}` }
+  }
+  return null
+}
+
+/** Dias seguidos a partir de lições feitas e comprovações enviadas (timestamps). */
+export const diasEstudados = (instantes: (string | null | undefined)[], paraDia: (iso: string) => string) =>
+  instantes.filter((d): d is string => Boolean(d)).map(paraDia)
