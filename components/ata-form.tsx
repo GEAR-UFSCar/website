@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
 import { TIPOS_ATA } from "@/lib/administracao"
-import { campoBase, rotuloBase } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 import { hojeISO } from "@/lib/datas"
 import { useEncerrarEdicao } from "@/components/membros/registro-editavel"
@@ -136,7 +136,7 @@ export function AtaForm({ usuarioId, ata }: { usuarioId: string; ata?: AtaEditav
       )}
 
       <button type="submit" disabled={salvando} data-cursor-hover
-        className="border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50">
+        className={botaoEnviar}>
         {salvando ? "Salvando…" : ata ? "Salvar correção" : "Registrar ata"}
       </button>
     </form>

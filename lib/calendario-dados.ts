@@ -20,8 +20,6 @@ import {
   rotuloDoHorario,
   segmentos,
   somarDias,
-  numeroDoDia,
-  diaDoNumero,
   type EventoCal,
   type RespostaPresenca,
 } from "@/lib/calendario"
@@ -285,9 +283,3 @@ export function ordenarItens(itens: ItemAgenda[]) {
   )
 }
 
-/** Dias de [de, ate] inclusive, como chaves. */
-export function diasDoIntervalo(de: string, ate: string) {
-  const dias: string[] = []
-  for (let n = numeroDoDia(de); n <= numeroDoDia(ate); n++) dias.push(diaDoNumero(n))
-  return dias
-}

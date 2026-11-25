@@ -9,7 +9,6 @@ import { hrefDoSprint } from "@/lib/administracao"
 import type { ItemPrazo, Passo, PedidoDeResposta, ProximaAcao } from "@/lib/hoje"
 import { aparenciaDoStatus, type Sprint } from "@/lib/sprints"
 import { prazoRelativo } from "@/lib/metas"
-import { formatarDuracao } from "@/lib/academia"
 
 const linha = "flex flex-wrap items-center gap-x-4 gap-y-1 border-b border-linha py-3"
 const verMais = "font-mono text-[11px] text-[var(--gear-amber)] hover:underline"
@@ -153,34 +152,31 @@ export function BlocoAvisos({ avisos, erro }: { avisos: AvisoResumo[]; erro: Err
 }
 
 export type ModuloAtual = {
-  titulo: string
-  nivel: string
-  posicao: string
-  prazo: string | null
-  duracao: number | null
-  percentual: number
+  competencia: string
+  licao: string
+  href: string
+  feitas: number
+  total: number
 }
 
+/** Onde a pessoa parou na Academia (047). Sem lição começada, o bloco não aparece. */
 export function BlocoAcademia({ atual }: { atual: ModuloAtual }) {
+  const pct = atual.total ? Math.round((atual.feitas / atual.total) * 100) : 0
   return (
-    <Secao titulo="Academia" acoes={<Link href="/membros/aprendizagem" className={verMais}>Abrir →</Link>}>
-      <p className="font-sans text-base">{atual.titulo}</p>
-      <p className="mt-1 font-mono text-xs text-muted-foreground">
-        {atual.nivel}, módulo {atual.posicao}
-        {atual.duracao ? `, ${formatarDuracao(atual.duracao)}` : ""}
-        {atual.prazo ? `, prazo ${prazoRelativo(atual.prazo)}` : ""}
-      </p>
+    <Secao titulo="Academia" acoes={<Link href={atual.href} className={verMais}>Continuar →</Link>}>
+      <p className="font-sans text-base">{atual.competencia}</p>
+      <p className="mt-1 font-mono text-xs text-muted-foreground">Próxima lição: {atual.licao}</p>
       <div
         role="progressbar"
-        aria-valuenow={atual.percentual}
+        aria-valuenow={pct}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-label="Progresso na formação"
+        aria-label="Lições feitas nesta competência"
         className="mt-3 h-1.5 w-full max-w-md bg-linha"
       >
-        <div style={{ width: `${atual.percentual}%` }} className="h-full bg-[var(--gear-amber)]" />
+        <div style={{ width: `${pct}%` }} className="h-full bg-[var(--gear-amber)]" />
       </div>
-      <p className="mt-1 font-mono text-xs tabular-nums text-muted-foreground">{atual.percentual}% da formação</p>
+      <p className="mt-1 font-mono text-xs tabular-nums text-muted-foreground">{atual.feitas} de {atual.total} lições</p>
     </Secao>
   )
 }
@@ -336,8 +332,8 @@ function redigir(acao: ProximaAcao, hoje: string, hrefSprint: (id: string) => st
         eyebrow: "Sua formação",
         titulo: acao.titulo,
         porque: "Nada urgente hoje. É um bom momento para avançar na Academia.",
-        href: "/membros/aprendizagem",
-        cta: "Continuar o módulo",
+        href: acao.href,
+        cta: "Continuar a lição",
         urgente: false,
       }
     default:

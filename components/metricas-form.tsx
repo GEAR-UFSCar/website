@@ -5,7 +5,7 @@ import type React from "react"
 import { useRouter } from "next/navigation"
 
 import { createClient } from "@/lib/supabase/client"
-import { campoBase, rotuloBase, botaoDesabilitavel } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 import { mensagemSegura } from "@/lib/erros"
 import {
   inteiro,
@@ -428,7 +428,7 @@ export function MetricasForm({ metrica, podeEditar, valorPatrimonio }: Props) {
             type="submit"
             disabled={salvando}
             data-cursor-hover
-            className={`border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] ${botaoDesabilitavel}`}
+            className={botaoEnviar}
           >
             {salvando ? "Salvando…" : "Salvar período"}
           </button>

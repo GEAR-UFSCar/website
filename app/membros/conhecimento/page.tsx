@@ -8,7 +8,7 @@ import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
-  title: "07 · Base de conhecimento | GEAR",
+  title: "Base de conhecimento | GEAR",
   robots: { index: false, follow: false },
 }
 
@@ -24,7 +24,7 @@ export default async function ConhecimentoPage() {
 
   return (
     <section className={paginaMembros}>
-      <PageHeader titulo="07 · Base de conhecimento">
+      <PageHeader titulo="Base de conhecimento">
         Como fazer as coisas na GEAR, escrito por quem já fez. Regra do grupo: quem perguntou algo escreve a resposta
         aqui, para ninguém precisar perguntar de novo. Todo membro escreve e corrige.
       </PageHeader>

@@ -11,7 +11,7 @@ import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
-  title: "05 · Membros e desempenho | GEAR",
+  title: "Membros e desempenho | GEAR",
   robots: { index: false, follow: false },
 }
 
@@ -19,7 +19,7 @@ const th = "py-3 pr-4 text-left font-mono text-[10px] font-normal uppercase trac
 const td = "py-3 pr-4 align-top"
 
 /**
- * 05 · Membros e desempenho (044). Em ordem alfabética, sem ranking: o foco é
+ * Membros e desempenho (044). Em ordem alfabética, sem ranking: o foco é
  * ninguém sumir. Pontos só da Academia e só aprovados; tarefa não tem ponto.
  */
 export default async function DesempenhoPage() {
@@ -44,7 +44,7 @@ export default async function DesempenhoPage() {
 
   return (
     <section className={paginaMembros}>
-      <PageHeader titulo="05 · Membros e desempenho">
+      <PageHeader titulo="Membros e desempenho">
         Quem está fazendo o quê{ciclo ? ` no ${ciclo.nome}` : ""}. Em ordem alfabética, sem ranking: a ideia é ninguém sumir,
         não competir. Pontos são só da Academia e só contam quando a comprovação é aprovada.
       </PageHeader>

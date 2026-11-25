@@ -7,13 +7,13 @@ import { useRouter } from "next/navigation"
 import { createClient } from "@/lib/supabase/client"
 import { mensagemSegura } from "@/lib/erros"
 import { hojeISO } from "@/lib/datas"
-import { campoBase, rotuloBase } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 
 export type EventoChamada = { id: string; titulo: string; tipo: string; dia: string; horas: number }
 type Pessoa = { id: string; nome_completo: string | null }
 
 const botao =
-  "border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50"
+  botaoEnviar
 
 /** Chamada de uma ocorrência de evento: quem marcar ganha as horas dela (033). */
 export function ChamadaForm({ eventos, pessoas }: { eventos: EventoChamada[]; pessoas: Pessoa[] }) {

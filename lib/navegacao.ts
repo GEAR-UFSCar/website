@@ -50,9 +50,9 @@ export const GRUPOS: Grupo[] = [
     href: "/membros/como-funciona",
     prefixos: ["/membros/como-funciona", "/membros/aprendizagem", "/membros/conhecimento"],
     abas: [
-      { href: "/membros/como-funciona", rotulo: "00 · Como funciona", prefixos: ["/membros/como-funciona"] },
-      { href: "/membros/aprendizagem", rotulo: "01 · Academia", prefixos: ["/membros/aprendizagem"] },
-      { href: "/membros/conhecimento", rotulo: "07 · Base", prefixos: ["/membros/conhecimento"] },
+      { href: "/membros/como-funciona", rotulo: "Como funciona", prefixos: ["/membros/como-funciona"] },
+      { href: "/membros/aprendizagem", rotulo: "Academia", prefixos: ["/membros/aprendizagem"] },
+      { href: "/membros/conhecimento", rotulo: "Base de conhecimento", prefixos: ["/membros/conhecimento"] },
     ],
   },
   {

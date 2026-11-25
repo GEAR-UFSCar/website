@@ -8,10 +8,10 @@ import { createClient } from "@/lib/supabase/client"
 import { FRENTES } from "@/lib/administracao"
 import { mensagemSegura } from "@/lib/erros"
 import { hojeISO } from "@/lib/datas"
-import { campoBase, rotuloBase } from "@/lib/ui"
+import { botaoEnviar, campoBase, rotuloBase } from "@/lib/ui"
 
 const botao =
-  "border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50"
+  botaoEnviar
 const pequeno =
   "inline-flex min-h-11 items-center border px-4 py-2 font-mono text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 disabled:opacity-50"
 

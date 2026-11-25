@@ -11,7 +11,7 @@ import { agoraISO } from "@/lib/datas"
 import { paginaMembros } from "@/lib/ui"
 
 export const metadata: Metadata = {
-  title: "03 · Fila de revisão | GEAR",
+  title: "Fila de revisão | GEAR",
   robots: { index: false, follow: false },
 }
 
@@ -28,7 +28,7 @@ export default async function RevisaoPage() {
 
   return (
     <section className={paginaMembros}>
-      <PageHeader titulo="03 · Fila de revisão">
+      <PageHeader titulo="Fila de revisão">
         Tarefas e comprovações da Academia esperando revisão, a mais antiga primeiro. Qualquer pessoa
         revisora pega, menos quem fez. Item com mais de 48 h fica destacado e qualquer outra pessoa revisora
         pode assumir, mesmo que alguém já tenha pegado.

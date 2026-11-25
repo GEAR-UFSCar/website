@@ -4,7 +4,7 @@ import Link from "next/link"
 import { ErroDados } from "@/components/erro-dados"
 import { PageHeader } from "@/components/membros/page-header"
 import { alertasDe, type Alerta } from "@/lib/alertas"
-import { eFinanceiro, eRevisor, temCargo } from "@/lib/administracao"
+import { eDiretoria, eFinanceiro, eRevisor, temCargo } from "@/lib/administracao"
 import { createClient } from "@/lib/supabase/server"
 import { exigirMembroAprovado } from "@/lib/supabase/sessao"
 import { paginaMembros } from "@/lib/ui"
@@ -24,7 +24,7 @@ export default async function AlertasPage() {
     supabase.from("perfis").select("id, nome_completo").eq("aprovado", true),
   ])
   const todos = (alertasR.data ?? []) as Alerta[]
-  const lista = geral ? todos : alertasDe(todos, { usuarioId: user.id, revisor: eRevisor(perfil), financeiro: eFinanceiro(perfil?.cargo) })
+  const lista = geral ? todos : alertasDe(todos, { usuarioId: user.id, revisor: eRevisor(perfil), financeiro: eFinanceiro(perfil?.cargo), diretoria: eDiretoria(perfil?.cargo) })
   const nomes = new Map((pessoasR.data ?? []).map((p) => [p.id, p.nome_completo ?? "sem nome"]))
   const grupos = [...new Set(lista.map((a) => a.titulo))]
 

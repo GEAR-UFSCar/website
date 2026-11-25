@@ -11,6 +11,10 @@
 export const botaoPrimario =
   "border border-[var(--gear-amber)] bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)]"
 
+/** Botão de enviar formulário: o primário um pouco mais baixo, já com o estado desabilitado. */
+export const botaoEnviar =
+  "border border-[var(--gear-amber)] bg-transparent px-8 py-3 font-mono text-sm tracking-widest uppercase text-[var(--gear-amber)] transition-colors duration-300 hover:bg-[var(--gear-amber)] hover:text-[var(--gear-ink)] disabled:opacity-50 disabled:hover:bg-transparent disabled:hover:text-[var(--gear-amber)]"
+
 /** Ação secundária: contorno discreto que clareia no hover. */
 export const botaoSecundario =
   "border border-white/20 bg-transparent px-8 py-4 font-mono text-sm tracking-widest uppercase text-muted-foreground transition-colors duration-300 hover:border-foreground hover:text-foreground"

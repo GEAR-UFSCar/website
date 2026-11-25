@@ -71,38 +71,6 @@ export type MetricaPeriodo = {
 export const COLUNAS_METRICA =
   "id, periodo, status, frente, insumos, atividades, resultados, impacto, atualizado_por, atualizado_em, created_at"
 
-export const INSUMOS_ZERADOS: Insumos = {
-  membros_ativos: 0,
-  horas_semanais_media: 0,
-  valor_patrimonio: 0,
-  patrocinio_recebido: 0,
-}
-
-export const ATIVIDADES_ZERADAS: Atividades = {
-  sprints_concluidos: 0,
-  modulos_ministrados: 0,
-  reunioes_realizadas: 0,
-  cursos_ofertados: [],
-  eventos_divulgacao: 0,
-}
-
-export const RESULTADOS_ZERADOS: Resultados = {
-  projetos_validacao_concluidos: 0,
-  publicacoes_submetidas: 0,
-  publicacoes_aceitas: 0,
-  competicoes_disputadas: 0,
-  membros_completaram_academia: 0,
-}
-
-export const IMPACTO_ZERADO: Impacto = {
-  membros_estagio_ic_bolsa: 0,
-  projetos_viraram_tcc_pesquisa: 0,
-  colocacoes_competicao: [],
-  citacoes_publicacoes: 0,
-  funil_retencao: { bootcamp: 0, academia: 0, frente: 0 },
-  parcerias_apoio_real: 0,
-}
-
 /* --- normalização ---------------------------------------------------------
  * jsonb aceita qualquer forma. Uma chave nova no código, um registro gravado
  * por uma versão anterior, uma edição manual pelo SQL Editor — em todos esses

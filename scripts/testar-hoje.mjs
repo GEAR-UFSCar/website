@@ -74,8 +74,8 @@ console.log("hoje: ok")
   const tipo = (o) => proximaAcao({ ...base, ...o }).tipo
 
   assert.equal(tipo({}), "nada")
-  assert.equal(tipo({ moduloAtual: "ROS" }), "modulo")
-  assert.equal(tipo({ moduloAtual: "ROS", proximos: [it("a", "2026-10-25")] }), "proximo")
+  assert.equal(tipo({ moduloAtual: { titulo: "ROS", href: "/x" } }), "modulo")
+  assert.equal(tipo({ moduloAtual: { titulo: "ROS", href: "/x" }, proximos: [it("a", "2026-10-25")] }), "proximo")
   assert.equal(tipo({ proximos: [it("a", "2026-10-25")], sprints: [sp(1, "Em andamento")] }), "andamento")
   assert.equal(tipo({ sprints: [sp(1, "Em andamento")], proximos: [it("h", "2026-10-23")] }), "hoje")
   assert.equal(tipo({ proximos: [it("h", "2026-10-23")], atrasados: [it("v", "2026-10-20")] }), "atrasada")
