@@ -2,7 +2,7 @@ import Link from "next/link"
 
 import { Pilula } from "@/components/membros/pilula"
 import { alertasDe, pontosNoCiclo, type Alerta } from "@/lib/alertas"
-import { eFinanceiro, eRevisor } from "@/lib/administracao"
+import { eDiretoria, eFinanceiro, eRevisor } from "@/lib/administracao"
 import { dataDoDia, hojeISO } from "@/lib/datas"
 import { createClient } from "@/lib/supabase/server"
 import type { Perfil } from "@/lib/supabase/sessao"
@@ -40,7 +40,7 @@ export async function PainelOrganizacao({ usuarioId, perfil }: { usuarioId: stri
   }))
   const noCiclo = pontosNoCiclo(aprovadas, ciclo ?? null)
   const abertas = abertasR.data ?? []
-  const alertas = alertasDe((alertasR.data ?? []) as Alerta[], { usuarioId, revisor: eRevisor(perfil), financeiro: eFinanceiro(perfil?.cargo) })
+  const alertas = alertasDe((alertasR.data ?? []) as Alerta[], { usuarioId, revisor: eRevisor(perfil), financeiro: eFinanceiro(perfil?.cargo), diretoria: eDiretoria(perfil?.cargo) })
 
   const cartaoTarefa = (nome: string, t?: MinhaTarefa) => (
     <div className={caixa}>

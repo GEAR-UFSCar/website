@@ -1258,6 +1258,26 @@ checar("material com devolução atrasada vira alerta de quem está com ele", pa
 await como(MEMBRO, `select public.devolver_item('${kit2}')`)
 checar("visitante não lê alertas", !(await anon(`select 1 from public.alertas`)).ok)
 
+secao("046. AVISOS DE PARTIDA — diretoria sabe quando falta revisor ou ciclo")
+
+checar("com revisor no grupo, não há alerta sem_revisor", bloqueado(await como(P, `select 1 from public.alertas where tipo = 'sem_revisor'`)), "ALERTOU")
+{
+  const niveis = (await db.query(`select id, nivel_formacao from public.perfis where nivel_formacao <> 'Fundamental'`)).rows
+  await db.exec(`update public.perfis set nivel_formacao = 'Fundamental'`)
+  const sr = await como(P, `select grupo, href from public.alertas where tipo = 'sem_revisor'`)
+  checar("sem nenhum revisor, a diretoria recebe sem_revisor apontando para Cargos",
+    passa(sr) && sr.rows[0]?.grupo === "diretoria" && sr.rows[0]?.href === "/membros/administracao/cargos", sr.erro ?? JSON.stringify(sr.rows))
+  for (const n of niveis) await db.exec(`update public.perfis set nivel_formacao = '${n.nivel_formacao}' where id = '${n.id}'`)
+}
+const temCiclo = (await db.query(`select 1 from public.ciclos where current_date between inicio and fim`)).rows.length > 0
+const sc = await como(P, `select grupo from public.alertas where tipo = 'sem_ciclo'`)
+checar("sem_ciclo aparece só quando não há ciclo cobrindo hoje", temCiclo ? bloqueado(sc) : sc.rows[0]?.grupo === "diretoria", sc.erro ?? JSON.stringify(sc.rows))
+
+const anonMod = await anon(`insert into public.modulos (titulo) values ('x') returning 1`)
+checar("visitante que escreve em modulos recebe 42501 (não erro de validação)", !anonMod.ok && anonMod.codigo === "42501", anonMod.codigo ?? "GRAVOU")
+const anonTar = await anon(`insert into public.sprint_tarefas (titulo) values ('x') returning 1`)
+checar("visitante que escreve em sprint_tarefas recebe 42501", !anonTar.ok && anonTar.codigo === "42501", anonTar.codigo ?? "GRAVOU")
+
 secao("044. GASTOS — abaixo do limite registra direto, acima espera aprovação")
 
 const g1 = await como(MEMBRO, `insert into public.pedidos_compra (item, valor_estimado, status, comprovante_url) values ('Jumpers', 30, 'Aprovado', 'https://loja.example/nf') returning status`)

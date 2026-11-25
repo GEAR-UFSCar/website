@@ -3,10 +3,11 @@ import assert from "node:assert/strict"
 import { alertasDe, pontosNoCiclo } from "../lib/alertas.ts"
 
 const a = (extra) => ({ tipo: "x", titulo: "x", detalhe: null, href: "/", pessoa_id: null, grupo: null, desde: null, ...extra })
-const lista = [a({ tipo: "meu", pessoa_id: "ana" }), a({ tipo: "dela", pessoa_id: "bia" }), a({ tipo: "fila", grupo: "revisores" }), a({ tipo: "gasto", pessoa_id: "bia", grupo: "financeiro" })]
+const lista = [a({ tipo: "meu", pessoa_id: "ana" }), a({ tipo: "dela", pessoa_id: "bia" }), a({ tipo: "fila", grupo: "revisores" }), a({ tipo: "gasto", pessoa_id: "bia", grupo: "financeiro" }), a({ tipo: "sem_revisor", grupo: "diretoria" })]
 const tipos = (q) => alertasDe(lista, q).map((x) => x.tipo).join(",")
 
-assert.equal(tipos({ usuarioId: "ana", revisor: false, financeiro: false }), "meu")
+assert.equal(tipos({ usuarioId: "ana", revisor: false, financeiro: false, diretoria: false }), "meu")
+assert.equal(tipos({ usuarioId: "ana", revisor: false, financeiro: false, diretoria: true }), "meu,sem_revisor")
 assert.equal(tipos({ usuarioId: "ana", revisor: true, financeiro: false }), "meu,fila")
 assert.equal(tipos({ usuarioId: "ana", revisor: false, financeiro: true }), "meu,gasto")
 // quem gastou vê o próprio gasto aguardando, mesmo sem ser do financeiro
